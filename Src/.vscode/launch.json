@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "stutil",
+            "cwd": "${workspaceRoot}",
+            "executable": "..\\build\\gesture_hid.elf",
+            "name": "Debug (ST-Util)",
+            "device": "STM32F767ZI6U",
+            "svdFile": ".\\STM32F7x7.svd",
+            "v1": false
+        },
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Debug (OpenOCD)",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "build",
+            "runToMain": true,
+            "executable": "..\\build\\gesture_hid.elf",
+            "device": "STM32F767ZI6U",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "board/st_nucleo_f7.cfg"
+            ],
+            "svdFile": ".\\STM32F7x7.svd"
+        }
+    ]
+}
