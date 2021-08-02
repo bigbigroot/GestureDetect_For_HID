@@ -44,6 +44,8 @@ user/Src/stm32f7xx_it.c \
 user/Src/stm32f7xx_hal_msp.c \
 dev/BSP/6180A1/6180a1.c \
 dev/BSP/board/uart.c \
+dev/BSP/board/6180a1_i2c.c \
+dev/BSP/board/watchdog.c \
 dev/BSP/Components/vl6180/vl6180_api.c \
 dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd.c \
 dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pcd_ex.c \

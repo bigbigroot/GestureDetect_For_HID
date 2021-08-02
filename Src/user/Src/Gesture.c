@@ -10,11 +10,17 @@
  */
 #include "stm32f7xx_hal.h"
 #include "6180a1.h"
+#include "vl6180_api.h"
 #include "vl6180_i2c.h"
 #include "vl6180_platform.h"
 #include "vl6180_types.h"
 
 extern I2C_HandleTypeDef hi2c1;
+
+
+VL6180Dev_t theVL6180Dev;
+struct MyVL6180Dev_t BoardDevs[4] = { [0]= { .DevID = 0 }, [1]= { .DevID = 1 }, [2]= { .DevID = 2 }, [3]= { .DevID = 3 }, };
+VL6180Dev_t theVL6180Dev = &BoardDevs[0];
 
 /**
  * @brief Gesture Detector
@@ -23,6 +29,12 @@ extern I2C_HandleTypeDef hi2c1;
  */
 void GestureDetectorHandler(void *pvParameters)
 {
+    int status;
+    uint8_t id;
+    
+    BoardDevs[0].I2cAddr = 0x52;
+    /* to detect device presence try to read it's dev id */
+    status = VL6180_RdByte(&BoardDevs[0], IDENTIFICATION_MODEL_ID, &id);
 
 }
 
