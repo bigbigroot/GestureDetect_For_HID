@@ -1,0 +1,107 @@
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccHaTNTx.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"syscalls.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._write,"ax",%progbits
+  17              		.align	1
+  18              		.global	_write
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-d16
+  25              	_write:
+  26              	.LVL0:
+  27              	.LFB0:
+  28              		.file 1 "lib/libc/syscalls.c"
+   1:lib/libc/syscalls.c **** 
+   2:lib/libc/syscalls.c **** int _write(int file, char *ptr, int len)
+   3:lib/libc/syscalls.c **** {
+  29              		.loc 1 3 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 3 1 is_stmt 0 view .LVU1
+  34 0000 70B5     		push	{r4, r5, r6, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 16
+  37              		.cfi_offset 4, -16
+  38              		.cfi_offset 5, -12
+  39              		.cfi_offset 6, -8
+  40              		.cfi_offset 14, -4
+  41 0002 0C46     		mov	r4, r1
+  42 0004 1646     		mov	r6, r2
+   4:lib/libc/syscalls.c ****   int DataIdx;
+  43              		.loc 1 4 3 is_stmt 1 view .LVU2
+   5:lib/libc/syscalls.c ****   for(DataIdx= 0; DataIdx< len; DataIdx++)
+  44              		.loc 1 5 3 view .LVU3
+  45              	.LVL1:
+  46              		.loc 1 5 14 is_stmt 0 view .LVU4
+  47 0006 0025     		movs	r5, #0
+  48              	.LVL2:
+  49              	.L2:
+  50              		.loc 1 5 19 is_stmt 1 discriminator 1 view .LVU5
+  51              		.loc 1 5 3 is_stmt 0 discriminator 1 view .LVU6
+  52 0008 B542     		cmp	r5, r6
+  53 000a 05DA     		bge	.L5
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccHaTNTx.s 			page 2
+
+
+  54              	.LBB2:
+   6:lib/libc/syscalls.c ****   {
+   7:lib/libc/syscalls.c ****     usart_putchar(*ptr++);
+  55              		.loc 1 7 5 is_stmt 1 discriminator 3 view .LVU7
+  56              	.LVL3:
+  57              		.loc 1 7 5 is_stmt 0 discriminator 3 view .LVU8
+  58 000c 14F8010B 		ldrb	r0, [r4], #1	@ zero_extendqisi2
+  59              	.LVL4:
+  60              		.loc 1 7 5 discriminator 3 view .LVU9
+  61 0010 FFF7FEFF 		bl	usart_putchar
+  62              	.LVL5:
+  63              	.LBE2:
+   5:lib/libc/syscalls.c ****   for(DataIdx= 0; DataIdx< len; DataIdx++)
+  64              		.loc 1 5 33 is_stmt 1 discriminator 3 view .LVU10
+   5:lib/libc/syscalls.c ****   for(DataIdx= 0; DataIdx< len; DataIdx++)
+  65              		.loc 1 5 40 is_stmt 0 discriminator 3 view .LVU11
+  66 0014 0135     		adds	r5, r5, #1
+  67              	.LVL6:
+   5:lib/libc/syscalls.c ****   for(DataIdx= 0; DataIdx< len; DataIdx++)
+  68              		.loc 1 5 40 discriminator 3 view .LVU12
+  69 0016 F7E7     		b	.L2
+  70              	.L5:
+   8:lib/libc/syscalls.c ****   }
+   9:lib/libc/syscalls.c ****   return len;
+  71              		.loc 1 9 3 is_stmt 1 view .LVU13
+  10:lib/libc/syscalls.c **** }...
+  72              		.loc 1 10 1 is_stmt 0 view .LVU14
+  73 0018 3046     		mov	r0, r6
+  74 001a 70BD     		pop	{r4, r5, r6, pc}
+  75              		.loc 1 10 1 view .LVU15
+  76              		.cfi_endproc
+  77              	.LFE0:
+  79              		.text
+  80              	.Letext0:
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccHaTNTx.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 syscalls.c
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccHaTNTx.s:17     .text._write:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccHaTNTx.s:25     .text._write:00000000 _write
+
+UNDEFINED SYMBOLS
+usart_putchar

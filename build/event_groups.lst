@@ -1,0 +1,3253 @@
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"event_groups.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.prvTestWaitCondition,"ax",%progbits
+  17              		.align	1
+  18              		.arch armv7e-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu fpv5-d16
+  24              	prvTestWaitCondition:
+  25              	.LVL0:
+  26              	.LFB15:
+  27              		.file 1 "os/event_groups.c"
+   1:os/event_groups.c **** /*
+   2:os/event_groups.c ****  * FreeRTOS Kernel V10.4.3
+   3:os/event_groups.c ****  * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+   4:os/event_groups.c ****  *
+   5:os/event_groups.c ****  * Permission is hereby granted, free of charge, to any person obtaining a copy of
+   6:os/event_groups.c ****  * this software and associated documentation files (the "Software"), to deal in
+   7:os/event_groups.c ****  * the Software without restriction, including without limitation the rights to
+   8:os/event_groups.c ****  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+   9:os/event_groups.c ****  * the Software, and to permit persons to whom the Software is furnished to do so,
+  10:os/event_groups.c ****  * subject to the following conditions:
+  11:os/event_groups.c ****  *
+  12:os/event_groups.c ****  * The above copyright notice and this permission notice shall be included in all
+  13:os/event_groups.c ****  * copies or substantial portions of the Software.
+  14:os/event_groups.c ****  *
+  15:os/event_groups.c ****  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  16:os/event_groups.c ****  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+  17:os/event_groups.c ****  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+  18:os/event_groups.c ****  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+  19:os/event_groups.c ****  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  20:os/event_groups.c ****  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  21:os/event_groups.c ****  *
+  22:os/event_groups.c ****  * https://www.FreeRTOS.org
+  23:os/event_groups.c ****  * https://github.com/FreeRTOS
+  24:os/event_groups.c ****  *
+  25:os/event_groups.c ****  */
+  26:os/event_groups.c **** 
+  27:os/event_groups.c **** /* Standard includes. */
+  28:os/event_groups.c **** #include <stdlib.h>
+  29:os/event_groups.c **** 
+  30:os/event_groups.c **** /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
+  31:os/event_groups.c ****  * all the API functions to use the MPU wrappers.  That should only be done when
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 2
+
+
+  32:os/event_groups.c ****  * task.h is included from an application file. */
+  33:os/event_groups.c **** #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  34:os/event_groups.c **** 
+  35:os/event_groups.c **** /* FreeRTOS includes. */
+  36:os/event_groups.c **** #include "FreeRTOS.h"
+  37:os/event_groups.c **** #include "task.h"
+  38:os/event_groups.c **** #include "timers.h"
+  39:os/event_groups.c **** #include "event_groups.h"
+  40:os/event_groups.c **** 
+  41:os/event_groups.c **** /* Lint e961, e750 and e9021 are suppressed as a MISRA exception justified
+  42:os/event_groups.c ****  * because the MPU ports require MPU_WRAPPERS_INCLUDED_FROM_API_FILE to be defined
+  43:os/event_groups.c ****  * for the header files above, but not in this file, in order to generate the
+  44:os/event_groups.c ****  * correct privileged Vs unprivileged linkage and placement. */
+  45:os/event_groups.c **** #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE /*lint !e961 !e750 !e9021 See comment above. */
+  46:os/event_groups.c **** 
+  47:os/event_groups.c **** /* The following bit fields convey control information in a task's event list
+  48:os/event_groups.c ****  * item value.  It is important they don't clash with the
+  49:os/event_groups.c ****  * taskEVENT_LIST_ITEM_VALUE_IN_USE definition. */
+  50:os/event_groups.c **** #if configUSE_16_BIT_TICKS == 1
+  51:os/event_groups.c ****     #define eventCLEAR_EVENTS_ON_EXIT_BIT    0x0100U
+  52:os/event_groups.c ****     #define eventUNBLOCKED_DUE_TO_BIT_SET    0x0200U
+  53:os/event_groups.c ****     #define eventWAIT_FOR_ALL_BITS           0x0400U
+  54:os/event_groups.c ****     #define eventEVENT_BITS_CONTROL_BYTES    0xff00U
+  55:os/event_groups.c **** #else
+  56:os/event_groups.c ****     #define eventCLEAR_EVENTS_ON_EXIT_BIT    0x01000000UL
+  57:os/event_groups.c ****     #define eventUNBLOCKED_DUE_TO_BIT_SET    0x02000000UL
+  58:os/event_groups.c ****     #define eventWAIT_FOR_ALL_BITS           0x04000000UL
+  59:os/event_groups.c ****     #define eventEVENT_BITS_CONTROL_BYTES    0xff000000UL
+  60:os/event_groups.c **** #endif
+  61:os/event_groups.c **** 
+  62:os/event_groups.c **** typedef struct EventGroupDef_t
+  63:os/event_groups.c **** {
+  64:os/event_groups.c ****     EventBits_t uxEventBits;
+  65:os/event_groups.c ****     List_t xTasksWaitingForBits; /*< List of tasks waiting for a bit to be set. */
+  66:os/event_groups.c **** 
+  67:os/event_groups.c ****     #if ( configUSE_TRACE_FACILITY == 1 )
+  68:os/event_groups.c ****         UBaseType_t uxEventGroupNumber;
+  69:os/event_groups.c ****     #endif
+  70:os/event_groups.c **** 
+  71:os/event_groups.c ****     #if ( ( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) )
+  72:os/event_groups.c ****         uint8_t ucStaticallyAllocated; /*< Set to pdTRUE if the event group is statically allocated
+  73:os/event_groups.c ****     #endif
+  74:os/event_groups.c **** } EventGroup_t;
+  75:os/event_groups.c **** 
+  76:os/event_groups.c **** /*-----------------------------------------------------------*/
+  77:os/event_groups.c **** 
+  78:os/event_groups.c **** /*
+  79:os/event_groups.c ****  * Test the bits set in uxCurrentEventBits to see if the wait condition is met.
+  80:os/event_groups.c ****  * The wait condition is defined by xWaitForAllBits.  If xWaitForAllBits is
+  81:os/event_groups.c ****  * pdTRUE then the wait condition is met if all the bits set in uxBitsToWaitFor
+  82:os/event_groups.c ****  * are also set in uxCurrentEventBits.  If xWaitForAllBits is pdFALSE then the
+  83:os/event_groups.c ****  * wait condition is met if any of the bits set in uxBitsToWait for are also set
+  84:os/event_groups.c ****  * in uxCurrentEventBits.
+  85:os/event_groups.c ****  */
+  86:os/event_groups.c **** static BaseType_t prvTestWaitCondition( const EventBits_t uxCurrentEventBits,
+  87:os/event_groups.c ****                                         const EventBits_t uxBitsToWaitFor,
+  88:os/event_groups.c ****                                         const BaseType_t xWaitForAllBits ) PRIVILEGED_FUNCTION;
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 3
+
+
+  89:os/event_groups.c **** 
+  90:os/event_groups.c **** /*-----------------------------------------------------------*/
+  91:os/event_groups.c **** 
+  92:os/event_groups.c **** #if ( configSUPPORT_STATIC_ALLOCATION == 1 )
+  93:os/event_groups.c **** 
+  94:os/event_groups.c ****     EventGroupHandle_t xEventGroupCreateStatic( StaticEventGroup_t * pxEventGroupBuffer )
+  95:os/event_groups.c ****     {
+  96:os/event_groups.c ****         EventGroup_t * pxEventBits;
+  97:os/event_groups.c **** 
+  98:os/event_groups.c ****         /* A StaticEventGroup_t object must be provided. */
+  99:os/event_groups.c ****         configASSERT( pxEventGroupBuffer );
+ 100:os/event_groups.c **** 
+ 101:os/event_groups.c ****         #if ( configASSERT_DEFINED == 1 )
+ 102:os/event_groups.c ****             {
+ 103:os/event_groups.c ****                 /* Sanity check that the size of the structure used to declare a
+ 104:os/event_groups.c ****                  * variable of type StaticEventGroup_t equals the size of the real
+ 105:os/event_groups.c ****                  * event group structure. */
+ 106:os/event_groups.c ****                 volatile size_t xSize = sizeof( StaticEventGroup_t );
+ 107:os/event_groups.c ****                 configASSERT( xSize == sizeof( EventGroup_t ) );
+ 108:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 109:os/event_groups.c ****         #endif /* configASSERT_DEFINED */
+ 110:os/event_groups.c **** 
+ 111:os/event_groups.c ****         /* The user has provided a statically allocated event group - use it. */
+ 112:os/event_groups.c ****         pxEventBits = ( EventGroup_t * ) pxEventGroupBuffer; /*lint !e740 !e9087 EventGroup_t and S
+ 113:os/event_groups.c **** 
+ 114:os/event_groups.c ****         if( pxEventBits != NULL )
+ 115:os/event_groups.c ****         {
+ 116:os/event_groups.c ****             pxEventBits->uxEventBits = 0;
+ 117:os/event_groups.c ****             vListInitialise( &( pxEventBits->xTasksWaitingForBits ) );
+ 118:os/event_groups.c **** 
+ 119:os/event_groups.c ****             #if ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+ 120:os/event_groups.c ****                 {
+ 121:os/event_groups.c ****                     /* Both static and dynamic allocation can be used, so note that
+ 122:os/event_groups.c ****                      * this event group was created statically in case the event group
+ 123:os/event_groups.c ****                      * is later deleted. */
+ 124:os/event_groups.c ****                     pxEventBits->ucStaticallyAllocated = pdTRUE;
+ 125:os/event_groups.c ****                 }
+ 126:os/event_groups.c ****             #endif /* configSUPPORT_DYNAMIC_ALLOCATION */
+ 127:os/event_groups.c **** 
+ 128:os/event_groups.c ****             traceEVENT_GROUP_CREATE( pxEventBits );
+ 129:os/event_groups.c ****         }
+ 130:os/event_groups.c ****         else
+ 131:os/event_groups.c ****         {
+ 132:os/event_groups.c ****             /* xEventGroupCreateStatic should only ever be called with
+ 133:os/event_groups.c ****              * pxEventGroupBuffer pointing to a pre-allocated (compile time
+ 134:os/event_groups.c ****              * allocated) StaticEventGroup_t variable. */
+ 135:os/event_groups.c ****             traceEVENT_GROUP_CREATE_FAILED();
+ 136:os/event_groups.c ****         }
+ 137:os/event_groups.c **** 
+ 138:os/event_groups.c ****         return pxEventBits;
+ 139:os/event_groups.c ****     }
+ 140:os/event_groups.c **** 
+ 141:os/event_groups.c **** #endif /* configSUPPORT_STATIC_ALLOCATION */
+ 142:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 143:os/event_groups.c **** 
+ 144:os/event_groups.c **** #if ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+ 145:os/event_groups.c **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 4
+
+
+ 146:os/event_groups.c ****     EventGroupHandle_t xEventGroupCreate( void )
+ 147:os/event_groups.c ****     {
+ 148:os/event_groups.c ****         EventGroup_t * pxEventBits;
+ 149:os/event_groups.c **** 
+ 150:os/event_groups.c ****         /* Allocate the event group.  Justification for MISRA deviation as
+ 151:os/event_groups.c ****          * follows:  pvPortMalloc() always ensures returned memory blocks are
+ 152:os/event_groups.c ****          * aligned per the requirements of the MCU stack.  In this case
+ 153:os/event_groups.c ****          * pvPortMalloc() must return a pointer that is guaranteed to meet the
+ 154:os/event_groups.c ****          * alignment requirements of the EventGroup_t structure - which (if you
+ 155:os/event_groups.c ****          * follow it through) is the alignment requirements of the TickType_t type
+ 156:os/event_groups.c ****          * (EventBits_t being of TickType_t itself).  Therefore, whenever the
+ 157:os/event_groups.c ****          * stack alignment requirements are greater than or equal to the
+ 158:os/event_groups.c ****          * TickType_t alignment requirements the cast is safe.  In other cases,
+ 159:os/event_groups.c ****          * where the natural word size of the architecture is less than
+ 160:os/event_groups.c ****          * sizeof( TickType_t ), the TickType_t variables will be accessed in two
+ 161:os/event_groups.c ****          * or more reads operations, and the alignment requirements is only that
+ 162:os/event_groups.c ****          * of each individual read. */
+ 163:os/event_groups.c ****         pxEventBits = ( EventGroup_t * ) pvPortMalloc( sizeof( EventGroup_t ) ); /*lint !e9087 !e90
+ 164:os/event_groups.c **** 
+ 165:os/event_groups.c ****         if( pxEventBits != NULL )
+ 166:os/event_groups.c ****         {
+ 167:os/event_groups.c ****             pxEventBits->uxEventBits = 0;
+ 168:os/event_groups.c ****             vListInitialise( &( pxEventBits->xTasksWaitingForBits ) );
+ 169:os/event_groups.c **** 
+ 170:os/event_groups.c ****             #if ( configSUPPORT_STATIC_ALLOCATION == 1 )
+ 171:os/event_groups.c ****                 {
+ 172:os/event_groups.c ****                     /* Both static and dynamic allocation can be used, so note this
+ 173:os/event_groups.c ****                      * event group was allocated statically in case the event group is
+ 174:os/event_groups.c ****                      * later deleted. */
+ 175:os/event_groups.c ****                     pxEventBits->ucStaticallyAllocated = pdFALSE;
+ 176:os/event_groups.c ****                 }
+ 177:os/event_groups.c ****             #endif /* configSUPPORT_STATIC_ALLOCATION */
+ 178:os/event_groups.c **** 
+ 179:os/event_groups.c ****             traceEVENT_GROUP_CREATE( pxEventBits );
+ 180:os/event_groups.c ****         }
+ 181:os/event_groups.c ****         else
+ 182:os/event_groups.c ****         {
+ 183:os/event_groups.c ****             traceEVENT_GROUP_CREATE_FAILED(); /*lint !e9063 Else branch only exists to allow tracin
+ 184:os/event_groups.c ****         }
+ 185:os/event_groups.c **** 
+ 186:os/event_groups.c ****         return pxEventBits;
+ 187:os/event_groups.c ****     }
+ 188:os/event_groups.c **** 
+ 189:os/event_groups.c **** #endif /* configSUPPORT_DYNAMIC_ALLOCATION */
+ 190:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 191:os/event_groups.c **** 
+ 192:os/event_groups.c **** EventBits_t xEventGroupSync( EventGroupHandle_t xEventGroup,
+ 193:os/event_groups.c ****                              const EventBits_t uxBitsToSet,
+ 194:os/event_groups.c ****                              const EventBits_t uxBitsToWaitFor,
+ 195:os/event_groups.c ****                              TickType_t xTicksToWait )
+ 196:os/event_groups.c **** {
+ 197:os/event_groups.c ****     EventBits_t uxOriginalBitValue, uxReturn;
+ 198:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 199:os/event_groups.c ****     BaseType_t xAlreadyYielded;
+ 200:os/event_groups.c ****     BaseType_t xTimeoutOccurred = pdFALSE;
+ 201:os/event_groups.c **** 
+ 202:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 5
+
+
+ 203:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 204:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 205:os/event_groups.c ****         {
+ 206:os/event_groups.c ****             configASSERT( !( ( xTaskGetSchedulerState() == taskSCHEDULER_SUSPENDED ) && ( xTicksToW
+ 207:os/event_groups.c ****         }
+ 208:os/event_groups.c ****     #endif
+ 209:os/event_groups.c **** 
+ 210:os/event_groups.c ****     vTaskSuspendAll();
+ 211:os/event_groups.c ****     {
+ 212:os/event_groups.c ****         uxOriginalBitValue = pxEventBits->uxEventBits;
+ 213:os/event_groups.c **** 
+ 214:os/event_groups.c ****         ( void ) xEventGroupSetBits( xEventGroup, uxBitsToSet );
+ 215:os/event_groups.c **** 
+ 216:os/event_groups.c ****         if( ( ( uxOriginalBitValue | uxBitsToSet ) & uxBitsToWaitFor ) == uxBitsToWaitFor )
+ 217:os/event_groups.c ****         {
+ 218:os/event_groups.c ****             /* All the rendezvous bits are now set - no need to block. */
+ 219:os/event_groups.c ****             uxReturn = ( uxOriginalBitValue | uxBitsToSet );
+ 220:os/event_groups.c **** 
+ 221:os/event_groups.c ****             /* Rendezvous always clear the bits.  They will have been cleared
+ 222:os/event_groups.c ****              * already unless this is the only task in the rendezvous. */
+ 223:os/event_groups.c ****             pxEventBits->uxEventBits &= ~uxBitsToWaitFor;
+ 224:os/event_groups.c **** 
+ 225:os/event_groups.c ****             xTicksToWait = 0;
+ 226:os/event_groups.c ****         }
+ 227:os/event_groups.c ****         else
+ 228:os/event_groups.c ****         {
+ 229:os/event_groups.c ****             if( xTicksToWait != ( TickType_t ) 0 )
+ 230:os/event_groups.c ****             {
+ 231:os/event_groups.c ****                 traceEVENT_GROUP_SYNC_BLOCK( xEventGroup, uxBitsToSet, uxBitsToWaitFor );
+ 232:os/event_groups.c **** 
+ 233:os/event_groups.c ****                 /* Store the bits that the calling task is waiting for in the
+ 234:os/event_groups.c ****                  * task's event list item so the kernel knows when a match is
+ 235:os/event_groups.c ****                  * found.  Then enter the blocked state. */
+ 236:os/event_groups.c ****                 vTaskPlaceOnUnorderedEventList( &( pxEventBits->xTasksWaitingForBits ), ( uxBitsToW
+ 237:os/event_groups.c **** 
+ 238:os/event_groups.c ****                 /* This assignment is obsolete as uxReturn will get set after
+ 239:os/event_groups.c ****                  * the task unblocks, but some compilers mistakenly generate a
+ 240:os/event_groups.c ****                  * warning about uxReturn being returned without being set if the
+ 241:os/event_groups.c ****                  * assignment is omitted. */
+ 242:os/event_groups.c ****                 uxReturn = 0;
+ 243:os/event_groups.c ****             }
+ 244:os/event_groups.c ****             else
+ 245:os/event_groups.c ****             {
+ 246:os/event_groups.c ****                 /* The rendezvous bits were not set, but no block time was
+ 247:os/event_groups.c ****                  * specified - just return the current event bit value. */
+ 248:os/event_groups.c ****                 uxReturn = pxEventBits->uxEventBits;
+ 249:os/event_groups.c ****                 xTimeoutOccurred = pdTRUE;
+ 250:os/event_groups.c ****             }
+ 251:os/event_groups.c ****         }
+ 252:os/event_groups.c ****     }
+ 253:os/event_groups.c ****     xAlreadyYielded = xTaskResumeAll();
+ 254:os/event_groups.c **** 
+ 255:os/event_groups.c ****     if( xTicksToWait != ( TickType_t ) 0 )
+ 256:os/event_groups.c ****     {
+ 257:os/event_groups.c ****         if( xAlreadyYielded == pdFALSE )
+ 258:os/event_groups.c ****         {
+ 259:os/event_groups.c ****             portYIELD_WITHIN_API();
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 6
+
+
+ 260:os/event_groups.c ****         }
+ 261:os/event_groups.c ****         else
+ 262:os/event_groups.c ****         {
+ 263:os/event_groups.c ****             mtCOVERAGE_TEST_MARKER();
+ 264:os/event_groups.c ****         }
+ 265:os/event_groups.c **** 
+ 266:os/event_groups.c ****         /* The task blocked to wait for its required bits to be set - at this
+ 267:os/event_groups.c ****          * point either the required bits were set or the block time expired.  If
+ 268:os/event_groups.c ****          * the required bits were set they will have been stored in the task's
+ 269:os/event_groups.c ****          * event list item, and they should now be retrieved then cleared. */
+ 270:os/event_groups.c ****         uxReturn = uxTaskResetEventItemValue();
+ 271:os/event_groups.c **** 
+ 272:os/event_groups.c ****         if( ( uxReturn & eventUNBLOCKED_DUE_TO_BIT_SET ) == ( EventBits_t ) 0 )
+ 273:os/event_groups.c ****         {
+ 274:os/event_groups.c ****             /* The task timed out, just return the current event bit value. */
+ 275:os/event_groups.c ****             taskENTER_CRITICAL();
+ 276:os/event_groups.c ****             {
+ 277:os/event_groups.c ****                 uxReturn = pxEventBits->uxEventBits;
+ 278:os/event_groups.c **** 
+ 279:os/event_groups.c ****                 /* Although the task got here because it timed out before the
+ 280:os/event_groups.c ****                  * bits it was waiting for were set, it is possible that since it
+ 281:os/event_groups.c ****                  * unblocked another task has set the bits.  If this is the case
+ 282:os/event_groups.c ****                  * then it needs to clear the bits before exiting. */
+ 283:os/event_groups.c ****                 if( ( uxReturn & uxBitsToWaitFor ) == uxBitsToWaitFor )
+ 284:os/event_groups.c ****                 {
+ 285:os/event_groups.c ****                     pxEventBits->uxEventBits &= ~uxBitsToWaitFor;
+ 286:os/event_groups.c ****                 }
+ 287:os/event_groups.c ****                 else
+ 288:os/event_groups.c ****                 {
+ 289:os/event_groups.c ****                     mtCOVERAGE_TEST_MARKER();
+ 290:os/event_groups.c ****                 }
+ 291:os/event_groups.c ****             }
+ 292:os/event_groups.c ****             taskEXIT_CRITICAL();
+ 293:os/event_groups.c **** 
+ 294:os/event_groups.c ****             xTimeoutOccurred = pdTRUE;
+ 295:os/event_groups.c ****         }
+ 296:os/event_groups.c ****         else
+ 297:os/event_groups.c ****         {
+ 298:os/event_groups.c ****             /* The task unblocked because the bits were set. */
+ 299:os/event_groups.c ****         }
+ 300:os/event_groups.c **** 
+ 301:os/event_groups.c ****         /* Control bits might be set as the task had blocked should not be
+ 302:os/event_groups.c ****          * returned. */
+ 303:os/event_groups.c ****         uxReturn &= ~eventEVENT_BITS_CONTROL_BYTES;
+ 304:os/event_groups.c ****     }
+ 305:os/event_groups.c **** 
+ 306:os/event_groups.c ****     traceEVENT_GROUP_SYNC_END( xEventGroup, uxBitsToSet, uxBitsToWaitFor, xTimeoutOccurred );
+ 307:os/event_groups.c **** 
+ 308:os/event_groups.c ****     /* Prevent compiler warnings when trace macros are not used. */
+ 309:os/event_groups.c ****     ( void ) xTimeoutOccurred;
+ 310:os/event_groups.c **** 
+ 311:os/event_groups.c ****     return uxReturn;
+ 312:os/event_groups.c **** }
+ 313:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 314:os/event_groups.c **** 
+ 315:os/event_groups.c **** EventBits_t xEventGroupWaitBits( EventGroupHandle_t xEventGroup,
+ 316:os/event_groups.c ****                                  const EventBits_t uxBitsToWaitFor,
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 7
+
+
+ 317:os/event_groups.c ****                                  const BaseType_t xClearOnExit,
+ 318:os/event_groups.c ****                                  const BaseType_t xWaitForAllBits,
+ 319:os/event_groups.c ****                                  TickType_t xTicksToWait )
+ 320:os/event_groups.c **** {
+ 321:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 322:os/event_groups.c ****     EventBits_t uxReturn, uxControlBits = 0;
+ 323:os/event_groups.c ****     BaseType_t xWaitConditionMet, xAlreadyYielded;
+ 324:os/event_groups.c ****     BaseType_t xTimeoutOccurred = pdFALSE;
+ 325:os/event_groups.c **** 
+ 326:os/event_groups.c ****     /* Check the user is not attempting to wait on the bits used by the kernel
+ 327:os/event_groups.c ****      * itself, and that at least one bit is being requested. */
+ 328:os/event_groups.c ****     configASSERT( xEventGroup );
+ 329:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 330:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 331:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 332:os/event_groups.c ****         {
+ 333:os/event_groups.c ****             configASSERT( !( ( xTaskGetSchedulerState() == taskSCHEDULER_SUSPENDED ) && ( xTicksToW
+ 334:os/event_groups.c ****         }
+ 335:os/event_groups.c ****     #endif
+ 336:os/event_groups.c **** 
+ 337:os/event_groups.c ****     vTaskSuspendAll();
+ 338:os/event_groups.c ****     {
+ 339:os/event_groups.c ****         const EventBits_t uxCurrentEventBits = pxEventBits->uxEventBits;
+ 340:os/event_groups.c **** 
+ 341:os/event_groups.c ****         /* Check to see if the wait condition is already met or not. */
+ 342:os/event_groups.c ****         xWaitConditionMet = prvTestWaitCondition( uxCurrentEventBits, uxBitsToWaitFor, xWaitForAllB
+ 343:os/event_groups.c **** 
+ 344:os/event_groups.c ****         if( xWaitConditionMet != pdFALSE )
+ 345:os/event_groups.c ****         {
+ 346:os/event_groups.c ****             /* The wait condition has already been met so there is no need to
+ 347:os/event_groups.c ****              * block. */
+ 348:os/event_groups.c ****             uxReturn = uxCurrentEventBits;
+ 349:os/event_groups.c ****             xTicksToWait = ( TickType_t ) 0;
+ 350:os/event_groups.c **** 
+ 351:os/event_groups.c ****             /* Clear the wait bits if requested to do so. */
+ 352:os/event_groups.c ****             if( xClearOnExit != pdFALSE )
+ 353:os/event_groups.c ****             {
+ 354:os/event_groups.c ****                 pxEventBits->uxEventBits &= ~uxBitsToWaitFor;
+ 355:os/event_groups.c ****             }
+ 356:os/event_groups.c ****             else
+ 357:os/event_groups.c ****             {
+ 358:os/event_groups.c ****                 mtCOVERAGE_TEST_MARKER();
+ 359:os/event_groups.c ****             }
+ 360:os/event_groups.c ****         }
+ 361:os/event_groups.c ****         else if( xTicksToWait == ( TickType_t ) 0 )
+ 362:os/event_groups.c ****         {
+ 363:os/event_groups.c ****             /* The wait condition has not been met, but no block time was
+ 364:os/event_groups.c ****              * specified, so just return the current value. */
+ 365:os/event_groups.c ****             uxReturn = uxCurrentEventBits;
+ 366:os/event_groups.c ****             xTimeoutOccurred = pdTRUE;
+ 367:os/event_groups.c ****         }
+ 368:os/event_groups.c ****         else
+ 369:os/event_groups.c ****         {
+ 370:os/event_groups.c ****             /* The task is going to block to wait for its required bits to be
+ 371:os/event_groups.c ****              * set.  uxControlBits are used to remember the specified behaviour of
+ 372:os/event_groups.c ****              * this call to xEventGroupWaitBits() - for use when the event bits
+ 373:os/event_groups.c ****              * unblock the task. */
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 8
+
+
+ 374:os/event_groups.c ****             if( xClearOnExit != pdFALSE )
+ 375:os/event_groups.c ****             {
+ 376:os/event_groups.c ****                 uxControlBits |= eventCLEAR_EVENTS_ON_EXIT_BIT;
+ 377:os/event_groups.c ****             }
+ 378:os/event_groups.c ****             else
+ 379:os/event_groups.c ****             {
+ 380:os/event_groups.c ****                 mtCOVERAGE_TEST_MARKER();
+ 381:os/event_groups.c ****             }
+ 382:os/event_groups.c **** 
+ 383:os/event_groups.c ****             if( xWaitForAllBits != pdFALSE )
+ 384:os/event_groups.c ****             {
+ 385:os/event_groups.c ****                 uxControlBits |= eventWAIT_FOR_ALL_BITS;
+ 386:os/event_groups.c ****             }
+ 387:os/event_groups.c ****             else
+ 388:os/event_groups.c ****             {
+ 389:os/event_groups.c ****                 mtCOVERAGE_TEST_MARKER();
+ 390:os/event_groups.c ****             }
+ 391:os/event_groups.c **** 
+ 392:os/event_groups.c ****             /* Store the bits that the calling task is waiting for in the
+ 393:os/event_groups.c ****              * task's event list item so the kernel knows when a match is
+ 394:os/event_groups.c ****              * found.  Then enter the blocked state. */
+ 395:os/event_groups.c ****             vTaskPlaceOnUnorderedEventList( &( pxEventBits->xTasksWaitingForBits ), ( uxBitsToWaitF
+ 396:os/event_groups.c **** 
+ 397:os/event_groups.c ****             /* This is obsolete as it will get set after the task unblocks, but
+ 398:os/event_groups.c ****              * some compilers mistakenly generate a warning about the variable
+ 399:os/event_groups.c ****              * being returned without being set if it is not done. */
+ 400:os/event_groups.c ****             uxReturn = 0;
+ 401:os/event_groups.c **** 
+ 402:os/event_groups.c ****             traceEVENT_GROUP_WAIT_BITS_BLOCK( xEventGroup, uxBitsToWaitFor );
+ 403:os/event_groups.c ****         }
+ 404:os/event_groups.c ****     }
+ 405:os/event_groups.c ****     xAlreadyYielded = xTaskResumeAll();
+ 406:os/event_groups.c **** 
+ 407:os/event_groups.c ****     if( xTicksToWait != ( TickType_t ) 0 )
+ 408:os/event_groups.c ****     {
+ 409:os/event_groups.c ****         if( xAlreadyYielded == pdFALSE )
+ 410:os/event_groups.c ****         {
+ 411:os/event_groups.c ****             portYIELD_WITHIN_API();
+ 412:os/event_groups.c ****         }
+ 413:os/event_groups.c ****         else
+ 414:os/event_groups.c ****         {
+ 415:os/event_groups.c ****             mtCOVERAGE_TEST_MARKER();
+ 416:os/event_groups.c ****         }
+ 417:os/event_groups.c **** 
+ 418:os/event_groups.c ****         /* The task blocked to wait for its required bits to be set - at this
+ 419:os/event_groups.c ****          * point either the required bits were set or the block time expired.  If
+ 420:os/event_groups.c ****          * the required bits were set they will have been stored in the task's
+ 421:os/event_groups.c ****          * event list item, and they should now be retrieved then cleared. */
+ 422:os/event_groups.c ****         uxReturn = uxTaskResetEventItemValue();
+ 423:os/event_groups.c **** 
+ 424:os/event_groups.c ****         if( ( uxReturn & eventUNBLOCKED_DUE_TO_BIT_SET ) == ( EventBits_t ) 0 )
+ 425:os/event_groups.c ****         {
+ 426:os/event_groups.c ****             taskENTER_CRITICAL();
+ 427:os/event_groups.c ****             {
+ 428:os/event_groups.c ****                 /* The task timed out, just return the current event bit value. */
+ 429:os/event_groups.c ****                 uxReturn = pxEventBits->uxEventBits;
+ 430:os/event_groups.c **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 9
+
+
+ 431:os/event_groups.c ****                 /* It is possible that the event bits were updated between this
+ 432:os/event_groups.c ****                  * task leaving the Blocked state and running again. */
+ 433:os/event_groups.c ****                 if( prvTestWaitCondition( uxReturn, uxBitsToWaitFor, xWaitForAllBits ) != pdFALSE )
+ 434:os/event_groups.c ****                 {
+ 435:os/event_groups.c ****                     if( xClearOnExit != pdFALSE )
+ 436:os/event_groups.c ****                     {
+ 437:os/event_groups.c ****                         pxEventBits->uxEventBits &= ~uxBitsToWaitFor;
+ 438:os/event_groups.c ****                     }
+ 439:os/event_groups.c ****                     else
+ 440:os/event_groups.c ****                     {
+ 441:os/event_groups.c ****                         mtCOVERAGE_TEST_MARKER();
+ 442:os/event_groups.c ****                     }
+ 443:os/event_groups.c ****                 }
+ 444:os/event_groups.c ****                 else
+ 445:os/event_groups.c ****                 {
+ 446:os/event_groups.c ****                     mtCOVERAGE_TEST_MARKER();
+ 447:os/event_groups.c ****                 }
+ 448:os/event_groups.c **** 
+ 449:os/event_groups.c ****                 xTimeoutOccurred = pdTRUE;
+ 450:os/event_groups.c ****             }
+ 451:os/event_groups.c ****             taskEXIT_CRITICAL();
+ 452:os/event_groups.c ****         }
+ 453:os/event_groups.c ****         else
+ 454:os/event_groups.c ****         {
+ 455:os/event_groups.c ****             /* The task unblocked because the bits were set. */
+ 456:os/event_groups.c ****         }
+ 457:os/event_groups.c **** 
+ 458:os/event_groups.c ****         /* The task blocked so control bits may have been set. */
+ 459:os/event_groups.c ****         uxReturn &= ~eventEVENT_BITS_CONTROL_BYTES;
+ 460:os/event_groups.c ****     }
+ 461:os/event_groups.c **** 
+ 462:os/event_groups.c ****     traceEVENT_GROUP_WAIT_BITS_END( xEventGroup, uxBitsToWaitFor, xTimeoutOccurred );
+ 463:os/event_groups.c **** 
+ 464:os/event_groups.c ****     /* Prevent compiler warnings when trace macros are not used. */
+ 465:os/event_groups.c ****     ( void ) xTimeoutOccurred;
+ 466:os/event_groups.c **** 
+ 467:os/event_groups.c ****     return uxReturn;
+ 468:os/event_groups.c **** }
+ 469:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 470:os/event_groups.c **** 
+ 471:os/event_groups.c **** EventBits_t xEventGroupClearBits( EventGroupHandle_t xEventGroup,
+ 472:os/event_groups.c ****                                   const EventBits_t uxBitsToClear )
+ 473:os/event_groups.c **** {
+ 474:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 475:os/event_groups.c ****     EventBits_t uxReturn;
+ 476:os/event_groups.c **** 
+ 477:os/event_groups.c ****     /* Check the user is not attempting to clear the bits used by the kernel
+ 478:os/event_groups.c ****      * itself. */
+ 479:os/event_groups.c ****     configASSERT( xEventGroup );
+ 480:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 481:os/event_groups.c **** 
+ 482:os/event_groups.c ****     taskENTER_CRITICAL();
+ 483:os/event_groups.c ****     {
+ 484:os/event_groups.c ****         traceEVENT_GROUP_CLEAR_BITS( xEventGroup, uxBitsToClear );
+ 485:os/event_groups.c **** 
+ 486:os/event_groups.c ****         /* The value returned is the event group value prior to the bits being
+ 487:os/event_groups.c ****          * cleared. */
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 10
+
+
+ 488:os/event_groups.c ****         uxReturn = pxEventBits->uxEventBits;
+ 489:os/event_groups.c **** 
+ 490:os/event_groups.c ****         /* Clear the bits. */
+ 491:os/event_groups.c ****         pxEventBits->uxEventBits &= ~uxBitsToClear;
+ 492:os/event_groups.c ****     }
+ 493:os/event_groups.c ****     taskEXIT_CRITICAL();
+ 494:os/event_groups.c **** 
+ 495:os/event_groups.c ****     return uxReturn;
+ 496:os/event_groups.c **** }
+ 497:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 498:os/event_groups.c **** 
+ 499:os/event_groups.c **** #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_T
+ 500:os/event_groups.c **** 
+ 501:os/event_groups.c ****     BaseType_t xEventGroupClearBitsFromISR( EventGroupHandle_t xEventGroup,
+ 502:os/event_groups.c ****                                             const EventBits_t uxBitsToClear )
+ 503:os/event_groups.c ****     {
+ 504:os/event_groups.c ****         BaseType_t xReturn;
+ 505:os/event_groups.c **** 
+ 506:os/event_groups.c ****         traceEVENT_GROUP_CLEAR_BITS_FROM_ISR( xEventGroup, uxBitsToClear );
+ 507:os/event_groups.c ****         xReturn = xTimerPendFunctionCallFromISR( vEventGroupClearBitsCallback, ( void * ) xEventGro
+ 508:os/event_groups.c **** 
+ 509:os/event_groups.c ****         return xReturn;
+ 510:os/event_groups.c ****     }
+ 511:os/event_groups.c **** 
+ 512:os/event_groups.c **** #endif /* if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( co
+ 513:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 514:os/event_groups.c **** 
+ 515:os/event_groups.c **** EventBits_t xEventGroupGetBitsFromISR( EventGroupHandle_t xEventGroup )
+ 516:os/event_groups.c **** {
+ 517:os/event_groups.c ****     UBaseType_t uxSavedInterruptStatus;
+ 518:os/event_groups.c ****     EventGroup_t const * const pxEventBits = xEventGroup;
+ 519:os/event_groups.c ****     EventBits_t uxReturn;
+ 520:os/event_groups.c **** 
+ 521:os/event_groups.c ****     uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+ 522:os/event_groups.c ****     {
+ 523:os/event_groups.c ****         uxReturn = pxEventBits->uxEventBits;
+ 524:os/event_groups.c ****     }
+ 525:os/event_groups.c ****     portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus );
+ 526:os/event_groups.c **** 
+ 527:os/event_groups.c ****     return uxReturn;
+ 528:os/event_groups.c **** } /*lint !e818 EventGroupHandle_t is a typedef used in other functions to so can't be pointer to co
+ 529:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 530:os/event_groups.c **** 
+ 531:os/event_groups.c **** EventBits_t xEventGroupSetBits( EventGroupHandle_t xEventGroup,
+ 532:os/event_groups.c ****                                 const EventBits_t uxBitsToSet )
+ 533:os/event_groups.c **** {
+ 534:os/event_groups.c ****     ListItem_t * pxListItem, * pxNext;
+ 535:os/event_groups.c ****     ListItem_t const * pxListEnd;
+ 536:os/event_groups.c ****     List_t const * pxList;
+ 537:os/event_groups.c ****     EventBits_t uxBitsToClear = 0, uxBitsWaitedFor, uxControlBits;
+ 538:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 539:os/event_groups.c ****     BaseType_t xMatchFound = pdFALSE;
+ 540:os/event_groups.c **** 
+ 541:os/event_groups.c ****     /* Check the user is not attempting to set the bits used by the kernel
+ 542:os/event_groups.c ****      * itself. */
+ 543:os/event_groups.c ****     configASSERT( xEventGroup );
+ 544:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 11
+
+
+ 545:os/event_groups.c **** 
+ 546:os/event_groups.c ****     pxList = &( pxEventBits->xTasksWaitingForBits );
+ 547:os/event_groups.c ****     pxListEnd = listGET_END_MARKER( pxList ); /*lint !e826 !e740 !e9087 The mini list structure is 
+ 548:os/event_groups.c ****     vTaskSuspendAll();
+ 549:os/event_groups.c ****     {
+ 550:os/event_groups.c ****         traceEVENT_GROUP_SET_BITS( xEventGroup, uxBitsToSet );
+ 551:os/event_groups.c **** 
+ 552:os/event_groups.c ****         pxListItem = listGET_HEAD_ENTRY( pxList );
+ 553:os/event_groups.c **** 
+ 554:os/event_groups.c ****         /* Set the bits. */
+ 555:os/event_groups.c ****         pxEventBits->uxEventBits |= uxBitsToSet;
+ 556:os/event_groups.c **** 
+ 557:os/event_groups.c ****         /* See if the new bit value should unblock any tasks. */
+ 558:os/event_groups.c ****         while( pxListItem != pxListEnd )
+ 559:os/event_groups.c ****         {
+ 560:os/event_groups.c ****             pxNext = listGET_NEXT( pxListItem );
+ 561:os/event_groups.c ****             uxBitsWaitedFor = listGET_LIST_ITEM_VALUE( pxListItem );
+ 562:os/event_groups.c ****             xMatchFound = pdFALSE;
+ 563:os/event_groups.c **** 
+ 564:os/event_groups.c ****             /* Split the bits waited for from the control bits. */
+ 565:os/event_groups.c ****             uxControlBits = uxBitsWaitedFor & eventEVENT_BITS_CONTROL_BYTES;
+ 566:os/event_groups.c ****             uxBitsWaitedFor &= ~eventEVENT_BITS_CONTROL_BYTES;
+ 567:os/event_groups.c **** 
+ 568:os/event_groups.c ****             if( ( uxControlBits & eventWAIT_FOR_ALL_BITS ) == ( EventBits_t ) 0 )
+ 569:os/event_groups.c ****             {
+ 570:os/event_groups.c ****                 /* Just looking for single bit being set. */
+ 571:os/event_groups.c ****                 if( ( uxBitsWaitedFor & pxEventBits->uxEventBits ) != ( EventBits_t ) 0 )
+ 572:os/event_groups.c ****                 {
+ 573:os/event_groups.c ****                     xMatchFound = pdTRUE;
+ 574:os/event_groups.c ****                 }
+ 575:os/event_groups.c ****                 else
+ 576:os/event_groups.c ****                 {
+ 577:os/event_groups.c ****                     mtCOVERAGE_TEST_MARKER();
+ 578:os/event_groups.c ****                 }
+ 579:os/event_groups.c ****             }
+ 580:os/event_groups.c ****             else if( ( uxBitsWaitedFor & pxEventBits->uxEventBits ) == uxBitsWaitedFor )
+ 581:os/event_groups.c ****             {
+ 582:os/event_groups.c ****                 /* All bits are set. */
+ 583:os/event_groups.c ****                 xMatchFound = pdTRUE;
+ 584:os/event_groups.c ****             }
+ 585:os/event_groups.c ****             else
+ 586:os/event_groups.c ****             {
+ 587:os/event_groups.c ****                 /* Need all bits to be set, but not all the bits were set. */
+ 588:os/event_groups.c ****             }
+ 589:os/event_groups.c **** 
+ 590:os/event_groups.c ****             if( xMatchFound != pdFALSE )
+ 591:os/event_groups.c ****             {
+ 592:os/event_groups.c ****                 /* The bits match.  Should the bits be cleared on exit? */
+ 593:os/event_groups.c ****                 if( ( uxControlBits & eventCLEAR_EVENTS_ON_EXIT_BIT ) != ( EventBits_t ) 0 )
+ 594:os/event_groups.c ****                 {
+ 595:os/event_groups.c ****                     uxBitsToClear |= uxBitsWaitedFor;
+ 596:os/event_groups.c ****                 }
+ 597:os/event_groups.c ****                 else
+ 598:os/event_groups.c ****                 {
+ 599:os/event_groups.c ****                     mtCOVERAGE_TEST_MARKER();
+ 600:os/event_groups.c ****                 }
+ 601:os/event_groups.c **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 12
+
+
+ 602:os/event_groups.c ****                 /* Store the actual event flag value in the task's event list
+ 603:os/event_groups.c ****                  * item before removing the task from the event list.  The
+ 604:os/event_groups.c ****                  * eventUNBLOCKED_DUE_TO_BIT_SET bit is set so the task knows
+ 605:os/event_groups.c ****                  * that is was unblocked due to its required bits matching, rather
+ 606:os/event_groups.c ****                  * than because it timed out. */
+ 607:os/event_groups.c ****                 vTaskRemoveFromUnorderedEventList( pxListItem, pxEventBits->uxEventBits | eventUNBL
+ 608:os/event_groups.c ****             }
+ 609:os/event_groups.c **** 
+ 610:os/event_groups.c ****             /* Move onto the next list item.  Note pxListItem->pxNext is not
+ 611:os/event_groups.c ****              * used here as the list item may have been removed from the event list
+ 612:os/event_groups.c ****              * and inserted into the ready/pending reading list. */
+ 613:os/event_groups.c ****             pxListItem = pxNext;
+ 614:os/event_groups.c ****         }
+ 615:os/event_groups.c **** 
+ 616:os/event_groups.c ****         /* Clear any bits that matched when the eventCLEAR_EVENTS_ON_EXIT_BIT
+ 617:os/event_groups.c ****          * bit was set in the control word. */
+ 618:os/event_groups.c ****         pxEventBits->uxEventBits &= ~uxBitsToClear;
+ 619:os/event_groups.c ****     }
+ 620:os/event_groups.c ****     ( void ) xTaskResumeAll();
+ 621:os/event_groups.c **** 
+ 622:os/event_groups.c ****     return pxEventBits->uxEventBits;
+ 623:os/event_groups.c **** }
+ 624:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 625:os/event_groups.c **** 
+ 626:os/event_groups.c **** void vEventGroupDelete( EventGroupHandle_t xEventGroup )
+ 627:os/event_groups.c **** {
+ 628:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 629:os/event_groups.c ****     const List_t * pxTasksWaitingForBits = &( pxEventBits->xTasksWaitingForBits );
+ 630:os/event_groups.c **** 
+ 631:os/event_groups.c ****     vTaskSuspendAll();
+ 632:os/event_groups.c ****     {
+ 633:os/event_groups.c ****         traceEVENT_GROUP_DELETE( xEventGroup );
+ 634:os/event_groups.c **** 
+ 635:os/event_groups.c ****         while( listCURRENT_LIST_LENGTH( pxTasksWaitingForBits ) > ( UBaseType_t ) 0 )
+ 636:os/event_groups.c ****         {
+ 637:os/event_groups.c ****             /* Unblock the task, returning 0 as the event list is being deleted
+ 638:os/event_groups.c ****              * and cannot therefore have any bits set. */
+ 639:os/event_groups.c ****             configASSERT( pxTasksWaitingForBits->xListEnd.pxNext != ( const ListItem_t * ) &( pxTas
+ 640:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 641:os/event_groups.c ****         }
+ 642:os/event_groups.c **** 
+ 643:os/event_groups.c ****         #if ( ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) && ( configSUPPORT_STATIC_ALLOCATION == 0 )
+ 644:os/event_groups.c ****             {
+ 645:os/event_groups.c ****                 /* The event group can only have been allocated dynamically - free
+ 646:os/event_groups.c ****                  * it again. */
+ 647:os/event_groups.c ****                 vPortFree( pxEventBits );
+ 648:os/event_groups.c ****             }
+ 649:os/event_groups.c ****         #elif ( ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) && ( configSUPPORT_STATIC_ALLOCATION == 1
+ 650:os/event_groups.c ****             {
+ 651:os/event_groups.c ****                 /* The event group could have been allocated statically or
+ 652:os/event_groups.c ****                  * dynamically, so check before attempting to free the memory. */
+ 653:os/event_groups.c ****                 if( pxEventBits->ucStaticallyAllocated == ( uint8_t ) pdFALSE )
+ 654:os/event_groups.c ****                 {
+ 655:os/event_groups.c ****                     vPortFree( pxEventBits );
+ 656:os/event_groups.c ****                 }
+ 657:os/event_groups.c ****                 else
+ 658:os/event_groups.c ****                 {
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 13
+
+
+ 659:os/event_groups.c ****                     mtCOVERAGE_TEST_MARKER();
+ 660:os/event_groups.c ****                 }
+ 661:os/event_groups.c ****             }
+ 662:os/event_groups.c ****         #endif /* configSUPPORT_DYNAMIC_ALLOCATION */
+ 663:os/event_groups.c ****     }
+ 664:os/event_groups.c ****     ( void ) xTaskResumeAll();
+ 665:os/event_groups.c **** }
+ 666:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 667:os/event_groups.c **** 
+ 668:os/event_groups.c **** /* For internal use only - execute a 'set bits' command that was pended from
+ 669:os/event_groups.c ****  * an interrupt. */
+ 670:os/event_groups.c **** void vEventGroupSetBitsCallback( void * pvEventGroup,
+ 671:os/event_groups.c ****                                  const uint32_t ulBitsToSet )
+ 672:os/event_groups.c **** {
+ 673:os/event_groups.c ****     ( void ) xEventGroupSetBits( pvEventGroup, ( EventBits_t ) ulBitsToSet ); /*lint !e9079 Can't a
+ 674:os/event_groups.c **** }
+ 675:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 676:os/event_groups.c **** 
+ 677:os/event_groups.c **** /* For internal use only - execute a 'clear bits' command that was pended from
+ 678:os/event_groups.c ****  * an interrupt. */
+ 679:os/event_groups.c **** void vEventGroupClearBitsCallback( void * pvEventGroup,
+ 680:os/event_groups.c ****                                    const uint32_t ulBitsToClear )
+ 681:os/event_groups.c **** {
+ 682:os/event_groups.c ****     ( void ) xEventGroupClearBits( pvEventGroup, ( EventBits_t ) ulBitsToClear ); /*lint !e9079 Can
+ 683:os/event_groups.c **** }
+ 684:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 685:os/event_groups.c **** 
+ 686:os/event_groups.c **** static BaseType_t prvTestWaitCondition( const EventBits_t uxCurrentEventBits,
+ 687:os/event_groups.c ****                                         const EventBits_t uxBitsToWaitFor,
+ 688:os/event_groups.c ****                                         const BaseType_t xWaitForAllBits )
+ 689:os/event_groups.c **** {
+  28              		.loc 1 689 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+ 690:os/event_groups.c ****     BaseType_t xWaitConditionMet = pdFALSE;
+  33              		.loc 1 690 5 view .LVU1
+ 691:os/event_groups.c **** 
+ 692:os/event_groups.c ****     if( xWaitForAllBits == pdFALSE )
+  34              		.loc 1 692 5 view .LVU2
+  35              		.loc 1 692 7 is_stmt 0 view .LVU3
+  36 0000 1AB9     		cbnz	r2, .L2
+ 693:os/event_groups.c ****     {
+ 694:os/event_groups.c ****         /* Task only has to wait for one bit within uxBitsToWaitFor to be
+ 695:os/event_groups.c ****          * set.  Is one already set? */
+ 696:os/event_groups.c ****         if( ( uxCurrentEventBits & uxBitsToWaitFor ) != ( EventBits_t ) 0 )
+  37              		.loc 1 696 9 is_stmt 1 view .LVU4
+  38              		.loc 1 696 11 is_stmt 0 view .LVU5
+  39 0002 0842     		tst	r0, r1
+  40 0004 06D1     		bne	.L4
+ 690:os/event_groups.c **** 
+  41              		.loc 1 690 16 view .LVU6
+  42 0006 1046     		mov	r0, r2
+  43              	.LVL1:
+ 690:os/event_groups.c **** 
+  44              		.loc 1 690 16 view .LVU7
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 14
+
+
+  45 0008 7047     		bx	lr
+  46              	.LVL2:
+  47              	.L2:
+ 697:os/event_groups.c ****         {
+ 698:os/event_groups.c ****             xWaitConditionMet = pdTRUE;
+ 699:os/event_groups.c ****         }
+ 700:os/event_groups.c ****         else
+ 701:os/event_groups.c ****         {
+ 702:os/event_groups.c ****             mtCOVERAGE_TEST_MARKER();
+ 703:os/event_groups.c ****         }
+ 704:os/event_groups.c ****     }
+ 705:os/event_groups.c ****     else
+ 706:os/event_groups.c ****     {
+ 707:os/event_groups.c ****         /* Task has to wait for all the bits in uxBitsToWaitFor to be set.
+ 708:os/event_groups.c ****          * Are they set already? */
+ 709:os/event_groups.c ****         if( ( uxCurrentEventBits & uxBitsToWaitFor ) == uxBitsToWaitFor )
+  48              		.loc 1 709 9 is_stmt 1 view .LVU8
+  49              		.loc 1 709 11 is_stmt 0 view .LVU9
+  50 000a 31EA0003 		bics	r3, r1, r0
+  51 000e 03D0     		beq	.L5
+ 690:os/event_groups.c **** 
+  52              		.loc 1 690 16 view .LVU10
+  53 0010 0020     		movs	r0, #0
+  54              	.LVL3:
+ 690:os/event_groups.c **** 
+  55              		.loc 1 690 16 view .LVU11
+  56 0012 7047     		bx	lr
+  57              	.LVL4:
+  58              	.L4:
+ 698:os/event_groups.c ****         }
+  59              		.loc 1 698 31 view .LVU12
+  60 0014 0120     		movs	r0, #1
+  61              	.LVL5:
+ 698:os/event_groups.c ****         }
+  62              		.loc 1 698 31 view .LVU13
+  63 0016 7047     		bx	lr
+  64              	.LVL6:
+  65              	.L5:
+ 710:os/event_groups.c ****         {
+ 711:os/event_groups.c ****             xWaitConditionMet = pdTRUE;
+  66              		.loc 1 711 31 view .LVU14
+  67 0018 0120     		movs	r0, #1
+  68              	.LVL7:
+ 712:os/event_groups.c ****         }
+ 713:os/event_groups.c ****         else
+ 714:os/event_groups.c ****         {
+ 715:os/event_groups.c ****             mtCOVERAGE_TEST_MARKER();
+  69              		.loc 1 715 37 is_stmt 1 view .LVU15
+ 716:os/event_groups.c ****         }
+ 717:os/event_groups.c ****     }
+ 718:os/event_groups.c **** 
+ 719:os/event_groups.c ****     return xWaitConditionMet;
+  70              		.loc 1 719 5 view .LVU16
+ 720:os/event_groups.c **** }
+  71              		.loc 1 720 1 is_stmt 0 view .LVU17
+  72 001a 7047     		bx	lr
+  73              		.cfi_endproc
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 15
+
+
+  74              	.LFE15:
+  76              		.section	.text.xEventGroupCreateStatic,"ax",%progbits
+  77              		.align	1
+  78              		.global	xEventGroupCreateStatic
+  79              		.syntax unified
+  80              		.thumb
+  81              		.thumb_func
+  82              		.fpu fpv5-d16
+  84              	xEventGroupCreateStatic:
+  85              	.LVL8:
+  86              	.LFB4:
+  95:os/event_groups.c ****         EventGroup_t * pxEventBits;
+  87              		.loc 1 95 5 is_stmt 1 view -0
+  88              		.cfi_startproc
+  89              		@ args = 0, pretend = 0, frame = 8
+  90              		@ frame_needed = 0, uses_anonymous_args = 0
+  96:os/event_groups.c **** 
+  91              		.loc 1 96 9 view .LVU19
+  99:os/event_groups.c **** 
+  92              		.loc 1 99 9 view .LVU20
+  93 0000 90B1     		cbz	r0, .L13
+  95:os/event_groups.c ****         EventGroup_t * pxEventBits;
+  94              		.loc 1 95 5 is_stmt 0 discriminator 2 view .LVU21
+  95 0002 10B5     		push	{r4, lr}
+  96              	.LCFI0:
+  97              		.cfi_def_cfa_offset 8
+  98              		.cfi_offset 4, -8
+  99              		.cfi_offset 14, -4
+ 100 0004 82B0     		sub	sp, sp, #8
+ 101              	.LCFI1:
+ 102              		.cfi_def_cfa_offset 16
+ 103 0006 0446     		mov	r4, r0
+  99:os/event_groups.c **** 
+ 104              		.loc 1 99 43 is_stmt 1 discriminator 2 view .LVU22
+ 105              	.LBB36:
+ 106:os/event_groups.c ****                 configASSERT( xSize == sizeof( EventGroup_t ) );
+ 106              		.loc 1 106 17 discriminator 2 view .LVU23
+ 106:os/event_groups.c ****                 configASSERT( xSize == sizeof( EventGroup_t ) );
+ 107              		.loc 1 106 33 is_stmt 0 discriminator 2 view .LVU24
+ 108 0008 2023     		movs	r3, #32
+ 109 000a 0193     		str	r3, [sp, #4]
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 110              		.loc 1 107 17 is_stmt 1 discriminator 2 view .LVU25
+ 111 000c 019B     		ldr	r3, [sp, #4]
+ 112 000e 202B     		cmp	r3, #32
+ 113 0010 15D0     		beq	.L9
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 114              		.loc 1 107 17 view .LVU26
+ 115              	.LBB37:
+ 116              	.LBI37:
+ 117              		.file 2 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h"
+   1:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*
+   2:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * FreeRTOS Kernel V10.4.3
+   3:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+   4:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+   5:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * Permission is hereby granted, free of charge, to any person obtaining a copy of
+   6:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * this software and associated documentation files (the "Software"), to deal in
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 16
+
+
+   7:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * the Software without restriction, including without limitation the rights to
+   8:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+   9:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * the Software, and to permit persons to whom the Software is furnished to do so,
+  10:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * subject to the following conditions:
+  11:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  12:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * The above copyright notice and this permission notice shall be included in all
+  13:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * copies or substantial portions of the Software.
+  14:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  15:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  16:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+  17:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+  18:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+  19:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  20:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  21:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  22:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * https://www.FreeRTOS.org
+  23:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * https://github.com/FreeRTOS
+  24:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  25:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * 1 tab == 4 spaces!
+  26:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  */
+  27:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  28:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  29:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifndef PORTMACRO_H
+  30:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define PORTMACRO_H
+  31:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  32:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #ifdef __cplusplus
+  33:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         extern "C" {
+  34:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif
+  35:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  36:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------
+  37:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * Port specific definitions.
+  38:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  39:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * The settings in this file configure FreeRTOS correctly for the
+  40:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * given hardware and compiler.
+  41:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  42:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * These settings should not be altered.
+  43:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *-----------------------------------------------------------
+  44:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  */
+  45:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  46:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Type definitions. */
+  47:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portCHAR          char
+  48:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portFLOAT         float
+  49:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portDOUBLE        double
+  50:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portLONG          long
+  51:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portSHORT         short
+  52:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portSTACK_TYPE    uint32_t
+  53:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portBASE_TYPE     long
+  54:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  55:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     typedef portSTACK_TYPE   StackType_t;
+  56:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     typedef long             BaseType_t;
+  57:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     typedef unsigned long    UBaseType_t;
+  58:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  59:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #if ( configUSE_16_BIT_TICKS == 1 )
+  60:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         typedef uint16_t     TickType_t;
+  61:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portMAX_DELAY              ( TickType_t ) 0xffff
+  62:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #else
+  63:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         typedef uint32_t     TickType_t;
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 17
+
+
+  64:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portMAX_DELAY              ( TickType_t ) 0xffffffffUL
+  65:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  66:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
+  67:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * not need to be guarded with a critical section. */
+  68:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portTICK_TYPE_IS_ATOMIC    1
+  69:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif
+  70:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+  71:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  72:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Architecture specifics. */
+  73:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portSTACK_GROWTH      ( -1 )
+  74:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portTICK_PERIOD_MS    ( ( TickType_t ) 1000 / configTICK_RATE_HZ )
+  75:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portBYTE_ALIGNMENT    8
+  76:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portDONT_DISCARD      __attribute__( ( used ) )
+  77:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+  78:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  79:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Scheduler utilities. */
+  80:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portYIELD()                                 \
+  81:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {                                                   \
+  82:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         /* Set a PendSV to request a context switch. */ \
+  83:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; \
+  84:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****                                                         \
+  85:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         /* Barriers are normally not required but do ensure the code is completely \
+  86:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****          * within the specified behaviour for the architecture. */ \
+  87:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __asm volatile ( "dsb" ::: "memory" );                     \
+  88:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __asm volatile ( "isb" );                                  \
+  89:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     }
+  90:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  91:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portNVIC_INT_CTRL_REG     ( *( ( volatile uint32_t * ) 0xe000ed04 ) )
+  92:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portNVIC_PENDSVSET_BIT    ( 1UL << 28UL )
+  93:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portEND_SWITCHING_ISR( xSwitchRequired )    if( xSwitchRequired != pdFALSE ) portYIELD(
+  94:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portYIELD_FROM_ISR( x )                     portEND_SWITCHING_ISR( x )
+  95:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+  96:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  97:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Critical section management. */
+  98:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     extern void vPortEnterCritical( void );
+  99:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     extern void vPortExitCritical( void );
+ 100:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portSET_INTERRUPT_MASK_FROM_ISR()         ulPortRaiseBASEPRI()
+ 101:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portCLEAR_INTERRUPT_MASK_FROM_ISR( x )    vPortSetBASEPRI( x )
+ 102:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portDISABLE_INTERRUPTS()                  vPortRaiseBASEPRI()
+ 103:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portENABLE_INTERRUPTS()                   vPortSetBASEPRI( 0 )
+ 104:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portENTER_CRITICAL()                      vPortEnterCritical()
+ 105:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portEXIT_CRITICAL()                       vPortExitCritical()
+ 106:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 107:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 108:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 109:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Task function macros as described on the FreeRTOS.org WEB site.  These are
+ 110:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * not necessary for to use this port.  They are defined so the common demo files
+ 111:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * (which build with all the ports) will build. */
+ 112:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portTASK_FUNCTION_PROTO( vFunction, pvParameters )    void vFunction( void * pvParamete
+ 113:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portTASK_FUNCTION( vFunction, pvParameters )          void vFunction( void * pvParamete
+ 114:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 115:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 116:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Tickless idle/low power functionality. */
+ 117:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #ifndef portSUPPRESS_TICKS_AND_SLEEP
+ 118:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         extern void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime );
+ 119:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime )    vPortSuppressTicksAndSleep( xE
+ 120:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 18
+
+
+ 121:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 122:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 123:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Architecture specific optimisations. */
+ 124:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION
+ 125:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define configUSE_PORT_OPTIMISED_TASK_SELECTION    1
+ 126:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif
+ 127:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 128:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
+ 129:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 130:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Generic helper function. */
+ 131:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __attribute__( ( always_inline ) ) static inline uint8_t ucPortCountLeadingZeros( uint32_t 
+ 132:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         {
+ 133:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             uint8_t ucReturn;
+ 134:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 135:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             __asm volatile ( "clz %0, %1" : "=r" ( ucReturn ) : "r" ( ulBitmap ) : "memory" );
+ 136:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 137:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             return ucReturn;
+ 138:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         }
+ 139:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 140:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Check the configuration. */
+ 141:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #if ( configMAX_PRIORITIES > 32 )
+ 142:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             #error configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIO
+ 143:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #endif
+ 144:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 145:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Store/clear the ready priorities in a bit map. */
+ 146:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portRECORD_READY_PRIORITY( uxPriority, uxReadyPriorities )    ( uxReadyPriorities )
+ 147:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portRESET_READY_PRIORITY( uxPriority, uxReadyPriorities )     ( uxReadyPriorities )
+ 148:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 149:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 150:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 151:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities )    uxTopPriority = ( 3
+ 152:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 153:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
+ 154:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 155:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 156:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 157:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #ifdef configASSERT
+ 158:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         void vPortValidateInterruptPriority( void );
+ 159:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID()    vPortValidateInterruptPriority()
+ 160:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif
+ 161:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 162:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* portNOP() is not required by this port. */
+ 163:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portNOP()
+ 164:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 165:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #define portINLINE              __inline
+ 166:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 167:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #ifndef portFORCE_INLINE
+ 168:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         #define portFORCE_INLINE    inline __attribute__( ( always_inline ) )
+ 169:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     #endif
+ 170:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 171:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt( void )
+ 172:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 173:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         uint32_t ulCurrentInterrupt;
+ 174:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         BaseType_t xReturn;
+ 175:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 176:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         /* Obtain the number of the currently executing interrupt. */
+ 177:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __asm volatile ( "mrs %0, ipsr" : "=r" ( ulCurrentInterrupt )::"memory" );
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 19
+
+
+ 178:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 179:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         if( ulCurrentInterrupt == 0 )
+ 180:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         {
+ 181:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             xReturn = pdFALSE;
+ 182:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         }
+ 183:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         else
+ 184:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         {
+ 185:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             xReturn = pdTRUE;
+ 186:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         }
+ 187:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 188:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         return xReturn;
+ 189:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     }
+ 190:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 191:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 192:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     portFORCE_INLINE static void vPortRaiseBASEPRI( void )
+ 118              		.loc 2 193 34 view .LVU27
+ 119              	.LBB38:
+ 194:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         uint32_t ulNewBASEPRI;
+ 120              		.loc 2 195 9 view .LVU28
+ 196:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __asm volatile
+ 121              		.loc 2 197 9 view .LVU29
+ 122              		.syntax unified
+ 123              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 124 0012 4FF05003 			mov r3, #80												
+ 125 0016 72B6     		cpsid i													
+ 126 0018 83F31188 		msr basepri, r3											
+ 127 001c BFF36F8F 		isb														
+ 128 0020 BFF34F8F 		dsb														
+ 129 0024 62B6     		cpsie i													
+ 130              	
+ 131              	@ 0 "" 2
+ 132              	.LVL9:
+ 133              		.thumb
+ 134              		.syntax unified
+ 135              	.L10:
+ 136              		.loc 2 197 9 is_stmt 0 view .LVU30
+ 137              	.LBE38:
+ 138              	.LBE37:
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 139              		.loc 1 107 17 is_stmt 1 discriminator 2 view .LVU31
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 140              		.loc 1 107 17 discriminator 2 view .LVU32
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 141              		.loc 1 107 17 discriminator 2 view .LVU33
+ 142 0026 FEE7     		b	.L10
+ 143              	.L13:
+ 144              	.LCFI2:
+ 145              		.cfi_def_cfa_offset 0
+ 146              		.cfi_restore 4
+ 147              		.cfi_restore 14
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 148              		.loc 1 107 17 is_stmt 0 discriminator 2 view .LVU34
+ 149              	.LBE36:
+  99:os/event_groups.c **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 20
+
+
+ 150              		.loc 1 99 9 is_stmt 1 view .LVU35
+ 151              	.LBB39:
+ 152              	.LBI39:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 153              		.loc 2 193 34 view .LVU36
+ 154              	.LBB40:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 155              		.loc 2 195 9 view .LVU37
+ 156              		.loc 2 197 9 view .LVU38
+ 157              		.syntax unified
+ 158              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 159 0028 4FF05003 			mov r3, #80												
+ 160 002c 72B6     		cpsid i													
+ 161 002e 83F31188 		msr basepri, r3											
+ 162 0032 BFF36F8F 		isb														
+ 163 0036 BFF34F8F 		dsb														
+ 164 003a 62B6     		cpsie i													
+ 165              	
+ 166              	@ 0 "" 2
+ 167              	.LVL10:
+ 168              		.thumb
+ 169              		.syntax unified
+ 170              	.L8:
+ 171              		.loc 2 197 9 is_stmt 0 view .LVU39
+ 172              	.LBE40:
+ 173              	.LBE39:
+  99:os/event_groups.c **** 
+ 174              		.loc 1 99 9 is_stmt 1 discriminator 1 view .LVU40
+  99:os/event_groups.c **** 
+ 175              		.loc 1 99 9 discriminator 1 view .LVU41
+  99:os/event_groups.c **** 
+ 176              		.loc 1 99 9 discriminator 1 view .LVU42
+ 177 003c FEE7     		b	.L8
+ 178              	.L9:
+ 179              	.LCFI3:
+ 180              		.cfi_def_cfa_offset 16
+ 181              		.cfi_offset 4, -8
+ 182              		.cfi_offset 14, -4
+ 183              	.LBB41:
+ 107:os/event_groups.c ****             } /*lint !e529 xSize is referenced if configASSERT() is defined. */
+ 184              		.loc 1 107 64 view .LVU43
+ 185              	.LBE41:
+ 112:os/event_groups.c **** 
+ 186              		.loc 1 112 9 view .LVU44
+ 187              	.LVL11:
+ 114:os/event_groups.c ****         {
+ 188              		.loc 1 114 9 view .LVU45
+ 116:os/event_groups.c ****             vListInitialise( &( pxEventBits->xTasksWaitingForBits ) );
+ 189              		.loc 1 116 13 view .LVU46
+ 116:os/event_groups.c ****             vListInitialise( &( pxEventBits->xTasksWaitingForBits ) );
+ 190              		.loc 1 116 38 is_stmt 0 view .LVU47
+ 191 003e 0023     		movs	r3, #0
+ 192 0040 40F8043B 		str	r3, [r0], #4
+ 193              	.LVL12:
+ 117:os/event_groups.c **** 
+ 194              		.loc 1 117 13 is_stmt 1 view .LVU48
+ 195 0044 FFF7FEFF 		bl	vListInitialise
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 21
+
+
+ 196              	.LVL13:
+ 124:os/event_groups.c ****                 }
+ 197              		.loc 1 124 21 view .LVU49
+ 124:os/event_groups.c ****                 }
+ 198              		.loc 1 124 56 is_stmt 0 view .LVU50
+ 199 0048 0123     		movs	r3, #1
+ 200 004a 2377     		strb	r3, [r4, #28]
+ 128:os/event_groups.c ****         }
+ 201              		.loc 1 128 51 is_stmt 1 view .LVU51
+ 135:os/event_groups.c ****         }
+ 202              		.loc 1 135 45 view .LVU52
+ 138:os/event_groups.c ****     }
+ 203              		.loc 1 138 9 view .LVU53
+ 139:os/event_groups.c **** 
+ 204              		.loc 1 139 5 is_stmt 0 view .LVU54
+ 205 004c 2046     		mov	r0, r4
+ 206 004e 02B0     		add	sp, sp, #8
+ 207              	.LCFI4:
+ 208              		.cfi_def_cfa_offset 8
+ 209              		@ sp needed
+ 210 0050 10BD     		pop	{r4, pc}
+ 139:os/event_groups.c **** 
+ 211              		.loc 1 139 5 view .LVU55
+ 212              		.cfi_endproc
+ 213              	.LFE4:
+ 215              		.section	.text.xEventGroupCreate,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	xEventGroupCreate
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 221              		.fpu fpv5-d16
+ 223              	xEventGroupCreate:
+ 224              	.LFB5:
+ 147:os/event_groups.c ****         EventGroup_t * pxEventBits;
+ 225              		.loc 1 147 5 is_stmt 1 view -0
+ 226              		.cfi_startproc
+ 227              		@ args = 0, pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 229 0000 38B5     		push	{r3, r4, r5, lr}
+ 230              	.LCFI5:
+ 231              		.cfi_def_cfa_offset 16
+ 232              		.cfi_offset 3, -16
+ 233              		.cfi_offset 4, -12
+ 234              		.cfi_offset 5, -8
+ 235              		.cfi_offset 14, -4
+ 148:os/event_groups.c **** 
+ 236              		.loc 1 148 9 view .LVU57
+ 163:os/event_groups.c **** 
+ 237              		.loc 1 163 9 view .LVU58
+ 163:os/event_groups.c **** 
+ 238              		.loc 1 163 42 is_stmt 0 view .LVU59
+ 239 0002 2020     		movs	r0, #32
+ 240 0004 FFF7FEFF 		bl	pvPortMalloc
+ 241              	.LVL14:
+ 165:os/event_groups.c ****         {
+ 242              		.loc 1 165 9 is_stmt 1 view .LVU60
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 22
+
+
+ 165:os/event_groups.c ****         {
+ 243              		.loc 1 165 11 is_stmt 0 view .LVU61
+ 244 0008 0446     		mov	r4, r0
+ 245 000a 28B1     		cbz	r0, .L14
+ 167:os/event_groups.c ****             vListInitialise( &( pxEventBits->xTasksWaitingForBits ) );
+ 246              		.loc 1 167 13 is_stmt 1 view .LVU62
+ 167:os/event_groups.c ****             vListInitialise( &( pxEventBits->xTasksWaitingForBits ) );
+ 247              		.loc 1 167 38 is_stmt 0 view .LVU63
+ 248 000c 0025     		movs	r5, #0
+ 249 000e 40F8045B 		str	r5, [r0], #4
+ 250              	.LVL15:
+ 168:os/event_groups.c **** 
+ 251              		.loc 1 168 13 is_stmt 1 view .LVU64
+ 252 0012 FFF7FEFF 		bl	vListInitialise
+ 253              	.LVL16:
+ 175:os/event_groups.c ****                 }
+ 254              		.loc 1 175 21 view .LVU65
+ 175:os/event_groups.c ****                 }
+ 255              		.loc 1 175 56 is_stmt 0 view .LVU66
+ 256 0016 2577     		strb	r5, [r4, #28]
+ 179:os/event_groups.c ****         }
+ 257              		.loc 1 179 51 is_stmt 1 view .LVU67
+ 183:os/event_groups.c ****         }
+ 258              		.loc 1 183 45 view .LVU68
+ 186:os/event_groups.c ****     }
+ 259              		.loc 1 186 9 view .LVU69
+ 260              	.L14:
+ 187:os/event_groups.c **** 
+ 261              		.loc 1 187 5 is_stmt 0 view .LVU70
+ 262 0018 2046     		mov	r0, r4
+ 263 001a 38BD     		pop	{r3, r4, r5, pc}
+ 187:os/event_groups.c **** 
+ 264              		.loc 1 187 5 view .LVU71
+ 265              		.cfi_endproc
+ 266              	.LFE5:
+ 268              		.section	.text.xEventGroupWaitBits,"ax",%progbits
+ 269              		.align	1
+ 270              		.global	xEventGroupWaitBits
+ 271              		.syntax unified
+ 272              		.thumb
+ 273              		.thumb_func
+ 274              		.fpu fpv5-d16
+ 276              	xEventGroupWaitBits:
+ 277              	.LVL17:
+ 278              	.LFB7:
+ 320:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 279              		.loc 1 320 1 is_stmt 1 view -0
+ 280              		.cfi_startproc
+ 281              		@ args = 4, pretend = 0, frame = 0
+ 282              		@ frame_needed = 0, uses_anonymous_args = 0
+ 320:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 283              		.loc 1 320 1 is_stmt 0 view .LVU73
+ 284 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 285              	.LCFI6:
+ 286              		.cfi_def_cfa_offset 32
+ 287              		.cfi_offset 4, -32
+ 288              		.cfi_offset 5, -28
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 23
+
+
+ 289              		.cfi_offset 6, -24
+ 290              		.cfi_offset 7, -20
+ 291              		.cfi_offset 8, -16
+ 292              		.cfi_offset 9, -12
+ 293              		.cfi_offset 10, -8
+ 294              		.cfi_offset 14, -4
+ 295 0004 DDF820A0 		ldr	r10, [sp, #32]
+ 321:os/event_groups.c ****     EventBits_t uxReturn, uxControlBits = 0;
+ 296              		.loc 1 321 5 is_stmt 1 view .LVU74
+ 297              	.LVL18:
+ 322:os/event_groups.c ****     BaseType_t xWaitConditionMet, xAlreadyYielded;
+ 298              		.loc 1 322 5 view .LVU75
+ 323:os/event_groups.c ****     BaseType_t xTimeoutOccurred = pdFALSE;
+ 299              		.loc 1 323 5 view .LVU76
+ 324:os/event_groups.c **** 
+ 300              		.loc 1 324 5 view .LVU77
+ 328:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 301              		.loc 1 328 5 view .LVU78
+ 302 0008 88B1     		cbz	r0, .L37
+ 303 000a 0D46     		mov	r5, r1
+ 304 000c 1746     		mov	r7, r2
+ 305 000e 9846     		mov	r8, r3
+ 306 0010 0646     		mov	r6, r0
+ 328:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 307              		.loc 1 328 32 discriminator 2 view .LVU79
+ 329:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 308              		.loc 1 329 5 discriminator 2 view .LVU80
+ 309 0012 11F07F49 		ands	r9, r1, #-16777216
+ 310 0016 15D0     		beq	.L20
+ 329:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 311              		.loc 1 329 5 view .LVU81
+ 312              	.LBB42:
+ 313              	.LBI42:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 314              		.loc 2 193 34 view .LVU82
+ 315              	.LBB43:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 316              		.loc 2 195 9 view .LVU83
+ 317              		.loc 2 197 9 view .LVU84
+ 318              		.syntax unified
+ 319              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 320 0018 4FF05003 			mov r3, #80												
+ 321 001c 72B6     		cpsid i													
+ 322 001e 83F31188 		msr basepri, r3											
+ 323 0022 BFF36F8F 		isb														
+ 324 0026 BFF34F8F 		dsb														
+ 325 002a 62B6     		cpsie i													
+ 326              	
+ 327              	@ 0 "" 2
+ 328              	.LVL19:
+ 329              		.thumb
+ 330              		.syntax unified
+ 331              	.L21:
+ 332              		.loc 2 197 9 is_stmt 0 view .LVU85
+ 333              	.LBE43:
+ 334              	.LBE42:
+ 329:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 24
+
+
+ 335              		.loc 1 329 5 is_stmt 1 discriminator 2 view .LVU86
+ 329:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 336              		.loc 1 329 5 discriminator 2 view .LVU87
+ 329:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 337              		.loc 1 329 5 discriminator 2 view .LVU88
+ 338 002c FEE7     		b	.L21
+ 339              	.LVL20:
+ 340              	.L37:
+ 328:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 341              		.loc 1 328 5 view .LVU89
+ 342              	.LBB44:
+ 343              	.LBI44:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 344              		.loc 2 193 34 view .LVU90
+ 345              	.LBB45:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 346              		.loc 2 195 9 view .LVU91
+ 347              		.loc 2 197 9 view .LVU92
+ 348              		.syntax unified
+ 349              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 350 002e 4FF05003 			mov r3, #80												
+ 351 0032 72B6     		cpsid i													
+ 352 0034 83F31188 		msr basepri, r3											
+ 353 0038 BFF36F8F 		isb														
+ 354 003c BFF34F8F 		dsb														
+ 355 0040 62B6     		cpsie i													
+ 356              	
+ 357              	@ 0 "" 2
+ 358              	.LVL21:
+ 359              		.thumb
+ 360              		.syntax unified
+ 361              	.L19:
+ 362              		.loc 2 197 9 is_stmt 0 view .LVU93
+ 363              	.LBE45:
+ 364              	.LBE44:
+ 328:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 365              		.loc 1 328 5 is_stmt 1 discriminator 1 view .LVU94
+ 328:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 366              		.loc 1 328 5 discriminator 1 view .LVU95
+ 328:os/event_groups.c ****     configASSERT( ( uxBitsToWaitFor & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 367              		.loc 1 328 5 discriminator 1 view .LVU96
+ 368 0042 FEE7     		b	.L19
+ 369              	.LVL22:
+ 370              	.L20:
+ 329:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 371              		.loc 1 329 77 discriminator 2 view .LVU97
+ 330:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 372              		.loc 1 330 5 discriminator 2 view .LVU98
+ 373 0044 51B9     		cbnz	r1, .L22
+ 330:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 374              		.loc 1 330 5 view .LVU99
+ 375              	.LBB46:
+ 376              	.LBI46:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 377              		.loc 2 193 34 view .LVU100
+ 378              	.LBB47:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 25
+
+
+ 379              		.loc 2 195 9 view .LVU101
+ 380              		.loc 2 197 9 view .LVU102
+ 381              		.syntax unified
+ 382              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 383 0046 4FF05003 			mov r3, #80												
+ 384 004a 72B6     		cpsid i													
+ 385 004c 83F31188 		msr basepri, r3											
+ 386 0050 BFF36F8F 		isb														
+ 387 0054 BFF34F8F 		dsb														
+ 388 0058 62B6     		cpsie i													
+ 389              	
+ 390              	@ 0 "" 2
+ 391              	.LVL23:
+ 392              		.thumb
+ 393              		.syntax unified
+ 394              	.L23:
+ 395              		.loc 2 197 9 is_stmt 0 view .LVU103
+ 396              	.LBE47:
+ 397              	.LBE46:
+ 330:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 398              		.loc 1 330 5 is_stmt 1 discriminator 3 view .LVU104
+ 330:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 399              		.loc 1 330 5 discriminator 3 view .LVU105
+ 330:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 400              		.loc 1 330 5 discriminator 3 view .LVU106
+ 401 005a FEE7     		b	.L23
+ 402              	.LVL24:
+ 403              	.L22:
+ 330:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 404              		.loc 1 330 41 discriminator 2 view .LVU107
+ 333:os/event_groups.c ****         }
+ 405              		.loc 1 333 13 discriminator 2 view .LVU108
+ 406 005c FFF7FEFF 		bl	xTaskGetSchedulerState
+ 407              	.LVL25:
+ 333:os/event_groups.c ****         }
+ 408              		.loc 1 333 13 is_stmt 0 discriminator 2 view .LVU109
+ 409 0060 68B9     		cbnz	r0, .L24
+ 410 0062 BAF1000F 		cmp	r10, #0
+ 411 0066 0AD0     		beq	.L24
+ 333:os/event_groups.c ****         }
+ 412              		.loc 1 333 13 is_stmt 1 view .LVU110
+ 413              	.LBB48:
+ 414              	.LBI48:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 415              		.loc 2 193 34 view .LVU111
+ 416              	.LBB49:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 417              		.loc 2 195 9 view .LVU112
+ 418              		.loc 2 197 9 view .LVU113
+ 419              		.syntax unified
+ 420              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 421 0068 4FF05003 			mov r3, #80												
+ 422 006c 72B6     		cpsid i													
+ 423 006e 83F31188 		msr basepri, r3											
+ 424 0072 BFF36F8F 		isb														
+ 425 0076 BFF34F8F 		dsb														
+ 426 007a 62B6     		cpsie i													
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 26
+
+
+ 427              	
+ 428              	@ 0 "" 2
+ 429              	.LVL26:
+ 430              		.thumb
+ 431              		.syntax unified
+ 432              	.L25:
+ 433              		.loc 2 197 9 is_stmt 0 view .LVU114
+ 434              	.LBE49:
+ 435              	.LBE48:
+ 333:os/event_groups.c ****         }
+ 436              		.loc 1 333 13 is_stmt 1 discriminator 4 view .LVU115
+ 333:os/event_groups.c ****         }
+ 437              		.loc 1 333 13 discriminator 4 view .LVU116
+ 333:os/event_groups.c ****         }
+ 438              		.loc 1 333 13 discriminator 4 view .LVU117
+ 439 007c FEE7     		b	.L25
+ 440              	.L24:
+ 333:os/event_groups.c ****         }
+ 441              		.loc 1 333 114 discriminator 8 view .LVU118
+ 337:os/event_groups.c ****     {
+ 442              		.loc 1 337 5 discriminator 8 view .LVU119
+ 443 007e FFF7FEFF 		bl	vTaskSuspendAll
+ 444              	.LVL27:
+ 445              	.LBB50:
+ 339:os/event_groups.c **** 
+ 446              		.loc 1 339 9 discriminator 8 view .LVU120
+ 339:os/event_groups.c **** 
+ 447              		.loc 1 339 27 is_stmt 0 discriminator 8 view .LVU121
+ 448 0082 3468     		ldr	r4, [r6]
+ 449              	.LVL28:
+ 342:os/event_groups.c **** 
+ 450              		.loc 1 342 9 is_stmt 1 discriminator 8 view .LVU122
+ 342:os/event_groups.c **** 
+ 451              		.loc 1 342 29 is_stmt 0 discriminator 8 view .LVU123
+ 452 0084 4246     		mov	r2, r8
+ 453 0086 2946     		mov	r1, r5
+ 454 0088 2046     		mov	r0, r4
+ 455 008a FFF7FEFF 		bl	prvTestWaitCondition
+ 456              	.LVL29:
+ 344:os/event_groups.c ****         {
+ 457              		.loc 1 344 9 is_stmt 1 discriminator 8 view .LVU124
+ 344:os/event_groups.c ****         {
+ 458              		.loc 1 344 11 is_stmt 0 discriminator 8 view .LVU125
+ 459 008e E0B1     		cbz	r0, .L26
+ 348:os/event_groups.c ****             xTicksToWait = ( TickType_t ) 0;
+ 460              		.loc 1 348 13 is_stmt 1 view .LVU126
+ 461              	.LVL30:
+ 349:os/event_groups.c **** 
+ 462              		.loc 1 349 13 view .LVU127
+ 352:os/event_groups.c ****             {
+ 463              		.loc 1 352 13 view .LVU128
+ 352:os/event_groups.c ****             {
+ 464              		.loc 1 352 15 is_stmt 0 view .LVU129
+ 465 0090 17B1     		cbz	r7, .L27
+ 354:os/event_groups.c ****             }
+ 466              		.loc 1 354 17 is_stmt 1 view .LVU130
+ 354:os/event_groups.c ****             }
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 27
+
+
+ 467              		.loc 1 354 42 is_stmt 0 view .LVU131
+ 468 0092 24EA0503 		bic	r3, r4, r5
+ 469 0096 3360     		str	r3, [r6]
+ 470              	.LVL31:
+ 471              	.L27:
+ 402:os/event_groups.c ****         }
+ 472              		.loc 1 402 77 is_stmt 1 view .LVU132
+ 473              	.LBE50:
+ 405:os/event_groups.c **** 
+ 474              		.loc 1 405 5 view .LVU133
+ 405:os/event_groups.c **** 
+ 475              		.loc 1 405 23 is_stmt 0 view .LVU134
+ 476 0098 FFF7FEFF 		bl	xTaskResumeAll
+ 477              	.LVL32:
+ 407:os/event_groups.c ****     {
+ 478              		.loc 1 407 5 is_stmt 1 view .LVU135
+ 407:os/event_groups.c ****     {
+ 479              		.loc 1 407 7 is_stmt 0 view .LVU136
+ 480 009c B9F1000F 		cmp	r9, #0
+ 481 00a0 10D0     		beq	.L17
+ 409:os/event_groups.c ****         {
+ 482              		.loc 1 409 9 is_stmt 1 view .LVU137
+ 409:os/event_groups.c ****         {
+ 483              		.loc 1 409 11 is_stmt 0 view .LVU138
+ 484 00a2 38B9     		cbnz	r0, .L31
+ 411:os/event_groups.c ****         }
+ 485              		.loc 1 411 13 is_stmt 1 view .LVU139
+ 486 00a4 1C4B     		ldr	r3, .L39
+ 487 00a6 4FF08052 		mov	r2, #268435456
+ 488 00aa 1A60     		str	r2, [r3]
+ 411:os/event_groups.c ****         }
+ 489              		.loc 1 411 13 view .LVU140
+ 490              		.syntax unified
+ 491              	@ 411 "os/event_groups.c" 1
+ 492 00ac BFF34F8F 		dsb
+ 493              	@ 0 "" 2
+ 411:os/event_groups.c ****         }
+ 494              		.loc 1 411 13 view .LVU141
+ 495              	@ 411 "os/event_groups.c" 1
+ 496 00b0 BFF36F8F 		isb
+ 497              	@ 0 "" 2
+ 411:os/event_groups.c ****         }
+ 498              		.loc 1 411 35 view .LVU142
+ 499              		.thumb
+ 500              		.syntax unified
+ 501              	.L31:
+ 415:os/event_groups.c ****         }
+ 502              		.loc 1 415 37 view .LVU143
+ 422:os/event_groups.c **** 
+ 503              		.loc 1 422 9 view .LVU144
+ 422:os/event_groups.c **** 
+ 504              		.loc 1 422 20 is_stmt 0 view .LVU145
+ 505 00b4 FFF7FEFF 		bl	uxTaskResetEventItemValue
+ 506              	.LVL33:
+ 422:os/event_groups.c **** 
+ 507              		.loc 1 422 20 view .LVU146
+ 508 00b8 0446     		mov	r4, r0
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 28
+
+
+ 509              	.LVL34:
+ 424:os/event_groups.c ****         {
+ 510              		.loc 1 424 9 is_stmt 1 view .LVU147
+ 424:os/event_groups.c ****         {
+ 511              		.loc 1 424 11 is_stmt 0 view .LVU148
+ 512 00ba 10F0007F 		tst	r0, #33554432
+ 513 00be 1BD0     		beq	.L38
+ 514              	.LVL35:
+ 515              	.L32:
+ 456:os/event_groups.c **** 
+ 516              		.loc 1 456 9 is_stmt 1 view .LVU149
+ 459:os/event_groups.c ****     }
+ 517              		.loc 1 459 9 view .LVU150
+ 459:os/event_groups.c ****     }
+ 518              		.loc 1 459 18 is_stmt 0 view .LVU151
+ 519 00c0 24F07F44 		bic	r4, r4, #-16777216
+ 520              	.LVL36:
+ 462:os/event_groups.c **** 
+ 521              		.loc 1 462 5 is_stmt 1 view .LVU152
+ 465:os/event_groups.c **** 
+ 522              		.loc 1 465 5 view .LVU153
+ 467:os/event_groups.c **** }
+ 523              		.loc 1 467 5 view .LVU154
+ 524              	.L17:
+ 468:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 525              		.loc 1 468 1 is_stmt 0 view .LVU155
+ 526 00c4 2046     		mov	r0, r4
+ 527 00c6 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 528              	.LVL37:
+ 529              	.L26:
+ 530              	.LBB51:
+ 361:os/event_groups.c ****         {
+ 531              		.loc 1 361 14 is_stmt 1 view .LVU156
+ 361:os/event_groups.c ****         {
+ 532              		.loc 1 361 16 is_stmt 0 view .LVU157
+ 533 00ca BAF1000F 		cmp	r10, #0
+ 534 00ce 11D0     		beq	.L34
+ 374:os/event_groups.c ****             {
+ 535              		.loc 1 374 13 is_stmt 1 view .LVU158
+ 374:os/event_groups.c ****             {
+ 536              		.loc 1 374 15 is_stmt 0 view .LVU159
+ 537 00d0 6FB9     		cbnz	r7, .L35
+ 538              	.LBE51:
+ 322:os/event_groups.c ****     BaseType_t xWaitConditionMet, xAlreadyYielded;
+ 539              		.loc 1 322 27 view .LVU160
+ 540 00d2 4946     		mov	r1, r9
+ 541              	.L28:
+ 542              	.LVL38:
+ 543              	.LBB52:
+ 380:os/event_groups.c ****             }
+ 544              		.loc 1 380 41 is_stmt 1 view .LVU161
+ 383:os/event_groups.c ****             {
+ 545              		.loc 1 383 13 view .LVU162
+ 383:os/event_groups.c ****             {
+ 546              		.loc 1 383 15 is_stmt 0 view .LVU163
+ 547 00d4 B8F1000F 		cmp	r8, #0
+ 548 00d8 01D0     		beq	.L29
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 29
+
+
+ 385:os/event_groups.c ****             }
+ 549              		.loc 1 385 17 is_stmt 1 view .LVU164
+ 385:os/event_groups.c ****             }
+ 550              		.loc 1 385 31 is_stmt 0 view .LVU165
+ 551 00da 41F08061 		orr	r1, r1, #67108864
+ 552              	.LVL39:
+ 553              	.L29:
+ 389:os/event_groups.c ****             }
+ 554              		.loc 1 389 41 is_stmt 1 view .LVU166
+ 395:os/event_groups.c **** 
+ 555              		.loc 1 395 13 view .LVU167
+ 556 00de 5246     		mov	r2, r10
+ 557 00e0 2943     		orrs	r1, r1, r5
+ 558              	.LVL40:
+ 395:os/event_groups.c **** 
+ 559              		.loc 1 395 13 is_stmt 0 view .LVU168
+ 560 00e2 301D     		adds	r0, r6, #4
+ 561              	.LVL41:
+ 395:os/event_groups.c **** 
+ 562              		.loc 1 395 13 view .LVU169
+ 563 00e4 FFF7FEFF 		bl	vTaskPlaceOnUnorderedEventList
+ 564              	.LVL42:
+ 400:os/event_groups.c **** 
+ 565              		.loc 1 400 13 is_stmt 1 view .LVU170
+ 400:os/event_groups.c **** 
+ 566              		.loc 1 400 22 is_stmt 0 view .LVU171
+ 567 00e8 4C46     		mov	r4, r9
+ 568              	.LVL43:
+ 395:os/event_groups.c **** 
+ 569              		.loc 1 395 13 view .LVU172
+ 570 00ea D146     		mov	r9, r10
+ 571 00ec D4E7     		b	.L27
+ 572              	.LVL44:
+ 573              	.L35:
+ 376:os/event_groups.c ****             }
+ 574              		.loc 1 376 31 view .LVU173
+ 575 00ee 4FF08071 		mov	r1, #16777216
+ 576 00f2 EFE7     		b	.L28
+ 577              	.L34:
+ 578 00f4 D146     		mov	r9, r10
+ 579 00f6 CFE7     		b	.L27
+ 580              	.LVL45:
+ 581              	.L38:
+ 376:os/event_groups.c ****             }
+ 582              		.loc 1 376 31 view .LVU174
+ 583              	.LBE52:
+ 426:os/event_groups.c ****             {
+ 584              		.loc 1 426 13 is_stmt 1 view .LVU175
+ 585 00f8 FFF7FEFF 		bl	vPortEnterCritical
+ 586              	.LVL46:
+ 429:os/event_groups.c **** 
+ 587              		.loc 1 429 17 view .LVU176
+ 429:os/event_groups.c **** 
+ 588              		.loc 1 429 26 is_stmt 0 view .LVU177
+ 589 00fc 3468     		ldr	r4, [r6]
+ 590              	.LVL47:
+ 433:os/event_groups.c ****                 {
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 30
+
+
+ 591              		.loc 1 433 17 is_stmt 1 view .LVU178
+ 433:os/event_groups.c ****                 {
+ 592              		.loc 1 433 21 is_stmt 0 view .LVU179
+ 593 00fe 4246     		mov	r2, r8
+ 594 0100 2946     		mov	r1, r5
+ 595 0102 2046     		mov	r0, r4
+ 596 0104 FFF7FEFF 		bl	prvTestWaitCondition
+ 597              	.LVL48:
+ 433:os/event_groups.c ****                 {
+ 598              		.loc 1 433 19 view .LVU180
+ 599 0108 18B1     		cbz	r0, .L33
+ 435:os/event_groups.c ****                     {
+ 600              		.loc 1 435 21 is_stmt 1 view .LVU181
+ 435:os/event_groups.c ****                     {
+ 601              		.loc 1 435 23 is_stmt 0 view .LVU182
+ 602 010a 17B1     		cbz	r7, .L33
+ 437:os/event_groups.c ****                     }
+ 603              		.loc 1 437 25 is_stmt 1 view .LVU183
+ 437:os/event_groups.c ****                     }
+ 604              		.loc 1 437 50 is_stmt 0 view .LVU184
+ 605 010c 24EA0505 		bic	r5, r4, r5
+ 606              	.LVL49:
+ 437:os/event_groups.c ****                     }
+ 607              		.loc 1 437 50 view .LVU185
+ 608 0110 3560     		str	r5, [r6]
+ 609              	.L33:
+ 446:os/event_groups.c ****                 }
+ 610              		.loc 1 446 45 is_stmt 1 view .LVU186
+ 449:os/event_groups.c ****             }
+ 611              		.loc 1 449 17 view .LVU187
+ 612              	.LVL50:
+ 451:os/event_groups.c ****         }
+ 613              		.loc 1 451 13 view .LVU188
+ 614 0112 FFF7FEFF 		bl	vPortExitCritical
+ 615              	.LVL51:
+ 616 0116 D3E7     		b	.L32
+ 617              	.L40:
+ 618              		.align	2
+ 619              	.L39:
+ 620 0118 04ED00E0 		.word	-536810236
+ 621              		.cfi_endproc
+ 622              	.LFE7:
+ 624              		.section	.text.xEventGroupClearBits,"ax",%progbits
+ 625              		.align	1
+ 626              		.global	xEventGroupClearBits
+ 627              		.syntax unified
+ 628              		.thumb
+ 629              		.thumb_func
+ 630              		.fpu fpv5-d16
+ 632              	xEventGroupClearBits:
+ 633              	.LVL52:
+ 634              	.LFB8:
+ 473:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 635              		.loc 1 473 1 view -0
+ 636              		.cfi_startproc
+ 637              		@ args = 0, pretend = 0, frame = 0
+ 638              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 31
+
+
+ 474:os/event_groups.c ****     EventBits_t uxReturn;
+ 639              		.loc 1 474 5 view .LVU190
+ 475:os/event_groups.c **** 
+ 640              		.loc 1 475 5 view .LVU191
+ 479:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 641              		.loc 1 479 5 view .LVU192
+ 642 0000 80B1     		cbz	r0, .L48
+ 473:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 643              		.loc 1 473 1 is_stmt 0 discriminator 2 view .LVU193
+ 644 0002 70B5     		push	{r4, r5, r6, lr}
+ 645              	.LCFI7:
+ 646              		.cfi_def_cfa_offset 16
+ 647              		.cfi_offset 4, -16
+ 648              		.cfi_offset 5, -12
+ 649              		.cfi_offset 6, -8
+ 650              		.cfi_offset 14, -4
+ 651 0004 0C46     		mov	r4, r1
+ 652 0006 0646     		mov	r6, r0
+ 479:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 653              		.loc 1 479 32 is_stmt 1 discriminator 2 view .LVU194
+ 480:os/event_groups.c **** 
+ 654              		.loc 1 480 5 discriminator 2 view .LVU195
+ 655 0008 11F07F4F 		tst	r1, #-16777216
+ 656 000c 15D0     		beq	.L44
+ 480:os/event_groups.c **** 
+ 657              		.loc 1 480 5 view .LVU196
+ 658              	.LBB53:
+ 659              	.LBI53:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 660              		.loc 2 193 34 view .LVU197
+ 661              	.LBB54:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 662              		.loc 2 195 9 view .LVU198
+ 663              		.loc 2 197 9 view .LVU199
+ 664              		.syntax unified
+ 665              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 666 000e 4FF05003 			mov r3, #80												
+ 667 0012 72B6     		cpsid i													
+ 668 0014 83F31188 		msr basepri, r3											
+ 669 0018 BFF36F8F 		isb														
+ 670 001c BFF34F8F 		dsb														
+ 671 0020 62B6     		cpsie i													
+ 672              	
+ 673              	@ 0 "" 2
+ 674              	.LVL53:
+ 675              		.thumb
+ 676              		.syntax unified
+ 677              	.L45:
+ 678              		.loc 2 197 9 is_stmt 0 view .LVU200
+ 679              	.LBE54:
+ 680              	.LBE53:
+ 480:os/event_groups.c **** 
+ 681              		.loc 1 480 5 is_stmt 1 discriminator 2 view .LVU201
+ 480:os/event_groups.c **** 
+ 682              		.loc 1 480 5 discriminator 2 view .LVU202
+ 480:os/event_groups.c **** 
+ 683              		.loc 1 480 5 discriminator 2 view .LVU203
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 32
+
+
+ 684 0022 FEE7     		b	.L45
+ 685              	.L48:
+ 686              	.LCFI8:
+ 687              		.cfi_def_cfa_offset 0
+ 688              		.cfi_restore 4
+ 689              		.cfi_restore 5
+ 690              		.cfi_restore 6
+ 691              		.cfi_restore 14
+ 479:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 692              		.loc 1 479 5 view .LVU204
+ 693              	.LBB55:
+ 694              	.LBI55:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 695              		.loc 2 193 34 view .LVU205
+ 696              	.LBB56:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 697              		.loc 2 195 9 view .LVU206
+ 698              		.loc 2 197 9 view .LVU207
+ 699              		.syntax unified
+ 700              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 701 0024 4FF05003 			mov r3, #80												
+ 702 0028 72B6     		cpsid i													
+ 703 002a 83F31188 		msr basepri, r3											
+ 704 002e BFF36F8F 		isb														
+ 705 0032 BFF34F8F 		dsb														
+ 706 0036 62B6     		cpsie i													
+ 707              	
+ 708              	@ 0 "" 2
+ 709              	.LVL54:
+ 710              		.thumb
+ 711              		.syntax unified
+ 712              	.L43:
+ 713              		.loc 2 197 9 is_stmt 0 view .LVU208
+ 714              	.LBE56:
+ 715              	.LBE55:
+ 479:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 716              		.loc 1 479 5 is_stmt 1 discriminator 1 view .LVU209
+ 479:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 717              		.loc 1 479 5 discriminator 1 view .LVU210
+ 479:os/event_groups.c ****     configASSERT( ( uxBitsToClear & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 718              		.loc 1 479 5 discriminator 1 view .LVU211
+ 719 0038 FEE7     		b	.L43
+ 720              	.L44:
+ 721              	.LCFI9:
+ 722              		.cfi_def_cfa_offset 16
+ 723              		.cfi_offset 4, -16
+ 724              		.cfi_offset 5, -12
+ 725              		.cfi_offset 6, -8
+ 726              		.cfi_offset 14, -4
+ 480:os/event_groups.c **** 
+ 727              		.loc 1 480 75 discriminator 2 view .LVU212
+ 482:os/event_groups.c ****     {
+ 728              		.loc 1 482 5 discriminator 2 view .LVU213
+ 729 003a FFF7FEFF 		bl	vPortEnterCritical
+ 730              	.LVL55:
+ 484:os/event_groups.c **** 
+ 731              		.loc 1 484 66 discriminator 2 view .LVU214
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 33
+
+
+ 488:os/event_groups.c **** 
+ 732              		.loc 1 488 9 discriminator 2 view .LVU215
+ 488:os/event_groups.c **** 
+ 733              		.loc 1 488 18 is_stmt 0 discriminator 2 view .LVU216
+ 734 003e 3568     		ldr	r5, [r6]
+ 735              	.LVL56:
+ 491:os/event_groups.c ****     }
+ 736              		.loc 1 491 9 is_stmt 1 discriminator 2 view .LVU217
+ 491:os/event_groups.c ****     }
+ 737              		.loc 1 491 34 is_stmt 0 discriminator 2 view .LVU218
+ 738 0040 25EA0404 		bic	r4, r5, r4
+ 739              	.LVL57:
+ 491:os/event_groups.c ****     }
+ 740              		.loc 1 491 34 discriminator 2 view .LVU219
+ 741 0044 3460     		str	r4, [r6]
+ 493:os/event_groups.c **** 
+ 742              		.loc 1 493 5 is_stmt 1 discriminator 2 view .LVU220
+ 743 0046 FFF7FEFF 		bl	vPortExitCritical
+ 744              	.LVL58:
+ 495:os/event_groups.c **** }
+ 745              		.loc 1 495 5 discriminator 2 view .LVU221
+ 496:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 746              		.loc 1 496 1 is_stmt 0 discriminator 2 view .LVU222
+ 747 004a 2846     		mov	r0, r5
+ 748 004c 70BD     		pop	{r4, r5, r6, pc}
+ 496:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 749              		.loc 1 496 1 discriminator 2 view .LVU223
+ 750              		.cfi_endproc
+ 751              	.LFE8:
+ 753              		.section	.text.vEventGroupClearBitsCallback,"ax",%progbits
+ 754              		.align	1
+ 755              		.global	vEventGroupClearBitsCallback
+ 756              		.syntax unified
+ 757              		.thumb
+ 758              		.thumb_func
+ 759              		.fpu fpv5-d16
+ 761              	vEventGroupClearBitsCallback:
+ 762              	.LVL59:
+ 763              	.LFB14:
+ 681:os/event_groups.c ****     ( void ) xEventGroupClearBits( pvEventGroup, ( EventBits_t ) ulBitsToClear ); /*lint !e9079 Can
+ 764              		.loc 1 681 1 is_stmt 1 view -0
+ 765              		.cfi_startproc
+ 766              		@ args = 0, pretend = 0, frame = 0
+ 767              		@ frame_needed = 0, uses_anonymous_args = 0
+ 681:os/event_groups.c ****     ( void ) xEventGroupClearBits( pvEventGroup, ( EventBits_t ) ulBitsToClear ); /*lint !e9079 Can
+ 768              		.loc 1 681 1 is_stmt 0 view .LVU225
+ 769 0000 08B5     		push	{r3, lr}
+ 770              	.LCFI10:
+ 771              		.cfi_def_cfa_offset 8
+ 772              		.cfi_offset 3, -8
+ 773              		.cfi_offset 14, -4
+ 682:os/event_groups.c **** }
+ 774              		.loc 1 682 5 is_stmt 1 view .LVU226
+ 682:os/event_groups.c **** }
+ 775              		.loc 1 682 14 is_stmt 0 view .LVU227
+ 776 0002 FFF7FEFF 		bl	xEventGroupClearBits
+ 777              	.LVL60:
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 34
+
+
+ 683:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 778              		.loc 1 683 1 view .LVU228
+ 779 0006 08BD     		pop	{r3, pc}
+ 780              		.cfi_endproc
+ 781              	.LFE14:
+ 783              		.section	.text.xEventGroupClearBitsFromISR,"ax",%progbits
+ 784              		.align	1
+ 785              		.global	xEventGroupClearBitsFromISR
+ 786              		.syntax unified
+ 787              		.thumb
+ 788              		.thumb_func
+ 789              		.fpu fpv5-d16
+ 791              	xEventGroupClearBitsFromISR:
+ 792              	.LVL61:
+ 793              	.LFB9:
+ 503:os/event_groups.c ****         BaseType_t xReturn;
+ 794              		.loc 1 503 5 is_stmt 1 view -0
+ 795              		.cfi_startproc
+ 796              		@ args = 0, pretend = 0, frame = 0
+ 797              		@ frame_needed = 0, uses_anonymous_args = 0
+ 503:os/event_groups.c ****         BaseType_t xReturn;
+ 798              		.loc 1 503 5 is_stmt 0 view .LVU230
+ 799 0000 08B5     		push	{r3, lr}
+ 800              	.LCFI11:
+ 801              		.cfi_def_cfa_offset 8
+ 802              		.cfi_offset 3, -8
+ 803              		.cfi_offset 14, -4
+ 804 0002 0A46     		mov	r2, r1
+ 504:os/event_groups.c **** 
+ 805              		.loc 1 504 9 is_stmt 1 view .LVU231
+ 506:os/event_groups.c ****         xReturn = xTimerPendFunctionCallFromISR( vEventGroupClearBitsCallback, ( void * ) xEventGro
+ 806              		.loc 1 506 75 view .LVU232
+ 507:os/event_groups.c **** 
+ 807              		.loc 1 507 9 view .LVU233
+ 507:os/event_groups.c **** 
+ 808              		.loc 1 507 19 is_stmt 0 view .LVU234
+ 809 0004 0023     		movs	r3, #0
+ 810 0006 0146     		mov	r1, r0
+ 811              	.LVL62:
+ 507:os/event_groups.c **** 
+ 812              		.loc 1 507 19 view .LVU235
+ 813 0008 0148     		ldr	r0, .L53
+ 814              	.LVL63:
+ 507:os/event_groups.c **** 
+ 815              		.loc 1 507 19 view .LVU236
+ 816 000a FFF7FEFF 		bl	xTimerPendFunctionCallFromISR
+ 817              	.LVL64:
+ 509:os/event_groups.c ****     }
+ 818              		.loc 1 509 9 is_stmt 1 view .LVU237
+ 510:os/event_groups.c **** 
+ 819              		.loc 1 510 5 is_stmt 0 view .LVU238
+ 820 000e 08BD     		pop	{r3, pc}
+ 821              	.L54:
+ 822              		.align	2
+ 823              	.L53:
+ 824 0010 00000000 		.word	vEventGroupClearBitsCallback
+ 825              		.cfi_endproc
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 35
+
+
+ 826              	.LFE9:
+ 828              		.section	.text.xEventGroupGetBitsFromISR,"ax",%progbits
+ 829              		.align	1
+ 830              		.global	xEventGroupGetBitsFromISR
+ 831              		.syntax unified
+ 832              		.thumb
+ 833              		.thumb_func
+ 834              		.fpu fpv5-d16
+ 836              	xEventGroupGetBitsFromISR:
+ 837              	.LVL65:
+ 838              	.LFB10:
+ 516:os/event_groups.c ****     UBaseType_t uxSavedInterruptStatus;
+ 839              		.loc 1 516 1 is_stmt 1 view -0
+ 840              		.cfi_startproc
+ 841              		@ args = 0, pretend = 0, frame = 0
+ 842              		@ frame_needed = 0, uses_anonymous_args = 0
+ 843              		@ link register save eliminated.
+ 517:os/event_groups.c ****     EventGroup_t const * const pxEventBits = xEventGroup;
+ 844              		.loc 1 517 5 view .LVU240
+ 518:os/event_groups.c ****     EventBits_t uxReturn;
+ 845              		.loc 1 518 5 view .LVU241
+ 519:os/event_groups.c **** 
+ 846              		.loc 1 519 5 view .LVU242
+ 521:os/event_groups.c ****     {
+ 847              		.loc 1 521 5 view .LVU243
+ 848              	.LBB57:
+ 849              	.LBI57:
+ 198:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 199:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	mov %0, %1												\n"\
+ 200:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	cpsid i													\n"\
+ 201:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	msr basepri, %0											\n"\
+ 202:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	isb														\n"\
+ 203:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	dsb														\n"\
+ 204:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	cpsie i													\n"\
+ 205:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             : "=r" ( ulNewBASEPRI ) : "i" ( configMAX_SYSCALL_INTERRUPT_PRIORITY ) : "memory"
+ 206:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         );
+ 207:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     }
+ 208:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 209:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 210:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 211:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     portFORCE_INLINE static uint32_t ulPortRaiseBASEPRI( void )
+ 850              		.loc 2 211 38 view .LVU244
+ 851              	.LBB58:
+ 212:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 213:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         uint32_t ulOriginalBASEPRI, ulNewBASEPRI;
+ 852              		.loc 2 213 9 view .LVU245
+ 214:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 215:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __asm volatile
+ 853              		.loc 2 215 9 view .LVU246
+ 854              		.syntax unified
+ 855              	@ 215 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 856 0000 EFF31183 			mrs r3, basepri											
+ 857 0004 4FF05002 		mov r2, #80												
+ 858 0008 72B6     		cpsid i													
+ 859 000a 82F31188 		msr basepri, r2											
+ 860 000e BFF36F8F 		isb														
+ 861 0012 BFF34F8F 		dsb														
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 36
+
+
+ 862 0016 62B6     		cpsie i													
+ 863              	
+ 864              	@ 0 "" 2
+ 865              	.LVL66:
+ 216:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 217:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	mrs %0, basepri											\n"\
+ 218:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	mov %1, %2												\n"\
+ 219:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	cpsid i													\n"\
+ 220:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	msr basepri, %1											\n"\
+ 221:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	isb														\n"\
+ 222:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	dsb														\n"\
+ 223:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             "	cpsie i													\n"\
+ 224:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****             : "=r" ( ulOriginalBASEPRI ), "=r" ( ulNewBASEPRI ) : "i" ( configMAX_SYSCALL_INTERRUPT
+ 225:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         );
+ 226:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 227:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         /* This return will not be reached but is necessary to prevent compiler
+ 228:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****          * warnings. */
+ 229:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         return ulOriginalBASEPRI;
+ 866              		.loc 2 229 9 view .LVU247
+ 867              		.loc 2 229 9 is_stmt 0 view .LVU248
+ 868              		.thumb
+ 869              		.syntax unified
+ 870              	.LBE58:
+ 871              	.LBE57:
+ 523:os/event_groups.c ****     }
+ 872              		.loc 1 523 9 is_stmt 1 view .LVU249
+ 523:os/event_groups.c ****     }
+ 873              		.loc 1 523 18 is_stmt 0 view .LVU250
+ 874 0018 0068     		ldr	r0, [r0]
+ 875              	.LVL67:
+ 525:os/event_groups.c **** 
+ 876              		.loc 1 525 5 is_stmt 1 view .LVU251
+ 877              	.LBB59:
+ 878              	.LBI59:
+ 230:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     }
+ 231:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 232:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 233:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     portFORCE_INLINE static void vPortSetBASEPRI( uint32_t ulNewMaskValue )
+ 879              		.loc 2 233 34 view .LVU252
+ 880              	.LBB60:
+ 234:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 235:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         __asm volatile
+ 881              		.loc 2 235 9 view .LVU253
+ 882              		.syntax unified
+ 883              	@ 235 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 884 001a 83F31188 			msr basepri, r3	
+ 885              	@ 0 "" 2
+ 886              	.LVL68:
+ 887              		.loc 2 235 9 is_stmt 0 view .LVU254
+ 888              		.thumb
+ 889              		.syntax unified
+ 890              	.LBE60:
+ 891              	.LBE59:
+ 527:os/event_groups.c **** } /*lint !e818 EventGroupHandle_t is a typedef used in other functions to so can't be pointer to co
+ 892              		.loc 1 527 5 is_stmt 1 view .LVU255
+ 528:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 893              		.loc 1 528 1 is_stmt 0 view .LVU256
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 37
+
+
+ 894 001e 7047     		bx	lr
+ 895              		.cfi_endproc
+ 896              	.LFE10:
+ 898              		.section	.text.xEventGroupSetBits,"ax",%progbits
+ 899              		.align	1
+ 900              		.global	xEventGroupSetBits
+ 901              		.syntax unified
+ 902              		.thumb
+ 903              		.thumb_func
+ 904              		.fpu fpv5-d16
+ 906              	xEventGroupSetBits:
+ 907              	.LVL69:
+ 908              	.LFB11:
+ 533:os/event_groups.c ****     ListItem_t * pxListItem, * pxNext;
+ 909              		.loc 1 533 1 is_stmt 1 view -0
+ 910              		.cfi_startproc
+ 911              		@ args = 0, pretend = 0, frame = 0
+ 912              		@ frame_needed = 0, uses_anonymous_args = 0
+ 533:os/event_groups.c ****     ListItem_t * pxListItem, * pxNext;
+ 913              		.loc 1 533 1 is_stmt 0 view .LVU258
+ 914 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 915              	.LCFI12:
+ 916              		.cfi_def_cfa_offset 24
+ 917              		.cfi_offset 3, -24
+ 918              		.cfi_offset 4, -20
+ 919              		.cfi_offset 5, -16
+ 920              		.cfi_offset 6, -12
+ 921              		.cfi_offset 7, -8
+ 922              		.cfi_offset 14, -4
+ 534:os/event_groups.c ****     ListItem_t const * pxListEnd;
+ 923              		.loc 1 534 5 is_stmt 1 view .LVU259
+ 535:os/event_groups.c ****     List_t const * pxList;
+ 924              		.loc 1 535 5 view .LVU260
+ 536:os/event_groups.c ****     EventBits_t uxBitsToClear = 0, uxBitsWaitedFor, uxControlBits;
+ 925              		.loc 1 536 5 view .LVU261
+ 537:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 926              		.loc 1 537 5 view .LVU262
+ 927              	.LVL70:
+ 538:os/event_groups.c ****     BaseType_t xMatchFound = pdFALSE;
+ 928              		.loc 1 538 5 view .LVU263
+ 539:os/event_groups.c **** 
+ 929              		.loc 1 539 5 view .LVU264
+ 543:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 930              		.loc 1 543 5 view .LVU265
+ 931 0002 78B1     		cbz	r0, .L68
+ 932 0004 0D46     		mov	r5, r1
+ 933 0006 0446     		mov	r4, r0
+ 543:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 934              		.loc 1 543 32 discriminator 2 view .LVU266
+ 544:os/event_groups.c **** 
+ 935              		.loc 1 544 5 discriminator 2 view .LVU267
+ 936 0008 11F07F46 		ands	r6, r1, #-16777216
+ 937 000c 15D0     		beq	.L59
+ 544:os/event_groups.c **** 
+ 938              		.loc 1 544 5 view .LVU268
+ 939              	.LBB61:
+ 940              	.LBI61:
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 38
+
+
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 941              		.loc 2 193 34 view .LVU269
+ 942              	.LBB62:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 943              		.loc 2 195 9 view .LVU270
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 944              		.loc 2 197 9 view .LVU271
+ 945              		.syntax unified
+ 946              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 947 000e 4FF05003 			mov r3, #80												
+ 948 0012 72B6     		cpsid i													
+ 949 0014 83F31188 		msr basepri, r3											
+ 950 0018 BFF36F8F 		isb														
+ 951 001c BFF34F8F 		dsb														
+ 952 0020 62B6     		cpsie i													
+ 953              	
+ 954              	@ 0 "" 2
+ 955              	.LVL71:
+ 956              		.thumb
+ 957              		.syntax unified
+ 958              	.L60:
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 959              		.loc 2 197 9 is_stmt 0 view .LVU272
+ 960              	.LBE62:
+ 961              	.LBE61:
+ 544:os/event_groups.c **** 
+ 962              		.loc 1 544 5 is_stmt 1 discriminator 2 view .LVU273
+ 544:os/event_groups.c **** 
+ 963              		.loc 1 544 5 discriminator 2 view .LVU274
+ 544:os/event_groups.c **** 
+ 964              		.loc 1 544 5 discriminator 2 view .LVU275
+ 965 0022 FEE7     		b	.L60
+ 966              	.L68:
+ 543:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 967              		.loc 1 543 5 view .LVU276
+ 968              	.LBB63:
+ 969              	.LBI63:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 970              		.loc 2 193 34 view .LVU277
+ 971              	.LBB64:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 972              		.loc 2 195 9 view .LVU278
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 973              		.loc 2 197 9 view .LVU279
+ 974              		.syntax unified
+ 975              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 976 0024 4FF05003 			mov r3, #80												
+ 977 0028 72B6     		cpsid i													
+ 978 002a 83F31188 		msr basepri, r3											
+ 979 002e BFF36F8F 		isb														
+ 980 0032 BFF34F8F 		dsb														
+ 981 0036 62B6     		cpsie i													
+ 982              	
+ 983              	@ 0 "" 2
+ 984              	.LVL72:
+ 985              		.thumb
+ 986              		.syntax unified
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 39
+
+
+ 987              	.L58:
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 988              		.loc 2 197 9 is_stmt 0 view .LVU280
+ 989              	.LBE64:
+ 990              	.LBE63:
+ 543:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 991              		.loc 1 543 5 is_stmt 1 discriminator 1 view .LVU281
+ 543:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 992              		.loc 1 543 5 discriminator 1 view .LVU282
+ 543:os/event_groups.c ****     configASSERT( ( uxBitsToSet & eventEVENT_BITS_CONTROL_BYTES ) == 0 );
+ 993              		.loc 1 543 5 discriminator 1 view .LVU283
+ 994 0038 FEE7     		b	.L58
+ 995              	.L59:
+ 544:os/event_groups.c **** 
+ 996              		.loc 1 544 73 discriminator 2 view .LVU284
+ 546:os/event_groups.c ****     pxListEnd = listGET_END_MARKER( pxList ); /*lint !e826 !e740 !e9087 The mini list structure is 
+ 997              		.loc 1 546 5 discriminator 2 view .LVU285
+ 998              	.LVL73:
+ 547:os/event_groups.c ****     vTaskSuspendAll();
+ 999              		.loc 1 547 5 discriminator 2 view .LVU286
+ 547:os/event_groups.c ****     vTaskSuspendAll();
+ 1000              		.loc 1 547 15 is_stmt 0 discriminator 2 view .LVU287
+ 1001 003a 00F10C07 		add	r7, r0, #12
+ 1002              	.LVL74:
+ 548:os/event_groups.c ****     {
+ 1003              		.loc 1 548 5 is_stmt 1 discriminator 2 view .LVU288
+ 1004 003e FFF7FEFF 		bl	vTaskSuspendAll
+ 1005              	.LVL75:
+ 550:os/event_groups.c **** 
+ 1006              		.loc 1 550 62 discriminator 2 view .LVU289
+ 552:os/event_groups.c **** 
+ 1007              		.loc 1 552 9 discriminator 2 view .LVU290
+ 552:os/event_groups.c **** 
+ 1008              		.loc 1 552 20 is_stmt 0 discriminator 2 view .LVU291
+ 1009 0042 2069     		ldr	r0, [r4, #16]
+ 1010              	.LVL76:
+ 555:os/event_groups.c **** 
+ 1011              		.loc 1 555 9 is_stmt 1 discriminator 2 view .LVU292
+ 555:os/event_groups.c **** 
+ 1012              		.loc 1 555 34 is_stmt 0 discriminator 2 view .LVU293
+ 1013 0044 2368     		ldr	r3, [r4]
+ 1014 0046 2B43     		orrs	r3, r3, r5
+ 1015 0048 2360     		str	r3, [r4]
+ 558:os/event_groups.c ****         {
+ 1016              		.loc 1 558 9 is_stmt 1 discriminator 2 view .LVU294
+ 558:os/event_groups.c ****         {
+ 1017              		.loc 1 558 14 is_stmt 0 discriminator 2 view .LVU295
+ 1018 004a 0AE0     		b	.L61
+ 1019              	.LVL77:
+ 1020              	.L62:
+ 580:os/event_groups.c ****             {
+ 1021              		.loc 1 580 18 is_stmt 1 view .LVU296
+ 580:os/event_groups.c ****             {
+ 1022              		.loc 1 580 53 is_stmt 0 view .LVU297
+ 1023 004c 2168     		ldr	r1, [r4]
+ 580:os/event_groups.c ****             {
+ 1024              		.loc 1 580 20 view .LVU298
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 40
+
+
+ 1025 004e 33EA0101 		bics	r1, r3, r1
+ 1026 0052 05D1     		bne	.L64
+ 580:os/event_groups.c ****             {
+ 1027              		.loc 1 580 20 view .LVU299
+ 1028 0054 11E0     		b	.L63
+ 1029              	.LVL78:
+ 1030              	.L65:
+ 599:os/event_groups.c ****                 }
+ 1031              		.loc 1 599 45 is_stmt 1 view .LVU300
+ 607:os/event_groups.c ****             }
+ 1032              		.loc 1 607 17 view .LVU301
+ 607:os/event_groups.c ****             }
+ 1033              		.loc 1 607 75 is_stmt 0 view .LVU302
+ 1034 0056 2168     		ldr	r1, [r4]
+ 607:os/event_groups.c ****             }
+ 1035              		.loc 1 607 17 view .LVU303
+ 1036 0058 41F00071 		orr	r1, r1, #33554432
+ 1037 005c FFF7FEFF 		bl	vTaskRemoveFromUnorderedEventList
+ 1038              	.LVL79:
+ 1039              	.L64:
+ 533:os/event_groups.c ****     ListItem_t * pxListItem, * pxNext;
+ 1040              		.loc 1 533 1 view .LVU304
+ 1041 0060 2846     		mov	r0, r5
+ 1042              	.LVL80:
+ 1043              	.L61:
+ 558:os/event_groups.c ****         {
+ 1044              		.loc 1 558 14 is_stmt 1 view .LVU305
+ 1045 0062 B842     		cmp	r0, r7
+ 1046 0064 0ED0     		beq	.L69
+ 560:os/event_groups.c ****             uxBitsWaitedFor = listGET_LIST_ITEM_VALUE( pxListItem );
+ 1047              		.loc 1 560 13 view .LVU306
+ 560:os/event_groups.c ****             uxBitsWaitedFor = listGET_LIST_ITEM_VALUE( pxListItem );
+ 1048              		.loc 1 560 20 is_stmt 0 view .LVU307
+ 1049 0066 4568     		ldr	r5, [r0, #4]
+ 1050              	.LVL81:
+ 561:os/event_groups.c ****             xMatchFound = pdFALSE;
+ 1051              		.loc 1 561 13 is_stmt 1 view .LVU308
+ 561:os/event_groups.c ****             xMatchFound = pdFALSE;
+ 1052              		.loc 1 561 29 is_stmt 0 view .LVU309
+ 1053 0068 0268     		ldr	r2, [r0]
+ 1054              	.LVL82:
+ 562:os/event_groups.c **** 
+ 1055              		.loc 1 562 13 is_stmt 1 view .LVU310
+ 565:os/event_groups.c ****             uxBitsWaitedFor &= ~eventEVENT_BITS_CONTROL_BYTES;
+ 1056              		.loc 1 565 13 view .LVU311
+ 566:os/event_groups.c **** 
+ 1057              		.loc 1 566 13 view .LVU312
+ 566:os/event_groups.c **** 
+ 1058              		.loc 1 566 29 is_stmt 0 view .LVU313
+ 1059 006a 22F07F43 		bic	r3, r2, #-16777216
+ 1060              	.LVL83:
+ 568:os/event_groups.c ****             {
+ 1061              		.loc 1 568 13 is_stmt 1 view .LVU314
+ 568:os/event_groups.c ****             {
+ 1062              		.loc 1 568 15 is_stmt 0 view .LVU315
+ 1063 006e 12F0806F 		tst	r2, #67108864
+ 1064 0072 EBD1     		bne	.L62
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 41
+
+
+ 571:os/event_groups.c ****                 {
+ 1065              		.loc 1 571 17 is_stmt 1 view .LVU316
+ 571:os/event_groups.c ****                 {
+ 1066              		.loc 1 571 52 is_stmt 0 view .LVU317
+ 1067 0074 2168     		ldr	r1, [r4]
+ 571:os/event_groups.c ****                 {
+ 1068              		.loc 1 571 19 view .LVU318
+ 1069 0076 1942     		tst	r1, r3
+ 1070 0078 F2D0     		beq	.L64
+ 1071              	.L63:
+ 1072              	.LVL84:
+ 593:os/event_groups.c ****                 {
+ 1073              		.loc 1 593 17 is_stmt 1 view .LVU319
+ 593:os/event_groups.c ****                 {
+ 1074              		.loc 1 593 19 is_stmt 0 view .LVU320
+ 1075 007a 12F0807F 		tst	r2, #16777216
+ 1076 007e EAD0     		beq	.L65
+ 595:os/event_groups.c ****                 }
+ 1077              		.loc 1 595 21 is_stmt 1 view .LVU321
+ 595:os/event_groups.c ****                 }
+ 1078              		.loc 1 595 35 is_stmt 0 view .LVU322
+ 1079 0080 1E43     		orrs	r6, r6, r3
+ 1080              	.LVL85:
+ 595:os/event_groups.c ****                 }
+ 1081              		.loc 1 595 35 view .LVU323
+ 1082 0082 E8E7     		b	.L65
+ 1083              	.LVL86:
+ 1084              	.L69:
+ 618:os/event_groups.c ****     }
+ 1085              		.loc 1 618 9 is_stmt 1 view .LVU324
+ 618:os/event_groups.c ****     }
+ 1086              		.loc 1 618 34 is_stmt 0 view .LVU325
+ 1087 0084 2368     		ldr	r3, [r4]
+ 1088 0086 23EA0603 		bic	r3, r3, r6
+ 1089 008a 2360     		str	r3, [r4]
+ 620:os/event_groups.c **** 
+ 1090              		.loc 1 620 5 is_stmt 1 view .LVU326
+ 620:os/event_groups.c **** 
+ 1091              		.loc 1 620 14 is_stmt 0 view .LVU327
+ 1092 008c FFF7FEFF 		bl	xTaskResumeAll
+ 1093              	.LVL87:
+ 622:os/event_groups.c **** }
+ 1094              		.loc 1 622 5 is_stmt 1 view .LVU328
+ 623:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 1095              		.loc 1 623 1 is_stmt 0 view .LVU329
+ 1096 0090 2068     		ldr	r0, [r4]
+ 1097 0092 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 623:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 1098              		.loc 1 623 1 view .LVU330
+ 1099              		.cfi_endproc
+ 1100              	.LFE11:
+ 1102              		.section	.text.xEventGroupSync,"ax",%progbits
+ 1103              		.align	1
+ 1104              		.global	xEventGroupSync
+ 1105              		.syntax unified
+ 1106              		.thumb
+ 1107              		.thumb_func
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 42
+
+
+ 1108              		.fpu fpv5-d16
+ 1110              	xEventGroupSync:
+ 1111              	.LVL88:
+ 1112              	.LFB6:
+ 196:os/event_groups.c ****     EventBits_t uxOriginalBitValue, uxReturn;
+ 1113              		.loc 1 196 1 is_stmt 1 view -0
+ 1114              		.cfi_startproc
+ 1115              		@ args = 0, pretend = 0, frame = 0
+ 1116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 196:os/event_groups.c ****     EventBits_t uxOriginalBitValue, uxReturn;
+ 1117              		.loc 1 196 1 is_stmt 0 view .LVU332
+ 1118 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 1119              	.LCFI13:
+ 1120              		.cfi_def_cfa_offset 32
+ 1121              		.cfi_offset 3, -32
+ 1122              		.cfi_offset 4, -28
+ 1123              		.cfi_offset 5, -24
+ 1124              		.cfi_offset 6, -20
+ 1125              		.cfi_offset 7, -16
+ 1126              		.cfi_offset 8, -12
+ 1127              		.cfi_offset 9, -8
+ 1128              		.cfi_offset 14, -4
+ 197:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 1129              		.loc 1 197 5 is_stmt 1 view .LVU333
+ 198:os/event_groups.c ****     BaseType_t xAlreadyYielded;
+ 1130              		.loc 1 198 5 view .LVU334
+ 1131              	.LVL89:
+ 199:os/event_groups.c ****     BaseType_t xTimeoutOccurred = pdFALSE;
+ 1132              		.loc 1 199 5 view .LVU335
+ 200:os/event_groups.c **** 
+ 1133              		.loc 1 200 5 view .LVU336
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1134              		.loc 1 202 5 view .LVU337
+ 1135 0004 12F07F48 		ands	r8, r2, #-16777216
+ 1136 0008 0AD0     		beq	.L71
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1137              		.loc 1 202 5 view .LVU338
+ 1138              	.LBB65:
+ 1139              	.LBI65:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 1140              		.loc 2 193 34 view .LVU339
+ 1141              	.LBB66:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 1142              		.loc 2 195 9 view .LVU340
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1143              		.loc 2 197 9 view .LVU341
+ 1144              		.syntax unified
+ 1145              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 1146 000a 4FF05003 			mov r3, #80												
+ 1147 000e 72B6     		cpsid i													
+ 1148 0010 83F31188 		msr basepri, r3											
+ 1149 0014 BFF36F8F 		isb														
+ 1150 0018 BFF34F8F 		dsb														
+ 1151 001c 62B6     		cpsie i													
+ 1152              	
+ 1153              	@ 0 "" 2
+ 1154              	.LVL90:
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 43
+
+
+ 1155              		.thumb
+ 1156              		.syntax unified
+ 1157              	.L72:
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1158              		.loc 2 197 9 is_stmt 0 view .LVU342
+ 1159              	.LBE66:
+ 1160              	.LBE65:
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1161              		.loc 1 202 5 is_stmt 1 discriminator 1 view .LVU343
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1162              		.loc 1 202 5 discriminator 1 view .LVU344
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1163              		.loc 1 202 5 discriminator 1 view .LVU345
+ 1164 001e FEE7     		b	.L72
+ 1165              	.LVL91:
+ 1166              	.L71:
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1167              		.loc 1 202 5 is_stmt 0 discriminator 1 view .LVU346
+ 1168 0020 0646     		mov	r6, r0
+ 1169 0022 0C46     		mov	r4, r1
+ 1170 0024 1546     		mov	r5, r2
+ 1171 0026 1F46     		mov	r7, r3
+ 202:os/event_groups.c ****     configASSERT( uxBitsToWaitFor != 0 );
+ 1172              		.loc 1 202 77 is_stmt 1 discriminator 2 view .LVU347
+ 203:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 1173              		.loc 1 203 5 discriminator 2 view .LVU348
+ 1174 0028 52B9     		cbnz	r2, .L73
+ 203:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 1175              		.loc 1 203 5 view .LVU349
+ 1176              	.LBB67:
+ 1177              	.LBI67:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 1178              		.loc 2 193 34 view .LVU350
+ 1179              	.LBB68:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 1180              		.loc 2 195 9 view .LVU351
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1181              		.loc 2 197 9 view .LVU352
+ 1182              		.syntax unified
+ 1183              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 1184 002a 4FF05003 			mov r3, #80												
+ 1185 002e 72B6     		cpsid i													
+ 1186 0030 83F31188 		msr basepri, r3											
+ 1187 0034 BFF36F8F 		isb														
+ 1188 0038 BFF34F8F 		dsb														
+ 1189 003c 62B6     		cpsie i													
+ 1190              	
+ 1191              	@ 0 "" 2
+ 1192              	.LVL92:
+ 1193              		.thumb
+ 1194              		.syntax unified
+ 1195              	.L74:
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1196              		.loc 2 197 9 is_stmt 0 view .LVU353
+ 1197              	.LBE68:
+ 1198              	.LBE67:
+ 203:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 44
+
+
+ 1199              		.loc 1 203 5 is_stmt 1 discriminator 2 view .LVU354
+ 203:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 1200              		.loc 1 203 5 discriminator 2 view .LVU355
+ 203:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 1201              		.loc 1 203 5 discriminator 2 view .LVU356
+ 1202 003e FEE7     		b	.L74
+ 1203              	.LVL93:
+ 1204              	.L73:
+ 203:os/event_groups.c ****     #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
+ 1205              		.loc 1 203 41 discriminator 2 view .LVU357
+ 206:os/event_groups.c ****         }
+ 1206              		.loc 1 206 13 discriminator 2 view .LVU358
+ 1207 0040 FFF7FEFF 		bl	xTaskGetSchedulerState
+ 1208              	.LVL94:
+ 206:os/event_groups.c ****         }
+ 1209              		.loc 1 206 13 is_stmt 0 discriminator 2 view .LVU359
+ 1210 0044 58B9     		cbnz	r0, .L75
+ 1211 0046 57B1     		cbz	r7, .L75
+ 206:os/event_groups.c ****         }
+ 1212              		.loc 1 206 13 is_stmt 1 view .LVU360
+ 1213              	.LBB69:
+ 1214              	.LBI69:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 1215              		.loc 2 193 34 view .LVU361
+ 1216              	.LBB70:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 1217              		.loc 2 195 9 view .LVU362
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1218              		.loc 2 197 9 view .LVU363
+ 1219              		.syntax unified
+ 1220              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 1221 0048 4FF05003 			mov r3, #80												
+ 1222 004c 72B6     		cpsid i													
+ 1223 004e 83F31188 		msr basepri, r3											
+ 1224 0052 BFF36F8F 		isb														
+ 1225 0056 BFF34F8F 		dsb														
+ 1226 005a 62B6     		cpsie i													
+ 1227              	
+ 1228              	@ 0 "" 2
+ 1229              	.LVL95:
+ 1230              		.thumb
+ 1231              		.syntax unified
+ 1232              	.L76:
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1233              		.loc 2 197 9 is_stmt 0 view .LVU364
+ 1234              	.LBE70:
+ 1235              	.LBE69:
+ 206:os/event_groups.c ****         }
+ 1236              		.loc 1 206 13 is_stmt 1 discriminator 3 view .LVU365
+ 206:os/event_groups.c ****         }
+ 1237              		.loc 1 206 13 discriminator 3 view .LVU366
+ 206:os/event_groups.c ****         }
+ 1238              		.loc 1 206 13 discriminator 3 view .LVU367
+ 1239 005c FEE7     		b	.L76
+ 1240              	.L75:
+ 206:os/event_groups.c ****         }
+ 1241              		.loc 1 206 114 discriminator 8 view .LVU368
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 45
+
+
+ 210:os/event_groups.c ****     {
+ 1242              		.loc 1 210 5 discriminator 8 view .LVU369
+ 1243 005e FFF7FEFF 		bl	vTaskSuspendAll
+ 1244              	.LVL96:
+ 212:os/event_groups.c **** 
+ 1245              		.loc 1 212 9 discriminator 8 view .LVU370
+ 212:os/event_groups.c **** 
+ 1246              		.loc 1 212 28 is_stmt 0 discriminator 8 view .LVU371
+ 1247 0062 D6F80090 		ldr	r9, [r6]
+ 1248              	.LVL97:
+ 214:os/event_groups.c **** 
+ 1249              		.loc 1 214 9 is_stmt 1 discriminator 8 view .LVU372
+ 214:os/event_groups.c **** 
+ 1250              		.loc 1 214 18 is_stmt 0 discriminator 8 view .LVU373
+ 1251 0066 2146     		mov	r1, r4
+ 1252 0068 3046     		mov	r0, r6
+ 1253 006a FFF7FEFF 		bl	xEventGroupSetBits
+ 1254              	.LVL98:
+ 216:os/event_groups.c ****         {
+ 1255              		.loc 1 216 9 is_stmt 1 discriminator 8 view .LVU374
+ 216:os/event_groups.c ****         {
+ 1256              		.loc 1 216 36 is_stmt 0 discriminator 8 view .LVU375
+ 1257 006e 49EA0404 		orr	r4, r9, r4
+ 1258              	.LVL99:
+ 216:os/event_groups.c ****         {
+ 1259              		.loc 1 216 11 discriminator 8 view .LVU376
+ 1260 0072 35EA0403 		bics	r3, r5, r4
+ 1261 0076 18D0     		beq	.L85
+ 229:os/event_groups.c ****             {
+ 1262              		.loc 1 229 13 is_stmt 1 view .LVU377
+ 229:os/event_groups.c ****             {
+ 1263              		.loc 1 229 15 is_stmt 0 view .LVU378
+ 1264 0078 EFB9     		cbnz	r7, .L86
+ 248:os/event_groups.c ****                 xTimeoutOccurred = pdTRUE;
+ 1265              		.loc 1 248 17 is_stmt 1 view .LVU379
+ 248:os/event_groups.c ****                 xTimeoutOccurred = pdTRUE;
+ 1266              		.loc 1 248 26 is_stmt 0 view .LVU380
+ 1267 007a 3468     		ldr	r4, [r6]
+ 1268              	.LVL100:
+ 249:os/event_groups.c ****             }
+ 1269              		.loc 1 249 17 is_stmt 1 view .LVU381
+ 1270              	.L78:
+ 253:os/event_groups.c **** 
+ 1271              		.loc 1 253 5 view .LVU382
+ 253:os/event_groups.c **** 
+ 1272              		.loc 1 253 23 is_stmt 0 view .LVU383
+ 1273 007c FFF7FEFF 		bl	xTaskResumeAll
+ 1274              	.LVL101:
+ 255:os/event_groups.c ****     {
+ 1275              		.loc 1 255 5 is_stmt 1 view .LVU384
+ 255:os/event_groups.c ****     {
+ 1276              		.loc 1 255 7 is_stmt 0 view .LVU385
+ 1277 0080 87B1     		cbz	r7, .L70
+ 257:os/event_groups.c ****         {
+ 1278              		.loc 1 257 9 is_stmt 1 view .LVU386
+ 257:os/event_groups.c ****         {
+ 1279              		.loc 1 257 11 is_stmt 0 view .LVU387
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 46
+
+
+ 1280 0082 38B9     		cbnz	r0, .L81
+ 259:os/event_groups.c ****         }
+ 1281              		.loc 1 259 13 is_stmt 1 view .LVU388
+ 1282 0084 164B     		ldr	r3, .L89
+ 1283 0086 4FF08052 		mov	r2, #268435456
+ 1284 008a 1A60     		str	r2, [r3]
+ 259:os/event_groups.c ****         }
+ 1285              		.loc 1 259 13 view .LVU389
+ 1286              		.syntax unified
+ 1287              	@ 259 "os/event_groups.c" 1
+ 1288 008c BFF34F8F 		dsb
+ 1289              	@ 0 "" 2
+ 259:os/event_groups.c ****         }
+ 1290              		.loc 1 259 13 view .LVU390
+ 1291              	@ 259 "os/event_groups.c" 1
+ 1292 0090 BFF36F8F 		isb
+ 1293              	@ 0 "" 2
+ 259:os/event_groups.c ****         }
+ 1294              		.loc 1 259 35 view .LVU391
+ 1295              		.thumb
+ 1296              		.syntax unified
+ 1297              	.L81:
+ 263:os/event_groups.c ****         }
+ 1298              		.loc 1 263 37 view .LVU392
+ 270:os/event_groups.c **** 
+ 1299              		.loc 1 270 9 view .LVU393
+ 270:os/event_groups.c **** 
+ 1300              		.loc 1 270 20 is_stmt 0 view .LVU394
+ 1301 0094 FFF7FEFF 		bl	uxTaskResetEventItemValue
+ 1302              	.LVL102:
+ 270:os/event_groups.c **** 
+ 1303              		.loc 1 270 20 view .LVU395
+ 1304 0098 0446     		mov	r4, r0
+ 1305              	.LVL103:
+ 272:os/event_groups.c ****         {
+ 1306              		.loc 1 272 9 is_stmt 1 view .LVU396
+ 272:os/event_groups.c ****         {
+ 1307              		.loc 1 272 11 is_stmt 0 view .LVU397
+ 1308 009a 10F0007F 		tst	r0, #33554432
+ 1309 009e 12D0     		beq	.L87
+ 1310              	.LVL104:
+ 1311              	.L82:
+ 299:os/event_groups.c **** 
+ 1312              		.loc 1 299 9 is_stmt 1 view .LVU398
+ 303:os/event_groups.c ****     }
+ 1313              		.loc 1 303 9 view .LVU399
+ 303:os/event_groups.c ****     }
+ 1314              		.loc 1 303 18 is_stmt 0 view .LVU400
+ 1315 00a0 24F07F44 		bic	r4, r4, #-16777216
+ 1316              	.LVL105:
+ 306:os/event_groups.c **** 
+ 1317              		.loc 1 306 5 is_stmt 1 view .LVU401
+ 309:os/event_groups.c **** 
+ 1318              		.loc 1 309 5 view .LVU402
+ 311:os/event_groups.c **** }
+ 1319              		.loc 1 311 5 view .LVU403
+ 1320              	.L70:
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 47
+
+
+ 312:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 1321              		.loc 1 312 1 is_stmt 0 view .LVU404
+ 1322 00a4 2046     		mov	r0, r4
+ 1323 00a6 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 1324              	.LVL106:
+ 1325              	.L85:
+ 219:os/event_groups.c **** 
+ 1326              		.loc 1 219 13 is_stmt 1 view .LVU405
+ 223:os/event_groups.c **** 
+ 1327              		.loc 1 223 13 view .LVU406
+ 223:os/event_groups.c **** 
+ 1328              		.loc 1 223 38 is_stmt 0 view .LVU407
+ 1329 00aa 3368     		ldr	r3, [r6]
+ 1330 00ac 23EA0503 		bic	r3, r3, r5
+ 1331 00b0 3360     		str	r3, [r6]
+ 225:os/event_groups.c ****         }
+ 1332              		.loc 1 225 13 is_stmt 1 view .LVU408
+ 1333              	.LVL107:
+ 225:os/event_groups.c ****         }
+ 1334              		.loc 1 225 26 is_stmt 0 view .LVU409
+ 1335 00b2 4746     		mov	r7, r8
+ 1336 00b4 E2E7     		b	.L78
+ 1337              	.LVL108:
+ 1338              	.L86:
+ 231:os/event_groups.c **** 
+ 1339              		.loc 1 231 89 is_stmt 1 view .LVU410
+ 236:os/event_groups.c **** 
+ 1340              		.loc 1 236 17 view .LVU411
+ 1341 00b6 3A46     		mov	r2, r7
+ 1342 00b8 45F0A061 		orr	r1, r5, #83886080
+ 1343 00bc 301D     		adds	r0, r6, #4
+ 1344 00be FFF7FEFF 		bl	vTaskPlaceOnUnorderedEventList
+ 1345              	.LVL109:
+ 242:os/event_groups.c ****             }
+ 1346              		.loc 1 242 17 view .LVU412
+ 242:os/event_groups.c ****             }
+ 1347              		.loc 1 242 26 is_stmt 0 view .LVU413
+ 1348 00c2 4446     		mov	r4, r8
+ 1349 00c4 DAE7     		b	.L78
+ 1350              	.LVL110:
+ 1351              	.L87:
+ 275:os/event_groups.c ****             {
+ 1352              		.loc 1 275 13 is_stmt 1 view .LVU414
+ 1353 00c6 FFF7FEFF 		bl	vPortEnterCritical
+ 1354              	.LVL111:
+ 277:os/event_groups.c **** 
+ 1355              		.loc 1 277 17 view .LVU415
+ 277:os/event_groups.c **** 
+ 1356              		.loc 1 277 26 is_stmt 0 view .LVU416
+ 1357 00ca 3468     		ldr	r4, [r6]
+ 1358              	.LVL112:
+ 283:os/event_groups.c ****                 {
+ 1359              		.loc 1 283 17 is_stmt 1 view .LVU417
+ 283:os/event_groups.c ****                 {
+ 1360              		.loc 1 283 19 is_stmt 0 view .LVU418
+ 1361 00cc 35EA0403 		bics	r3, r5, r4
+ 1362 00d0 02D0     		beq	.L88
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 48
+
+
+ 1363              	.LVL113:
+ 1364              	.L83:
+ 289:os/event_groups.c ****                 }
+ 1365              		.loc 1 289 45 is_stmt 1 view .LVU419
+ 292:os/event_groups.c **** 
+ 1366              		.loc 1 292 13 view .LVU420
+ 1367 00d2 FFF7FEFF 		bl	vPortExitCritical
+ 1368              	.LVL114:
+ 294:os/event_groups.c ****         }
+ 1369              		.loc 1 294 13 view .LVU421
+ 294:os/event_groups.c ****         }
+ 1370              		.loc 1 294 13 is_stmt 0 view .LVU422
+ 1371 00d6 E3E7     		b	.L82
+ 1372              	.LVL115:
+ 1373              	.L88:
+ 285:os/event_groups.c ****                 }
+ 1374              		.loc 1 285 21 is_stmt 1 view .LVU423
+ 285:os/event_groups.c ****                 }
+ 1375              		.loc 1 285 46 is_stmt 0 view .LVU424
+ 1376 00d8 24EA0505 		bic	r5, r4, r5
+ 1377              	.LVL116:
+ 285:os/event_groups.c ****                 }
+ 1378              		.loc 1 285 46 view .LVU425
+ 1379 00dc 3560     		str	r5, [r6]
+ 1380 00de F8E7     		b	.L83
+ 1381              	.L90:
+ 1382              		.align	2
+ 1383              	.L89:
+ 1384 00e0 04ED00E0 		.word	-536810236
+ 1385              		.cfi_endproc
+ 1386              	.LFE6:
+ 1388              		.section	.text.vEventGroupSetBitsCallback,"ax",%progbits
+ 1389              		.align	1
+ 1390              		.global	vEventGroupSetBitsCallback
+ 1391              		.syntax unified
+ 1392              		.thumb
+ 1393              		.thumb_func
+ 1394              		.fpu fpv5-d16
+ 1396              	vEventGroupSetBitsCallback:
+ 1397              	.LVL117:
+ 1398              	.LFB13:
+ 672:os/event_groups.c ****     ( void ) xEventGroupSetBits( pvEventGroup, ( EventBits_t ) ulBitsToSet ); /*lint !e9079 Can't a
+ 1399              		.loc 1 672 1 is_stmt 1 view -0
+ 1400              		.cfi_startproc
+ 1401              		@ args = 0, pretend = 0, frame = 0
+ 1402              		@ frame_needed = 0, uses_anonymous_args = 0
+ 672:os/event_groups.c ****     ( void ) xEventGroupSetBits( pvEventGroup, ( EventBits_t ) ulBitsToSet ); /*lint !e9079 Can't a
+ 1403              		.loc 1 672 1 is_stmt 0 view .LVU427
+ 1404 0000 08B5     		push	{r3, lr}
+ 1405              	.LCFI14:
+ 1406              		.cfi_def_cfa_offset 8
+ 1407              		.cfi_offset 3, -8
+ 1408              		.cfi_offset 14, -4
+ 673:os/event_groups.c **** }
+ 1409              		.loc 1 673 5 is_stmt 1 view .LVU428
+ 673:os/event_groups.c **** }
+ 1410              		.loc 1 673 14 is_stmt 0 view .LVU429
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 49
+
+
+ 1411 0002 FFF7FEFF 		bl	xEventGroupSetBits
+ 1412              	.LVL118:
+ 674:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 1413              		.loc 1 674 1 view .LVU430
+ 1414 0006 08BD     		pop	{r3, pc}
+ 1415              		.cfi_endproc
+ 1416              	.LFE13:
+ 1418              		.section	.text.vEventGroupDelete,"ax",%progbits
+ 1419              		.align	1
+ 1420              		.global	vEventGroupDelete
+ 1421              		.syntax unified
+ 1422              		.thumb
+ 1423              		.thumb_func
+ 1424              		.fpu fpv5-d16
+ 1426              	vEventGroupDelete:
+ 1427              	.LVL119:
+ 1428              	.LFB12:
+ 627:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 1429              		.loc 1 627 1 is_stmt 1 view -0
+ 1430              		.cfi_startproc
+ 1431              		@ args = 0, pretend = 0, frame = 0
+ 1432              		@ frame_needed = 0, uses_anonymous_args = 0
+ 627:os/event_groups.c ****     EventGroup_t * pxEventBits = xEventGroup;
+ 1433              		.loc 1 627 1 is_stmt 0 view .LVU432
+ 1434 0000 10B5     		push	{r4, lr}
+ 1435              	.LCFI15:
+ 1436              		.cfi_def_cfa_offset 8
+ 1437              		.cfi_offset 4, -8
+ 1438              		.cfi_offset 14, -4
+ 1439 0002 0446     		mov	r4, r0
+ 628:os/event_groups.c ****     const List_t * pxTasksWaitingForBits = &( pxEventBits->xTasksWaitingForBits );
+ 1440              		.loc 1 628 5 is_stmt 1 view .LVU433
+ 1441              	.LVL120:
+ 629:os/event_groups.c **** 
+ 1442              		.loc 1 629 5 view .LVU434
+ 631:os/event_groups.c ****     {
+ 1443              		.loc 1 631 5 view .LVU435
+ 1444 0004 FFF7FEFF 		bl	vTaskSuspendAll
+ 1445              	.LVL121:
+ 633:os/event_groups.c **** 
+ 1446              		.loc 1 633 47 view .LVU436
+ 635:os/event_groups.c ****         {
+ 1447              		.loc 1 635 9 view .LVU437
+ 1448              	.L94:
+ 635:os/event_groups.c ****         {
+ 1449              		.loc 1 635 14 view .LVU438
+ 635:os/event_groups.c ****         {
+ 1450              		.loc 1 635 16 is_stmt 0 view .LVU439
+ 1451 0008 6368     		ldr	r3, [r4, #4]
+ 635:os/event_groups.c ****         {
+ 1452              		.loc 1 635 14 view .LVU440
+ 1453 000a A3B1     		cbz	r3, .L100
+ 639:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 1454              		.loc 1 639 13 is_stmt 1 view .LVU441
+ 1455 000c 2069     		ldr	r0, [r4, #16]
+ 1456 000e 04F10C03 		add	r3, r4, #12
+ 1457 0012 9842     		cmp	r0, r3
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 50
+
+
+ 1458 0014 04D0     		beq	.L101
+ 639:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 1459              		.loc 1 639 130 discriminator 2 view .LVU442
+ 640:os/event_groups.c ****         }
+ 1460              		.loc 1 640 13 discriminator 2 view .LVU443
+ 1461 0016 4FF00071 		mov	r1, #33554432
+ 1462 001a FFF7FEFF 		bl	vTaskRemoveFromUnorderedEventList
+ 1463              	.LVL122:
+ 1464 001e F3E7     		b	.L94
+ 1465              	.L101:
+ 639:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 1466              		.loc 1 639 13 view .LVU444
+ 1467              	.LBB71:
+ 1468              	.LBI71:
+ 193:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     {
+ 1469              		.loc 2 193 34 view .LVU445
+ 1470              	.LBB72:
+ 195:os/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 1471              		.loc 2 195 9 view .LVU446
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1472              		.loc 2 197 9 view .LVU447
+ 1473              		.syntax unified
+ 1474              	@ 197 "os/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 1475 0020 4FF05003 			mov r3, #80												
+ 1476 0024 72B6     		cpsid i													
+ 1477 0026 83F31188 		msr basepri, r3											
+ 1478 002a BFF36F8F 		isb														
+ 1479 002e BFF34F8F 		dsb														
+ 1480 0032 62B6     		cpsie i													
+ 1481              	
+ 1482              	@ 0 "" 2
+ 1483              	.LVL123:
+ 1484              		.thumb
+ 1485              		.syntax unified
+ 1486              	.L96:
+ 197:os/portable/GCC/ARM_CM7/r0p1/portmacro.h ****         (
+ 1487              		.loc 2 197 9 is_stmt 0 view .LVU448
+ 1488              	.LBE72:
+ 1489              	.LBE71:
+ 639:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 1490              		.loc 1 639 13 is_stmt 1 discriminator 1 view .LVU449
+ 639:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 1491              		.loc 1 639 13 discriminator 1 view .LVU450
+ 639:os/event_groups.c ****             vTaskRemoveFromUnorderedEventList( pxTasksWaitingForBits->xListEnd.pxNext, eventUNBLOCK
+ 1492              		.loc 1 639 13 discriminator 1 view .LVU451
+ 1493 0034 FEE7     		b	.L96
+ 1494              	.L100:
+ 653:os/event_groups.c ****                 {
+ 1495              		.loc 1 653 17 view .LVU452
+ 653:os/event_groups.c ****                 {
+ 1496              		.loc 1 653 32 is_stmt 0 view .LVU453
+ 1497 0036 237F     		ldrb	r3, [r4, #28]	@ zero_extendqisi2
+ 653:os/event_groups.c ****                 {
+ 1498              		.loc 1 653 19 view .LVU454
+ 1499 0038 13B1     		cbz	r3, .L102
+ 1500              	.L98:
+ 659:os/event_groups.c ****                 }
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 51
+
+
+ 1501              		.loc 1 659 45 is_stmt 1 view .LVU455
+ 664:os/event_groups.c **** }
+ 1502              		.loc 1 664 5 view .LVU456
+ 664:os/event_groups.c **** }
+ 1503              		.loc 1 664 14 is_stmt 0 view .LVU457
+ 1504 003a FFF7FEFF 		bl	xTaskResumeAll
+ 1505              	.LVL124:
+ 665:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 1506              		.loc 1 665 1 view .LVU458
+ 1507 003e 10BD     		pop	{r4, pc}
+ 1508              	.LVL125:
+ 1509              	.L102:
+ 655:os/event_groups.c ****                 }
+ 1510              		.loc 1 655 21 is_stmt 1 view .LVU459
+ 1511 0040 2046     		mov	r0, r4
+ 1512 0042 FFF7FEFF 		bl	vPortFree
+ 1513              	.LVL126:
+ 1514 0046 F8E7     		b	.L98
+ 1515              		.cfi_endproc
+ 1516              	.LFE12:
+ 1518              		.section	.text.xEventGroupSetBitsFromISR,"ax",%progbits
+ 1519              		.align	1
+ 1520              		.global	xEventGroupSetBitsFromISR
+ 1521              		.syntax unified
+ 1522              		.thumb
+ 1523              		.thumb_func
+ 1524              		.fpu fpv5-d16
+ 1526              	xEventGroupSetBitsFromISR:
+ 1527              	.LVL127:
+ 1528              	.LFB16:
+ 721:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 722:os/event_groups.c **** 
+ 723:os/event_groups.c **** #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_T
+ 724:os/event_groups.c **** 
+ 725:os/event_groups.c ****     BaseType_t xEventGroupSetBitsFromISR( EventGroupHandle_t xEventGroup,
+ 726:os/event_groups.c ****                                           const EventBits_t uxBitsToSet,
+ 727:os/event_groups.c ****                                           BaseType_t * pxHigherPriorityTaskWoken )
+ 728:os/event_groups.c ****     {
+ 1529              		.loc 1 728 5 view -0
+ 1530              		.cfi_startproc
+ 1531              		@ args = 0, pretend = 0, frame = 0
+ 1532              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1533              		.loc 1 728 5 is_stmt 0 view .LVU461
+ 1534 0000 08B5     		push	{r3, lr}
+ 1535              	.LCFI16:
+ 1536              		.cfi_def_cfa_offset 8
+ 1537              		.cfi_offset 3, -8
+ 1538              		.cfi_offset 14, -4
+ 1539 0002 1346     		mov	r3, r2
+ 729:os/event_groups.c ****         BaseType_t xReturn;
+ 1540              		.loc 1 729 9 is_stmt 1 view .LVU462
+ 730:os/event_groups.c **** 
+ 731:os/event_groups.c ****         traceEVENT_GROUP_SET_BITS_FROM_ISR( xEventGroup, uxBitsToSet );
+ 1541              		.loc 1 731 71 view .LVU463
+ 732:os/event_groups.c ****         xReturn = xTimerPendFunctionCallFromISR( vEventGroupSetBitsCallback, ( void * ) xEventGroup
+ 1542              		.loc 1 732 9 view .LVU464
+ 1543              		.loc 1 732 19 is_stmt 0 view .LVU465
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 52
+
+
+ 1544 0004 0A46     		mov	r2, r1
+ 1545              	.LVL128:
+ 1546              		.loc 1 732 19 view .LVU466
+ 1547 0006 0146     		mov	r1, r0
+ 1548              	.LVL129:
+ 1549              		.loc 1 732 19 view .LVU467
+ 1550 0008 0148     		ldr	r0, .L105
+ 1551              	.LVL130:
+ 1552              		.loc 1 732 19 view .LVU468
+ 1553 000a FFF7FEFF 		bl	xTimerPendFunctionCallFromISR
+ 1554              	.LVL131:
+ 733:os/event_groups.c **** 
+ 734:os/event_groups.c ****         return xReturn;
+ 1555              		.loc 1 734 9 is_stmt 1 view .LVU469
+ 735:os/event_groups.c ****     }
+ 1556              		.loc 1 735 5 is_stmt 0 view .LVU470
+ 1557 000e 08BD     		pop	{r3, pc}
+ 1558              	.L106:
+ 1559              		.align	2
+ 1560              	.L105:
+ 1561 0010 00000000 		.word	vEventGroupSetBitsCallback
+ 1562              		.cfi_endproc
+ 1563              	.LFE16:
+ 1565              		.section	.text.uxEventGroupGetNumber,"ax",%progbits
+ 1566              		.align	1
+ 1567              		.global	uxEventGroupGetNumber
+ 1568              		.syntax unified
+ 1569              		.thumb
+ 1570              		.thumb_func
+ 1571              		.fpu fpv5-d16
+ 1573              	uxEventGroupGetNumber:
+ 1574              	.LVL132:
+ 1575              	.LFB17:
+ 736:os/event_groups.c **** 
+ 737:os/event_groups.c **** #endif /* if ( ( configUSE_TRACE_FACILITY == 1 ) && ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( co
+ 738:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 739:os/event_groups.c **** 
+ 740:os/event_groups.c **** #if ( configUSE_TRACE_FACILITY == 1 )
+ 741:os/event_groups.c **** 
+ 742:os/event_groups.c ****     UBaseType_t uxEventGroupGetNumber( void * xEventGroup )
+ 743:os/event_groups.c ****     {
+ 1576              		.loc 1 743 5 is_stmt 1 view -0
+ 1577              		.cfi_startproc
+ 1578              		@ args = 0, pretend = 0, frame = 0
+ 1579              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1580              		@ link register save eliminated.
+ 744:os/event_groups.c ****         UBaseType_t xReturn;
+ 1581              		.loc 1 744 9 view .LVU472
+ 745:os/event_groups.c ****         EventGroup_t const * pxEventBits = ( EventGroup_t * ) xEventGroup; /*lint !e9087 !e9079 Eve
+ 1582              		.loc 1 745 9 view .LVU473
+ 746:os/event_groups.c **** 
+ 747:os/event_groups.c ****         if( xEventGroup == NULL )
+ 1583              		.loc 1 747 9 view .LVU474
+ 1584              		.loc 1 747 11 is_stmt 0 view .LVU475
+ 1585 0000 08B1     		cbz	r0, .L109
+ 748:os/event_groups.c ****         {
+ 749:os/event_groups.c ****             xReturn = 0;
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 53
+
+
+ 750:os/event_groups.c ****         }
+ 751:os/event_groups.c ****         else
+ 752:os/event_groups.c ****         {
+ 753:os/event_groups.c ****             xReturn = pxEventBits->uxEventGroupNumber;
+ 1586              		.loc 1 753 13 is_stmt 1 view .LVU476
+ 1587              		.loc 1 753 21 is_stmt 0 view .LVU477
+ 1588 0002 8069     		ldr	r0, [r0, #24]
+ 1589              	.LVL133:
+ 1590              		.loc 1 753 21 view .LVU478
+ 1591 0004 7047     		bx	lr
+ 1592              	.LVL134:
+ 1593              	.L109:
+ 749:os/event_groups.c ****         }
+ 1594              		.loc 1 749 21 view .LVU479
+ 1595 0006 0020     		movs	r0, #0
+ 1596              	.LVL135:
+ 754:os/event_groups.c ****         }
+ 755:os/event_groups.c **** 
+ 756:os/event_groups.c ****         return xReturn;
+ 1597              		.loc 1 756 9 is_stmt 1 view .LVU480
+ 757:os/event_groups.c ****     }
+ 1598              		.loc 1 757 5 is_stmt 0 view .LVU481
+ 1599 0008 7047     		bx	lr
+ 1600              		.cfi_endproc
+ 1601              	.LFE17:
+ 1603              		.section	.text.vEventGroupSetNumber,"ax",%progbits
+ 1604              		.align	1
+ 1605              		.global	vEventGroupSetNumber
+ 1606              		.syntax unified
+ 1607              		.thumb
+ 1608              		.thumb_func
+ 1609              		.fpu fpv5-d16
+ 1611              	vEventGroupSetNumber:
+ 1612              	.LVL136:
+ 1613              	.LFB18:
+ 758:os/event_groups.c **** 
+ 759:os/event_groups.c **** #endif /* configUSE_TRACE_FACILITY */
+ 760:os/event_groups.c **** /*-----------------------------------------------------------*/
+ 761:os/event_groups.c **** 
+ 762:os/event_groups.c **** #if ( configUSE_TRACE_FACILITY == 1 )
+ 763:os/event_groups.c **** 
+ 764:os/event_groups.c ****     void vEventGroupSetNumber( void * xEventGroup,
+ 765:os/event_groups.c ****                                UBaseType_t uxEventGroupNumber )
+ 766:os/event_groups.c ****     {
+ 1614              		.loc 1 766 5 is_stmt 1 view -0
+ 1615              		.cfi_startproc
+ 1616              		@ args = 0, pretend = 0, frame = 0
+ 1617              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1618              		@ link register save eliminated.
+ 767:os/event_groups.c ****         ( ( EventGroup_t * ) xEventGroup )->uxEventGroupNumber = uxEventGroupNumber; /*lint !e9087 
+ 1619              		.loc 1 767 9 view .LVU483
+ 1620              		.loc 1 767 64 is_stmt 0 view .LVU484
+ 1621 0000 8161     		str	r1, [r0, #24]
+ 768:os/event_groups.c ****     }
+ 1622              		.loc 1 768 5 view .LVU485
+ 1623 0002 7047     		bx	lr
+ 1624              		.cfi_endproc
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 54
+
+
+ 1625              	.LFE18:
+ 1627              		.text
+ 1628              	.Letext0:
+ 1629              		.file 3 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\lib\\gcc\\arm-none
+ 1630              		.file 4 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 1631              		.file 5 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 1632              		.file 6 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 1633              		.file 7 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 1634              		.file 8 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 1635              		.file 9 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 1636              		.file 10 "user/Inc/FreeRTOSConfig.h"
+ 1637              		.file 11 "os/include/FreeRTOS.h"
+ 1638              		.file 12 "os/include/list.h"
+ 1639              		.file 13 "os/include/event_groups.h"
+ 1640              		.file 14 "os/include/timers.h"
+ 1641              		.file 15 "os/include/task.h"
+ 1642              		.file 16 "os/include/portable.h"
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s 			page 55
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 event_groups.c
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:17     .text.prvTestWaitCondition:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:24     .text.prvTestWaitCondition:00000000 prvTestWaitCondition
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:77     .text.xEventGroupCreateStatic:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:84     .text.xEventGroupCreateStatic:00000000 xEventGroupCreateStatic
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:216    .text.xEventGroupCreate:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:223    .text.xEventGroupCreate:00000000 xEventGroupCreate
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:269    .text.xEventGroupWaitBits:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:276    .text.xEventGroupWaitBits:00000000 xEventGroupWaitBits
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:620    .text.xEventGroupWaitBits:00000118 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:625    .text.xEventGroupClearBits:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:632    .text.xEventGroupClearBits:00000000 xEventGroupClearBits
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:754    .text.vEventGroupClearBitsCallback:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:761    .text.vEventGroupClearBitsCallback:00000000 vEventGroupClearBitsCallback
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:784    .text.xEventGroupClearBitsFromISR:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:791    .text.xEventGroupClearBitsFromISR:00000000 xEventGroupClearBitsFromISR
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:824    .text.xEventGroupClearBitsFromISR:00000010 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:829    .text.xEventGroupGetBitsFromISR:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:836    .text.xEventGroupGetBitsFromISR:00000000 xEventGroupGetBitsFromISR
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:899    .text.xEventGroupSetBits:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:906    .text.xEventGroupSetBits:00000000 xEventGroupSetBits
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1103   .text.xEventGroupSync:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1110   .text.xEventGroupSync:00000000 xEventGroupSync
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1384   .text.xEventGroupSync:000000e0 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1389   .text.vEventGroupSetBitsCallback:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1396   .text.vEventGroupSetBitsCallback:00000000 vEventGroupSetBitsCallback
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1419   .text.vEventGroupDelete:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1426   .text.vEventGroupDelete:00000000 vEventGroupDelete
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1519   .text.xEventGroupSetBitsFromISR:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1526   .text.xEventGroupSetBitsFromISR:00000000 xEventGroupSetBitsFromISR
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1561   .text.xEventGroupSetBitsFromISR:00000010 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1566   .text.uxEventGroupGetNumber:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1573   .text.uxEventGroupGetNumber:00000000 uxEventGroupGetNumber
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1604   .text.vEventGroupSetNumber:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfgbQLg.s:1611   .text.vEventGroupSetNumber:00000000 vEventGroupSetNumber
+
+UNDEFINED SYMBOLS
+vListInitialise
+pvPortMalloc
+xTaskGetSchedulerState
+vTaskSuspendAll
+xTaskResumeAll
+uxTaskResetEventItemValue
+vTaskPlaceOnUnorderedEventList
+vPortEnterCritical
+vPortExitCritical
+xTimerPendFunctionCallFromISR
+vTaskRemoveFromUnorderedEventList
+vPortFree

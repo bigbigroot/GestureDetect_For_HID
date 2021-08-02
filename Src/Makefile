@@ -38,6 +38,7 @@ BUILD_DIR = ../build
 C_SOURCES =  \
 boot/system_stm32f7xx.c \
 user/Src/main.c \
+user/Src/Gesture.c \
 user/Src/freertos.c \
 user/Src/stm32f7xx_it.c \
 user/Src/stm32f7xx_hal_msp.c \

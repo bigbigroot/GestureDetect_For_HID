@@ -30,6 +30,7 @@ TaskHandle_t gestureTask;
 TaskHandle_t idleTask;
 /* USER CODE BEGIN PV */
 UART_HandleTypeDef huart3;
+I2C_HandleTypeDef hi2c1;
 EXTI_HandleTypeDef exitUsrBtn;
 
 /* USER CODE END PV */
@@ -48,17 +49,11 @@ void GestureDetectorHandler(void *pvParameters);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-  /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
@@ -67,7 +62,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
 
-  printf("\f\r");
+  /* initialize VL6180 expansion board gpio and i2c */
+  XNUCLEO6180XA1_GPIO_Init();
+  XNUCLEO6180XA1_I2C1_Init(&hi2c1);
+
   /* Create the thread(s) */
   /* creation of defaultTask */
   xTaskCreate(USBDeviceReportHandler, "USB device HID task", TaskStackSize, NULL, configMAX_PRIORITIES-1,&usbdTask);

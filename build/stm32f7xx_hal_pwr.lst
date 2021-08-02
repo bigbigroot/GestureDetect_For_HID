@@ -1,0 +1,2404 @@
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"stm32f7xx_hal_pwr.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.HAL_PWR_DeInit,"ax",%progbits
+  17              		.align	1
+  18              		.global	HAL_PWR_DeInit
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-d16
+  25              	HAL_PWR_DeInit:
+  26              	.LFB141:
+  27              		.file 1 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c"
+   1:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+   2:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   ******************************************************************************
+   3:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @file    stm32f7xx_hal_pwr.c
+   4:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @author  MCD Application Team
+   5:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief   PWR HAL module driver.
+   6:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          This file provides firmware functions to manage the following 
+   7:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          functionalities of the Power Controller (PWR) peripheral:
+   8:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           + Initialization and de-initialization functions
+   9:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           + Peripheral Control functions 
+  10:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         
+  11:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   ******************************************************************************
+  12:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @attention
+  13:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *
+  14:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
+  15:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * All rights reserved.</center></h2>
+  16:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *
+  17:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * This software component is licensed by ST under BSD 3-Clause license,
+  18:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * the "License"; You may not use this file except in compliance with the
+  19:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * License. You may obtain a copy of the License at:
+  20:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *                        opensource.org/licenses/BSD-3-Clause
+  21:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *
+  22:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   ******************************************************************************
+  23:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */ 
+  24:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  25:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Includes ------------------------------------------------------------------*/
+  26:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #include "stm32f7xx_hal.h"
+  27:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  28:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @addtogroup STM32F7xx_HAL_Driver
+  29:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  30:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  31:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 2
+
+
+  32:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @defgroup PWR PWR
+  33:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief PWR HAL module driver
+  34:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  35:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  36:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  37:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #ifdef HAL_PWR_MODULE_ENABLED
+  38:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  39:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Private typedef -----------------------------------------------------------*/
+  40:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Private define ------------------------------------------------------------*/
+  41:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @addtogroup PWR_Private_Constants
+  42:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  43:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  44:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 	
+  45:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @defgroup PWR_PVD_Mode_Mask PWR PVD Mode Mask
+  46:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  47:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */     
+  48:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #define PVD_MODE_IT               ((uint32_t)0x00010000U)
+  49:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #define PVD_MODE_EVT              ((uint32_t)0x00020000U)
+  50:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #define PVD_RISING_EDGE           ((uint32_t)0x00000001U)
+  51:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #define PVD_FALLING_EDGE          ((uint32_t)0x00000002U)
+  52:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+  53:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @}
+  54:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  55:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  56:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @defgroup PWR_ENABLE_WUP_Mask PWR Enable WUP Mask
+  57:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  58:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */  
+  59:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #define  PWR_EWUP_MASK                          ((uint32_t)0x00003F00)
+  60:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+  61:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @}
+  62:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  63:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  64:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+  65:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @}
+  66:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  67:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Private macro -------------------------------------------------------------*/
+  68:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Private variables ---------------------------------------------------------*/
+  69:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Private function prototypes -----------------------------------------------*/
+  70:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /* Private functions ---------------------------------------------------------*/
+  71:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  72:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @defgroup PWR_Exported_Functions PWR Exported Functions
+  73:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  74:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  75:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  76:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @defgroup PWR_Exported_Functions_Group1 Initialization and de-initialization functions 
+  77:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *  @brief    Initialization and de-initialization functions
+  78:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *
+  79:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** @verbatim
+  80:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****  ===============================================================================
+  81:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               ##### Initialization and de-initialization functions #####
+  82:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****  ===============================================================================
+  83:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+  84:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       After reset, the backup domain (RTC registers, RTC backup data 
+  85:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       registers and backup SRAM) is protected against possible unwanted 
+  86:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       write accesses. 
+  87:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       To enable access to the RTC Domain and RTC registers, proceed as follows:
+  88:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (+) Enable the Power Controller (PWR) APB1 interface clock using the
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 3
+
+
+  89:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****             __HAL_RCC_PWR_CLK_ENABLE() macro.
+  90:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (+) Enable access to RTC domain using the HAL_PWR_EnableBkUpAccess() function.
+  91:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****  
+  92:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** @endverbatim
+  93:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+  94:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+  95:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+  96:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+  97:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Deinitializes the HAL PWR peripheral registers to their default reset values.
+  98:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+  99:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 100:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_DeInit(void)
+ 101:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+  28              		.loc 1 101 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+ 102:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __HAL_RCC_PWR_FORCE_RESET();
+  33              		.loc 1 102 3 view .LVU1
+  34 0000 044B     		ldr	r3, .L2
+  35 0002 1A6A     		ldr	r2, [r3, #32]
+  36 0004 42F08052 		orr	r2, r2, #268435456
+  37 0008 1A62     		str	r2, [r3, #32]
+ 103:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __HAL_RCC_PWR_RELEASE_RESET();
+  38              		.loc 1 103 3 view .LVU2
+  39 000a 1A6A     		ldr	r2, [r3, #32]
+  40 000c 22F08052 		bic	r2, r2, #268435456
+  41 0010 1A62     		str	r2, [r3, #32]
+ 104:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+  42              		.loc 1 104 1 is_stmt 0 view .LVU3
+  43 0012 7047     		bx	lr
+  44              	.L3:
+  45              		.align	2
+  46              	.L2:
+  47 0014 00380240 		.word	1073887232
+  48              		.cfi_endproc
+  49              	.LFE141:
+  51              		.section	.text.HAL_PWR_EnableBkUpAccess,"ax",%progbits
+  52              		.align	1
+  53              		.global	HAL_PWR_EnableBkUpAccess
+  54              		.syntax unified
+  55              		.thumb
+  56              		.thumb_func
+  57              		.fpu fpv5-d16
+  59              	HAL_PWR_EnableBkUpAccess:
+  60              	.LFB142:
+ 105:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 106:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 107:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enables access to the backup domain (RTC registers, RTC 
+ 108:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         backup data registers and backup SRAM).
+ 109:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note If the HSE divided by 2, 3, ..31 is used as the RTC clock, the 
+ 110:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         Backup Domain Access should be kept enabled.
+ 111:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 112:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 113:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnableBkUpAccess(void)
+ 114:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 4
+
+
+  61              		.loc 1 114 1 is_stmt 1 view -0
+  62              		.cfi_startproc
+  63              		@ args = 0, pretend = 0, frame = 0
+  64              		@ frame_needed = 0, uses_anonymous_args = 0
+  65              		@ link register save eliminated.
+ 115:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Enable access to RTC and backup registers */
+ 116:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SET_BIT(PWR->CR1, PWR_CR1_DBP);
+  66              		.loc 1 116 3 view .LVU5
+  67 0000 024A     		ldr	r2, .L5
+  68 0002 1368     		ldr	r3, [r2]
+  69 0004 43F48073 		orr	r3, r3, #256
+  70 0008 1360     		str	r3, [r2]
+ 117:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+  71              		.loc 1 117 1 is_stmt 0 view .LVU6
+  72 000a 7047     		bx	lr
+  73              	.L6:
+  74              		.align	2
+  75              	.L5:
+  76 000c 00700040 		.word	1073770496
+  77              		.cfi_endproc
+  78              	.LFE142:
+  80              		.section	.text.HAL_PWR_DisableBkUpAccess,"ax",%progbits
+  81              		.align	1
+  82              		.global	HAL_PWR_DisableBkUpAccess
+  83              		.syntax unified
+  84              		.thumb
+  85              		.thumb_func
+  86              		.fpu fpv5-d16
+  88              	HAL_PWR_DisableBkUpAccess:
+  89              	.LFB143:
+ 118:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 119:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 120:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Disables access to the backup domain (RTC registers, RTC 
+ 121:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         backup data registers and backup SRAM).
+ 122:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note If the HSE divided by 2, 3, ..31 is used as the RTC clock, the 
+ 123:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         Backup Domain Access should be kept enabled.
+ 124:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 125:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 126:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_DisableBkUpAccess(void)
+ 127:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+  90              		.loc 1 127 1 is_stmt 1 view -0
+  91              		.cfi_startproc
+  92              		@ args = 0, pretend = 0, frame = 0
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+  94              		@ link register save eliminated.
+ 128:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Disable access to RTC and backup registers */
+ 129:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 	CLEAR_BIT(PWR->CR1, PWR_CR1_DBP);
+  95              		.loc 1 129 2 view .LVU8
+  96 0000 024A     		ldr	r2, .L8
+  97 0002 1368     		ldr	r3, [r2]
+  98 0004 23F48073 		bic	r3, r3, #256
+  99 0008 1360     		str	r3, [r2]
+ 130:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 100              		.loc 1 130 1 is_stmt 0 view .LVU9
+ 101 000a 7047     		bx	lr
+ 102              	.L9:
+ 103              		.align	2
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 5
+
+
+ 104              	.L8:
+ 105 000c 00700040 		.word	1073770496
+ 106              		.cfi_endproc
+ 107              	.LFE143:
+ 109              		.section	.text.HAL_PWR_ConfigPVD,"ax",%progbits
+ 110              		.align	1
+ 111              		.global	HAL_PWR_ConfigPVD
+ 112              		.syntax unified
+ 113              		.thumb
+ 114              		.thumb_func
+ 115              		.fpu fpv5-d16
+ 117              	HAL_PWR_ConfigPVD:
+ 118              	.LVL0:
+ 119              	.LFB144:
+ 131:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 132:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 133:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @}
+ 134:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 135:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 136:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /** @defgroup PWR_Exported_Functions_Group2 Peripheral Control functions 
+ 137:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *  @brief Low Power modes configuration functions 
+ 138:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *
+ 139:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** @verbatim
+ 140:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 141:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****  ===============================================================================
+ 142:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****                  ##### Peripheral Control functions #####
+ 143:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****  ===============================================================================
+ 144:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****      
+ 145:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     *** PVD configuration ***
+ 146:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     =========================
+ 147:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 148:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) The PVD is used to monitor the VDD power supply by comparing it to a 
+ 149:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           threshold selected by the PVD Level (PLS[2:0] bits in the PWR_CR).
+ 150:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) A PVDO flag is available to indicate if VDD/VDDA is higher or lower 
+ 151:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           than the PVD threshold. This event is internally connected to the EXTI 
+ 152:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           line16 and can generate an interrupt if enabled. This is done through
+ 153:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           __HAL_PWR_PVD_EXTI_ENABLE_IT() macro.
+ 154:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) The PVD is stopped in Standby mode.
+ 155:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 156:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     *** Wake-up pin configuration ***
+ 157:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     ================================
+ 158:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 159:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Wake-up pin is used to wake up the system from Standby mode. This pin is 
+ 160:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           forced in input pull-down configuration and is active on rising edges.
+ 161:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) There are up to 6 Wake-up pin in the STM32F7 devices family
+ 162:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 163:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     *** Low Power modes configuration ***
+ 164:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     =====================================
+ 165:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 166:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       The devices feature 3 low-power modes:
+ 167:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Sleep mode: Cortex-M7 core stopped, peripherals kept running.
+ 168:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Stop mode: all clocks are stopped, regulator running, regulator 
+ 169:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           in low power mode
+ 170:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Standby mode: 1.2V domain powered off.
+ 171:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    
+ 172:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    *** Sleep mode ***
+ 173:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    ==================
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 6
+
+
+ 174:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 175:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Entry:
+ 176:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         The Sleep mode is entered by using the HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLE
+ 177:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               functions with
+ 178:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           (++) PWR_SLEEPENTRY_WFI: enter SLEEP mode with WFI instruction
+ 179:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           (++) PWR_SLEEPENTRY_WFE: enter SLEEP mode with WFE instruction
+ 180:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       
+ 181:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       -@@- The Regulator parameter is not used for the STM32F7 family 
+ 182:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               and is kept as parameter just to maintain compatibility with the 
+ 183:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               lower power families (STM32L).
+ 184:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Exit:
+ 185:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         Any peripheral interrupt acknowledged by the nested vectored interrupt 
+ 186:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               controller (NVIC) can wake up the device from Sleep mode.
+ 187:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 188:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    *** Stop mode ***
+ 189:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    =================
+ 190:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 191:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       In Stop mode, all clocks in the 1.2V domain are stopped, the PLL, the HSI,
+ 192:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       and the HSE RC oscillators are disabled. Internal SRAM and register contents 
+ 193:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       are preserved.
+ 194:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       The voltage regulator can be configured either in normal or low-power mode.
+ 195:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       To minimize the consumption In Stop mode, FLASH can be powered off before 
+ 196:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       entering the Stop mode using the HAL_PWREx_EnableFlashPowerDown() function.
+ 197:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       It can be switched on again by software after exiting the Stop mode using
+ 198:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       the HAL_PWREx_DisableFlashPowerDown() function. 
+ 199:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 200:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Entry:
+ 201:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****          The Stop mode is entered using the HAL_PWR_EnterSTOPMode(PWR_MAINREGULATOR_ON) 
+ 202:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****              function with:
+ 203:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           (++) Main regulator ON.
+ 204:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****           (++) Low Power regulator ON.
+ 205:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) Exit:
+ 206:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         Any EXTI Line (Internal or External) configured in Interrupt/Event mode.
+ 207:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 208:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    *** Standby mode ***
+ 209:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    ====================
+ 210:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 211:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     (+)
+ 212:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       The Standby mode allows to achieve the lowest power consumption. It is based 
+ 213:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       on the Cortex-M7 deep sleep mode, with the voltage regulator disabled. 
+ 214:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       The 1.2V domain is consequently powered off. The PLL, the HSI oscillator and 
+ 215:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       the HSE oscillator are also switched off. SRAM and register contents are lost 
+ 216:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       except for the RTC registers, RTC backup registers, backup SRAM and Standby 
+ 217:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       circuitry.
+ 218:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    
+ 219:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       The voltage regulator is OFF.
+ 220:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       
+ 221:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (++) Entry:
+ 222:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (+++) The Standby mode is entered using the HAL_PWR_EnterSTANDBYMode() function.
+ 223:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (++) Exit:
+ 224:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (+++) WKUP pin rising or falling edge, RTC alarm (Alarm A and Alarm B), RTC
+ 225:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****              wakeup, tamper event, time stamp event, external reset in NRST pin, IWDG reset.
+ 226:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 227:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    *** Auto-wakeup (AWU) from low-power mode ***
+ 228:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    =============================================
+ 229:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     [..]
+ 230:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 7
+
+
+ 231:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****      (+) The MCU can be woken up from low-power mode by an RTC Alarm event, an RTC 
+ 232:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       Wakeup event, a tamper event or a time-stamp event, without depending on 
+ 233:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       an external interrupt (Auto-wakeup mode).
+ 234:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 235:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****       (+) RTC auto-wakeup (AWU) from the Stop and Standby modes
+ 236:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****        
+ 237:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (++) To wake up from the Stop mode with an RTC alarm event, it is necessary to 
+ 238:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               configure the RTC to generate the RTC alarm using the HAL_RTC_SetAlarm_IT() function.
+ 239:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 240:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (++) To wake up from the Stop mode with an RTC Tamper or time stamp event, it 
+ 241:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****              is necessary to configure the RTC to detect the tamper or time stamp event using the
+ 242:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****                 HAL_RTCEx_SetTimeStamp_IT() or HAL_RTCEx_SetTamper_IT() functions.
+ 243:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****                   
+ 244:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****         (++) To wake up from the Stop mode with an RTC WakeUp event, it is necessary to
+ 245:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****               configure the RTC to generate the RTC WakeUp event using the HAL_RTCEx_SetWakeUpTimer
+ 246:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 247:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** @endverbatim
+ 248:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @{
+ 249:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 250:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 251:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 252:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Configures the voltage threshold detected by the Power Voltage Detector(PVD).
+ 253:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param sConfigPVD pointer to an PWR_PVDTypeDef structure that contains the configuration
+ 254:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *        information for the PVD.
+ 255:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note Refer to the electrical characteristics of your device datasheet for
+ 256:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         more details about the voltage threshold corresponding to each 
+ 257:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         detection level.
+ 258:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 259:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 260:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_ConfigPVD(PWR_PVDTypeDef *sConfigPVD)
+ 261:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 120              		.loc 1 261 1 is_stmt 1 view -0
+ 121              		.cfi_startproc
+ 122              		@ args = 0, pretend = 0, frame = 0
+ 123              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124              		@ link register save eliminated.
+ 262:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Check the parameters */
+ 263:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_PVD_LEVEL(sConfigPVD->PVDLevel));
+ 125              		.loc 1 263 3 view .LVU11
+ 264:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_PVD_MODE(sConfigPVD->Mode));
+ 126              		.loc 1 264 3 view .LVU12
+ 265:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 266:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Set PLS[7:5] bits according to PVDLevel value */
+ 267:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   MODIFY_REG(PWR->CR1, PWR_CR1_PLS, sConfigPVD->PVDLevel);
+ 127              		.loc 1 267 3 view .LVU13
+ 128 0000 1E4A     		ldr	r2, .L15
+ 129 0002 1368     		ldr	r3, [r2]
+ 130 0004 23F0E003 		bic	r3, r3, #224
+ 131 0008 0168     		ldr	r1, [r0]
+ 132 000a 0B43     		orrs	r3, r3, r1
+ 133 000c 1360     		str	r3, [r2]
+ 268:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 269:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Clear any previous config. Keep it clear if no event or IT mode is selected */
+ 270:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __HAL_PWR_PVD_EXTI_DISABLE_EVENT();
+ 134              		.loc 1 270 3 view .LVU14
+ 135 000e 1C4B     		ldr	r3, .L15+4
+ 136 0010 5A68     		ldr	r2, [r3, #4]
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 8
+
+
+ 137 0012 22F48032 		bic	r2, r2, #65536
+ 138 0016 5A60     		str	r2, [r3, #4]
+ 271:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __HAL_PWR_PVD_EXTI_DISABLE_IT();
+ 139              		.loc 1 271 3 view .LVU15
+ 140 0018 1A68     		ldr	r2, [r3]
+ 141 001a 22F48032 		bic	r2, r2, #65536
+ 142 001e 1A60     		str	r2, [r3]
+ 272:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __HAL_PWR_PVD_EXTI_DISABLE_RISING_EDGE();
+ 143              		.loc 1 272 3 view .LVU16
+ 144 0020 9A68     		ldr	r2, [r3, #8]
+ 145 0022 22F48032 		bic	r2, r2, #65536
+ 146 0026 9A60     		str	r2, [r3, #8]
+ 273:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __HAL_PWR_PVD_EXTI_DISABLE_FALLING_EDGE(); 
+ 147              		.loc 1 273 3 view .LVU17
+ 148 0028 DA68     		ldr	r2, [r3, #12]
+ 149 002a 22F48032 		bic	r2, r2, #65536
+ 150 002e DA60     		str	r2, [r3, #12]
+ 274:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 275:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Configure interrupt mode */
+ 276:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if((sConfigPVD->Mode & PVD_MODE_IT) == PVD_MODE_IT)
+ 151              		.loc 1 276 3 view .LVU18
+ 152              		.loc 1 276 17 is_stmt 0 view .LVU19
+ 153 0030 4368     		ldr	r3, [r0, #4]
+ 154              		.loc 1 276 5 view .LVU20
+ 155 0032 13F4803F 		tst	r3, #65536
+ 156 0036 04D0     		beq	.L11
+ 277:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 278:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __HAL_PWR_PVD_EXTI_ENABLE_IT();
+ 157              		.loc 1 278 5 is_stmt 1 view .LVU21
+ 158 0038 114A     		ldr	r2, .L15+4
+ 159 003a 1368     		ldr	r3, [r2]
+ 160 003c 43F48033 		orr	r3, r3, #65536
+ 161 0040 1360     		str	r3, [r2]
+ 162              	.L11:
+ 279:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 280:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 281:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Configure event mode */
+ 282:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if((sConfigPVD->Mode & PVD_MODE_EVT) == PVD_MODE_EVT)
+ 163              		.loc 1 282 3 view .LVU22
+ 164              		.loc 1 282 17 is_stmt 0 view .LVU23
+ 165 0042 4368     		ldr	r3, [r0, #4]
+ 166              		.loc 1 282 5 view .LVU24
+ 167 0044 13F4003F 		tst	r3, #131072
+ 168 0048 04D0     		beq	.L12
+ 283:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 284:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __HAL_PWR_PVD_EXTI_ENABLE_EVENT();
+ 169              		.loc 1 284 5 is_stmt 1 view .LVU25
+ 170 004a 0D4A     		ldr	r2, .L15+4
+ 171 004c 5368     		ldr	r3, [r2, #4]
+ 172 004e 43F48033 		orr	r3, r3, #65536
+ 173 0052 5360     		str	r3, [r2, #4]
+ 174              	.L12:
+ 285:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 286:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 287:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Configure the edge */
+ 288:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if((sConfigPVD->Mode & PVD_RISING_EDGE) == PVD_RISING_EDGE)
+ 175              		.loc 1 288 3 view .LVU26
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 9
+
+
+ 176              		.loc 1 288 17 is_stmt 0 view .LVU27
+ 177 0054 4368     		ldr	r3, [r0, #4]
+ 178              		.loc 1 288 5 view .LVU28
+ 179 0056 13F0010F 		tst	r3, #1
+ 180 005a 04D0     		beq	.L13
+ 289:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 290:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __HAL_PWR_PVD_EXTI_ENABLE_RISING_EDGE();
+ 181              		.loc 1 290 5 is_stmt 1 view .LVU29
+ 182 005c 084A     		ldr	r2, .L15+4
+ 183 005e 9368     		ldr	r3, [r2, #8]
+ 184 0060 43F48033 		orr	r3, r3, #65536
+ 185 0064 9360     		str	r3, [r2, #8]
+ 186              	.L13:
+ 291:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 292:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 293:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if((sConfigPVD->Mode & PVD_FALLING_EDGE) == PVD_FALLING_EDGE)
+ 187              		.loc 1 293 3 view .LVU30
+ 188              		.loc 1 293 17 is_stmt 0 view .LVU31
+ 189 0066 4368     		ldr	r3, [r0, #4]
+ 190              		.loc 1 293 5 view .LVU32
+ 191 0068 13F0020F 		tst	r3, #2
+ 192 006c 04D0     		beq	.L10
+ 294:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 295:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __HAL_PWR_PVD_EXTI_ENABLE_FALLING_EDGE();
+ 193              		.loc 1 295 5 is_stmt 1 view .LVU33
+ 194 006e 044A     		ldr	r2, .L15+4
+ 195 0070 D368     		ldr	r3, [r2, #12]
+ 196 0072 43F48033 		orr	r3, r3, #65536
+ 197 0076 D360     		str	r3, [r2, #12]
+ 198              	.L10:
+ 296:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 297:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 199              		.loc 1 297 1 is_stmt 0 view .LVU34
+ 200 0078 7047     		bx	lr
+ 201              	.L16:
+ 202 007a 00BF     		.align	2
+ 203              	.L15:
+ 204 007c 00700040 		.word	1073770496
+ 205 0080 003C0140 		.word	1073822720
+ 206              		.cfi_endproc
+ 207              	.LFE144:
+ 209              		.section	.text.HAL_PWR_EnablePVD,"ax",%progbits
+ 210              		.align	1
+ 211              		.global	HAL_PWR_EnablePVD
+ 212              		.syntax unified
+ 213              		.thumb
+ 214              		.thumb_func
+ 215              		.fpu fpv5-d16
+ 217              	HAL_PWR_EnablePVD:
+ 218              	.LFB145:
+ 298:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 299:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 300:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enables the Power Voltage Detector(PVD).
+ 301:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 302:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 303:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnablePVD(void)
+ 304:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 10
+
+
+ 219              		.loc 1 304 1 is_stmt 1 view -0
+ 220              		.cfi_startproc
+ 221              		@ args = 0, pretend = 0, frame = 0
+ 222              		@ frame_needed = 0, uses_anonymous_args = 0
+ 223              		@ link register save eliminated.
+ 305:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Enable the power voltage detector */
+ 306:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 	SET_BIT(PWR->CR1, PWR_CR1_PVDE);
+ 224              		.loc 1 306 2 view .LVU36
+ 225 0000 024A     		ldr	r2, .L18
+ 226 0002 1368     		ldr	r3, [r2]
+ 227 0004 43F01003 		orr	r3, r3, #16
+ 228 0008 1360     		str	r3, [r2]
+ 307:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 229              		.loc 1 307 1 is_stmt 0 view .LVU37
+ 230 000a 7047     		bx	lr
+ 231              	.L19:
+ 232              		.align	2
+ 233              	.L18:
+ 234 000c 00700040 		.word	1073770496
+ 235              		.cfi_endproc
+ 236              	.LFE145:
+ 238              		.section	.text.HAL_PWR_DisablePVD,"ax",%progbits
+ 239              		.align	1
+ 240              		.global	HAL_PWR_DisablePVD
+ 241              		.syntax unified
+ 242              		.thumb
+ 243              		.thumb_func
+ 244              		.fpu fpv5-d16
+ 246              	HAL_PWR_DisablePVD:
+ 247              	.LFB146:
+ 308:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 309:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 310:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Disables the Power Voltage Detector(PVD).
+ 311:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 312:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 313:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_DisablePVD(void)
+ 314:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 248              		.loc 1 314 1 is_stmt 1 view -0
+ 249              		.cfi_startproc
+ 250              		@ args = 0, pretend = 0, frame = 0
+ 251              		@ frame_needed = 0, uses_anonymous_args = 0
+ 252              		@ link register save eliminated.
+ 315:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Disable the power voltage detector */
+ 316:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 	CLEAR_BIT(PWR->CR1, PWR_CR1_PVDE);
+ 253              		.loc 1 316 2 view .LVU39
+ 254 0000 024A     		ldr	r2, .L21
+ 255 0002 1368     		ldr	r3, [r2]
+ 256 0004 23F01003 		bic	r3, r3, #16
+ 257 0008 1360     		str	r3, [r2]
+ 317:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 258              		.loc 1 317 1 is_stmt 0 view .LVU40
+ 259 000a 7047     		bx	lr
+ 260              	.L22:
+ 261              		.align	2
+ 262              	.L21:
+ 263 000c 00700040 		.word	1073770496
+ 264              		.cfi_endproc
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 11
+
+
+ 265              	.LFE146:
+ 267              		.section	.text.HAL_PWR_EnableWakeUpPin,"ax",%progbits
+ 268              		.align	1
+ 269              		.global	HAL_PWR_EnableWakeUpPin
+ 270              		.syntax unified
+ 271              		.thumb
+ 272              		.thumb_func
+ 273              		.fpu fpv5-d16
+ 275              	HAL_PWR_EnableWakeUpPin:
+ 276              	.LVL1:
+ 277              	.LFB147:
+ 318:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 319:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 320:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enable the WakeUp PINx functionality.
+ 321:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param WakeUpPinPolarity Specifies which Wake-Up pin to enable.
+ 322:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         This parameter can be one of the following legacy values, which sets the default polari
+ 323:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         detection on high level (rising edge):
+ 324:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN1, PWR_WAKEUP_PIN2, PWR_WAKEUP_PIN3, PWR_WAKEUP_PIN4, PWR_WAKEUP_P
+ 325:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         or one of the following value where the user can explicitly states the enabled pin and
+ 326:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         the chosen polarity  
+ 327:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN1_HIGH or PWR_WAKEUP_PIN1_LOW 
+ 328:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN2_HIGH or PWR_WAKEUP_PIN2_LOW 
+ 329:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN3_HIGH or PWR_WAKEUP_PIN3_LOW 
+ 330:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN4_HIGH or PWR_WAKEUP_PIN4_LOW
+ 331:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN5_HIGH or PWR_WAKEUP_PIN5_LOW 
+ 332:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN6_HIGH or PWR_WAKEUP_PIN6_LOW 
+ 333:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note  PWR_WAKEUP_PINx and PWR_WAKEUP_PINx_HIGH are equivalent.               
+ 334:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 335:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 336:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnableWakeUpPin(uint32_t WakeUpPinPolarity)
+ 337:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 278              		.loc 1 337 1 is_stmt 1 view -0
+ 279              		.cfi_startproc
+ 280              		@ args = 0, pretend = 0, frame = 0
+ 281              		@ frame_needed = 0, uses_anonymous_args = 0
+ 282              		@ link register save eliminated.
+ 283              		.loc 1 337 1 is_stmt 0 view .LVU42
+ 284 0000 10B4     		push	{r4}
+ 285              	.LCFI0:
+ 286              		.cfi_def_cfa_offset 4
+ 287              		.cfi_offset 4, -4
+ 338:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_WAKEUP_PIN(WakeUpPinPolarity));
+ 288              		.loc 1 338 3 is_stmt 1 view .LVU43
+ 339:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 340:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Enable wake-up pin */
+ 341:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SET_BIT(PWR->CSR2, (PWR_EWUP_MASK & WakeUpPinPolarity));
+ 289              		.loc 1 341 3 view .LVU44
+ 290 0002 074A     		ldr	r2, .L25
+ 291 0004 D168     		ldr	r1, [r2, #12]
+ 292 0006 00F47C54 		and	r4, r0, #16128
+ 293 000a 2143     		orrs	r1, r1, r4
+ 294 000c D160     		str	r1, [r2, #12]
+ 342:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 	
+ 343:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Specifies the Wake-Up pin polarity for the event detection
+ 344:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     (rising or falling edge) */
+ 345:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   MODIFY_REG(PWR->CR2, (PWR_EWUP_MASK & WakeUpPinPolarity), (WakeUpPinPolarity >> 0x06));
+ 295              		.loc 1 345 3 view .LVU45
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 12
+
+
+ 296 000e 9368     		ldr	r3, [r2, #8]
+ 297 0010 23EA0403 		bic	r3, r3, r4
+ 298 0014 43EA9010 		orr	r0, r3, r0, lsr #6
+ 299              	.LVL2:
+ 300              		.loc 1 345 3 is_stmt 0 view .LVU46
+ 301 0018 9060     		str	r0, [r2, #8]
+ 346:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 302              		.loc 1 346 1 view .LVU47
+ 303 001a 5DF8044B 		ldr	r4, [sp], #4
+ 304              	.LCFI1:
+ 305              		.cfi_restore 4
+ 306              		.cfi_def_cfa_offset 0
+ 307 001e 7047     		bx	lr
+ 308              	.L26:
+ 309              		.align	2
+ 310              	.L25:
+ 311 0020 00700040 		.word	1073770496
+ 312              		.cfi_endproc
+ 313              	.LFE147:
+ 315              		.section	.text.HAL_PWR_DisableWakeUpPin,"ax",%progbits
+ 316              		.align	1
+ 317              		.global	HAL_PWR_DisableWakeUpPin
+ 318              		.syntax unified
+ 319              		.thumb
+ 320              		.thumb_func
+ 321              		.fpu fpv5-d16
+ 323              	HAL_PWR_DisableWakeUpPin:
+ 324              	.LVL3:
+ 325              	.LFB148:
+ 347:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 348:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 349:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Disables the WakeUp PINx functionality.
+ 350:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param WakeUpPinx Specifies the Power Wake-Up pin to disable.
+ 351:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         This parameter can be one of the following values:
+ 352:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN1
+ 353:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN2
+ 354:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN3
+ 355:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN4
+ 356:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN5
+ 357:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *           @arg PWR_WAKEUP_PIN6 
+ 358:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 359:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 360:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_DisableWakeUpPin(uint32_t WakeUpPinx)
+ 361:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 326              		.loc 1 361 1 is_stmt 1 view -0
+ 327              		.cfi_startproc
+ 328              		@ args = 0, pretend = 0, frame = 0
+ 329              		@ frame_needed = 0, uses_anonymous_args = 0
+ 330              		@ link register save eliminated.
+ 362:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_WAKEUP_PIN(WakeUpPinx));
+ 331              		.loc 1 362 3 view .LVU49
+ 363:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 364:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   CLEAR_BIT(PWR->CSR2, WakeUpPinx);
+ 332              		.loc 1 364 3 view .LVU50
+ 333 0000 024A     		ldr	r2, .L28
+ 334 0002 D368     		ldr	r3, [r2, #12]
+ 335 0004 23EA0003 		bic	r3, r3, r0
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 13
+
+
+ 336 0008 D360     		str	r3, [r2, #12]
+ 365:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 337              		.loc 1 365 1 is_stmt 0 view .LVU51
+ 338 000a 7047     		bx	lr
+ 339              	.L29:
+ 340              		.align	2
+ 341              	.L28:
+ 342 000c 00700040 		.word	1073770496
+ 343              		.cfi_endproc
+ 344              	.LFE148:
+ 346              		.section	.text.HAL_PWR_EnterSLEEPMode,"ax",%progbits
+ 347              		.align	1
+ 348              		.global	HAL_PWR_EnterSLEEPMode
+ 349              		.syntax unified
+ 350              		.thumb
+ 351              		.thumb_func
+ 352              		.fpu fpv5-d16
+ 354              	HAL_PWR_EnterSLEEPMode:
+ 355              	.LVL4:
+ 356              	.LFB149:
+ 366:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 367:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 368:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enters Sleep mode.
+ 369:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *   
+ 370:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note In Sleep mode, all I/O pins keep the same state as in Run mode.
+ 371:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * 
+ 372:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note In Sleep mode, the systick is stopped to avoid exit from this mode with
+ 373:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       systick interrupt when used as time base for Timeout 
+ 374:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *                
+ 375:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param Regulator Specifies the regulator state in SLEEP mode.
+ 376:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            This parameter can be one of the following values:
+ 377:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_MAINREGULATOR_ON: SLEEP mode with regulator ON
+ 378:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_LOWPOWERREGULATOR_ON: SLEEP mode with low power regulator ON
+ 379:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note This parameter is not used for the STM32F7 family and is kept as parameter
+ 380:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       just to maintain compatibility with the lower power families.
+ 381:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param SLEEPEntry Specifies if SLEEP mode in entered with WFI or WFE instruction.
+ 382:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          This parameter can be one of the following values:
+ 383:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_SLEEPENTRY_WFI: enter SLEEP mode with WFI instruction
+ 384:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_SLEEPENTRY_WFE: enter SLEEP mode with WFE instruction
+ 385:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 386:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 387:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnterSLEEPMode(uint32_t Regulator, uint8_t SLEEPEntry)
+ 388:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 357              		.loc 1 388 1 is_stmt 1 view -0
+ 358              		.cfi_startproc
+ 359              		@ args = 0, pretend = 0, frame = 0
+ 360              		@ frame_needed = 0, uses_anonymous_args = 0
+ 361              		@ link register save eliminated.
+ 389:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Check the parameters */
+ 390:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_REGULATOR(Regulator));
+ 362              		.loc 1 390 3 view .LVU53
+ 391:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_SLEEP_ENTRY(SLEEPEntry));
+ 363              		.loc 1 391 3 view .LVU54
+ 392:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 393:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Clear SLEEPDEEP bit of Cortex System Control Register */
+ 394:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   CLEAR_BIT(SCB->SCR, ((uint32_t)SCB_SCR_SLEEPDEEP_Msk));
+ 364              		.loc 1 394 3 view .LVU55
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 14
+
+
+ 365 0000 084A     		ldr	r2, .L34
+ 366 0002 1369     		ldr	r3, [r2, #16]
+ 367 0004 23F00403 		bic	r3, r3, #4
+ 368 0008 1361     		str	r3, [r2, #16]
+ 395:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 396:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Ensure that all instructions done before entering SLEEP mode */
+ 397:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __DSB();
+ 369              		.loc 1 397 3 view .LVU56
+ 370              	.LBB10:
+ 371              	.LBI10:
+ 372              		.file 2 "dev/CMSIS/Include/cmsis_gcc.h"
+   1:dev/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:dev/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:dev/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:dev/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:dev/CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:dev/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:dev/CMSIS/Include/cmsis_gcc.h **** /*
+   8:dev/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:dev/CMSIS/Include/cmsis_gcc.h ****  *
+  10:dev/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:dev/CMSIS/Include/cmsis_gcc.h ****  *
+  12:dev/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:dev/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:dev/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:dev/CMSIS/Include/cmsis_gcc.h ****  *
+  16:dev/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:dev/CMSIS/Include/cmsis_gcc.h ****  *
+  18:dev/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:dev/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:dev/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:dev/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:dev/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:dev/CMSIS/Include/cmsis_gcc.h ****  */
+  24:dev/CMSIS/Include/cmsis_gcc.h **** 
+  25:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:dev/CMSIS/Include/cmsis_gcc.h **** 
+  28:dev/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:dev/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:dev/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:dev/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:dev/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:dev/CMSIS/Include/cmsis_gcc.h **** 
+  34:dev/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:dev/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:dev/CMSIS/Include/cmsis_gcc.h **** 
+  39:dev/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:dev/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:dev/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 15
+
+
+  47:dev/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:dev/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:dev/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:dev/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:dev/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:dev/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:dev/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:dev/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:dev/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:dev/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:dev/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:dev/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:dev/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:dev/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:dev/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:dev/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:dev/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 16
+
+
+ 104:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:dev/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:dev/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:dev/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:dev/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:dev/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:dev/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 117:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 118:dev/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:dev/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:dev/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:dev/CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 123:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 124:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:dev/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:dev/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 129:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 130:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 131:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 132:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 133:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 134:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 135:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 136:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 137:dev/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 138:dev/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 139:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 140:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 141:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 142:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 143:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 144:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 145:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 146:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 147:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Control Register
+ 148:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the Control Register.
+ 149:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Control Register value
+ 150:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 151:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_CONTROL(void)
+ 152:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 153:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 154:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 155:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, control" : "=r" (result) );
+ 156:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 157:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 158:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 159:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 160:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 17
+
+
+ 161:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 162:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Control Register (non-secure)
+ 163:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the non-secure Control Register when in secure mode.
+ 164:dev/CMSIS/Include/cmsis_gcc.h ****   \return               non-secure Control Register value
+ 165:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 166:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_CONTROL_NS(void)
+ 167:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 168:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 169:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 170:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, control_ns" : "=r" (result) );
+ 171:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 172:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 173:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 174:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 175:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 176:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 177:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Control Register
+ 178:dev/CMSIS/Include/cmsis_gcc.h ****   \details Writes the given value to the Control Register.
+ 179:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    control  Control Register value to set
+ 180:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 181:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_CONTROL(uint32_t control)
+ 182:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 183:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR control, %0" : : "r" (control) : "memory");
+ 184:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 185:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 186:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 187:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 188:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 189:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Control Register (non-secure)
+ 190:dev/CMSIS/Include/cmsis_gcc.h ****   \details Writes the given value to the non-secure Control Register when in secure state.
+ 191:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    control  Control Register value to set
+ 192:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 193:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_CONTROL_NS(uint32_t control)
+ 194:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 195:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR control_ns, %0" : : "r" (control) : "memory");
+ 196:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 197:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 198:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 199:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 200:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 201:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get IPSR Register
+ 202:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the IPSR Register.
+ 203:dev/CMSIS/Include/cmsis_gcc.h ****   \return               IPSR Register value
+ 204:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 205:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_IPSR(void)
+ 206:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 207:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 208:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 209:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, ipsr" : "=r" (result) );
+ 210:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 211:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 212:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 213:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 214:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 215:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get APSR Register
+ 216:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the APSR Register.
+ 217:dev/CMSIS/Include/cmsis_gcc.h ****   \return               APSR Register value
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 18
+
+
+ 218:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 219:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_APSR(void)
+ 220:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 221:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 222:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 223:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, apsr" : "=r" (result) );
+ 224:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 225:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 226:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 227:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 228:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 229:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get xPSR Register
+ 230:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the xPSR Register.
+ 231:dev/CMSIS/Include/cmsis_gcc.h ****   \return               xPSR Register value
+ 232:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 233:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_xPSR(void)
+ 234:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 235:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 236:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 237:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, xpsr" : "=r" (result) );
+ 238:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 239:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 240:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 241:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 242:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 243:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer
+ 244:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Process Stack Pointer (PSP).
+ 245:dev/CMSIS/Include/cmsis_gcc.h ****   \return               PSP Register value
+ 246:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 247:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_PSP(void)
+ 248:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 249:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 250:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 251:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psp"  : "=r" (result) );
+ 252:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 253:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 254:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 255:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 256:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 257:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 258:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer (non-secure)
+ 259:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Process Stack Pointer (PSP) when in secure s
+ 260:dev/CMSIS/Include/cmsis_gcc.h ****   \return               PSP Register value
+ 261:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 262:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_PSP_NS(void)
+ 263:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 264:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 265:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 266:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psp_ns"  : "=r" (result) );
+ 267:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 268:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 269:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 270:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 271:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 272:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 273:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Process Stack Pointer
+ 274:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Process Stack Pointer (PSP).
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 19
+
+
+ 275:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 276:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 277:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_PSP(uint32_t topOfProcStack)
+ 278:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 279:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR psp, %0" : : "r" (topOfProcStack) : );
+ 280:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 281:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 282:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 283:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 284:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 285:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Process Stack Pointer (non-secure)
+ 286:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Process Stack Pointer (PSP) when in secure sta
+ 287:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 288:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 289:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_PSP_NS(uint32_t topOfProcStack)
+ 290:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 291:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR psp_ns, %0" : : "r" (topOfProcStack) : );
+ 292:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 293:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 294:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 295:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 296:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 297:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer
+ 298:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Main Stack Pointer (MSP).
+ 299:dev/CMSIS/Include/cmsis_gcc.h ****   \return               MSP Register value
+ 300:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 301:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_MSP(void)
+ 302:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 303:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 304:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 305:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msp" : "=r" (result) );
+ 306:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 307:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 308:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 309:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 310:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 311:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 312:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer (non-secure)
+ 313:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Main Stack Pointer (MSP) when in secure stat
+ 314:dev/CMSIS/Include/cmsis_gcc.h ****   \return               MSP Register value
+ 315:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 316:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_MSP_NS(void)
+ 317:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 318:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 319:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 320:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msp_ns" : "=r" (result) );
+ 321:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 322:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 323:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 324:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 325:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 326:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 327:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Main Stack Pointer
+ 328:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Main Stack Pointer (MSP).
+ 329:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 330:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 331:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_MSP(uint32_t topOfMainStack)
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 20
+
+
+ 332:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 333:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR msp, %0" : : "r" (topOfMainStack) : );
+ 334:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 335:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 336:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 337:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 338:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 339:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Main Stack Pointer (non-secure)
+ 340:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Main Stack Pointer (MSP) when in secure state.
+ 341:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 342:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 343:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_MSP_NS(uint32_t topOfMainStack)
+ 344:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 345:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR msp_ns, %0" : : "r" (topOfMainStack) : );
+ 346:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 347:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 348:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 349:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 350:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 351:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 352:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Stack Pointer (non-secure)
+ 353:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Stack Pointer (SP) when in secure state.
+ 354:dev/CMSIS/Include/cmsis_gcc.h ****   \return               SP Register value
+ 355:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 356:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_SP_NS(void)
+ 357:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 358:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 359:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 360:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, sp_ns" : "=r" (result) );
+ 361:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 362:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 363:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 364:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 365:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 366:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Stack Pointer (non-secure)
+ 367:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Stack Pointer (SP) when in secure state.
+ 368:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfStack  Stack Pointer value to set
+ 369:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 370:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_SP_NS(uint32_t topOfStack)
+ 371:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 372:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR sp_ns, %0" : : "r" (topOfStack) : );
+ 373:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 374:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 375:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 376:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 377:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 378:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Priority Mask
+ 379:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current state of the priority mask bit from the Priority Mask Register.
+ 380:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Priority Mask value
+ 381:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 382:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_PRIMASK(void)
+ 383:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 384:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 385:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 386:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, primask" : "=r" (result) :: "memory");
+ 387:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 388:dev/CMSIS/Include/cmsis_gcc.h **** }
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 21
+
+
+ 389:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 390:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 391:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 392:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 393:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Priority Mask (non-secure)
+ 394:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current state of the non-secure priority mask bit from the Priority Mask Reg
+ 395:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Priority Mask value
+ 396:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 397:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_PRIMASK_NS(void)
+ 398:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 399:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 400:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 401:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, primask_ns" : "=r" (result) :: "memory");
+ 402:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 403:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 404:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 405:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 406:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 407:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 408:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Priority Mask
+ 409:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Priority Mask Register.
+ 410:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    priMask  Priority Mask
+ 411:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 412:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
+ 413:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 414:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR primask, %0" : : "r" (priMask) : "memory");
+ 415:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 416:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 417:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 418:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 419:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 420:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Priority Mask (non-secure)
+ 421:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Priority Mask Register when in secure state.
+ 422:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    priMask  Priority Mask
+ 423:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 424:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_PRIMASK_NS(uint32_t priMask)
+ 425:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 426:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR primask_ns, %0" : : "r" (priMask) : "memory");
+ 427:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 428:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 429:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 430:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 431:dev/CMSIS/Include/cmsis_gcc.h **** #if ((defined (__ARM_ARCH_7M__      ) && (__ARM_ARCH_7M__      == 1)) || \
+ 432:dev/CMSIS/Include/cmsis_gcc.h ****      (defined (__ARM_ARCH_7EM__     ) && (__ARM_ARCH_7EM__     == 1)) || \
+ 433:dev/CMSIS/Include/cmsis_gcc.h ****      (defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1))    )
+ 434:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 435:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable FIQ
+ 436:dev/CMSIS/Include/cmsis_gcc.h ****   \details Enables FIQ interrupts by clearing the F-bit in the CPSR.
+ 437:dev/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 438:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 439:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_fault_irq(void)
+ 440:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 441:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie f" : : : "memory");
+ 442:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 443:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 444:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 445:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 22
+
+
+ 446:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable FIQ
+ 447:dev/CMSIS/Include/cmsis_gcc.h ****   \details Disables FIQ interrupts by setting the F-bit in the CPSR.
+ 448:dev/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 449:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 450:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_fault_irq(void)
+ 451:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 452:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid f" : : : "memory");
+ 453:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 454:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 455:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 456:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 457:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Base Priority
+ 458:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Base Priority register.
+ 459:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Base Priority register value
+ 460:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 461:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_BASEPRI(void)
+ 462:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 463:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 464:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 465:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, basepri" : "=r" (result) );
+ 466:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 467:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 468:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 469:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 470:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 471:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 472:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Base Priority (non-secure)
+ 473:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Base Priority register when in secure state.
+ 474:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Base Priority register value
+ 475:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 476:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_BASEPRI_NS(void)
+ 477:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 478:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 479:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 480:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, basepri_ns" : "=r" (result) );
+ 481:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 482:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 483:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 484:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 485:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 486:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 487:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Base Priority
+ 488:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Base Priority register.
+ 489:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    basePri  Base Priority value to set
+ 490:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 491:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_BASEPRI(uint32_t basePri)
+ 492:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 493:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR basepri, %0" : : "r" (basePri) : "memory");
+ 494:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 495:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 496:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 497:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 498:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 499:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Base Priority (non-secure)
+ 500:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Base Priority register when in secure state.
+ 501:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    basePri  Base Priority value to set
+ 502:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 23
+
+
+ 503:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_BASEPRI_NS(uint32_t basePri)
+ 504:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 505:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR basepri_ns, %0" : : "r" (basePri) : "memory");
+ 506:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 507:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 508:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 509:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 510:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 511:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Base Priority with condition
+ 512:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Base Priority register only if BASEPRI masking is disable
+ 513:dev/CMSIS/Include/cmsis_gcc.h ****            or the new value increases the BASEPRI priority level.
+ 514:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    basePri  Base Priority value to set
+ 515:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 516:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_BASEPRI_MAX(uint32_t basePri)
+ 517:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 518:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR basepri_max, %0" : : "r" (basePri) : "memory");
+ 519:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 520:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 521:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 522:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 523:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Fault Mask
+ 524:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Fault Mask register.
+ 525:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Fault Mask register value
+ 526:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 527:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_FAULTMASK(void)
+ 528:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 529:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 530:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 531:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, faultmask" : "=r" (result) );
+ 532:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 533:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 534:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 535:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 536:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 537:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 538:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Fault Mask (non-secure)
+ 539:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Fault Mask register when in secure state.
+ 540:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Fault Mask register value
+ 541:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 542:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_FAULTMASK_NS(void)
+ 543:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 544:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 545:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 546:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, faultmask_ns" : "=r" (result) );
+ 547:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 548:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 549:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 550:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 551:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 552:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 553:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Fault Mask
+ 554:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Fault Mask register.
+ 555:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    faultMask  Fault Mask value to set
+ 556:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 557:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_FAULTMASK(uint32_t faultMask)
+ 558:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 559:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR faultmask, %0" : : "r" (faultMask) : "memory");
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 24
+
+
+ 560:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 561:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 562:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 563:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 564:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 565:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Fault Mask (non-secure)
+ 566:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Fault Mask register when in secure state.
+ 567:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    faultMask  Fault Mask value to set
+ 568:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 569:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_FAULTMASK_NS(uint32_t faultMask)
+ 570:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 571:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR faultmask_ns, %0" : : "r" (faultMask) : "memory");
+ 572:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 573:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 574:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 575:dev/CMSIS/Include/cmsis_gcc.h **** #endif /* ((defined (__ARM_ARCH_7M__      ) && (__ARM_ARCH_7M__      == 1)) || \
+ 576:dev/CMSIS/Include/cmsis_gcc.h ****            (defined (__ARM_ARCH_7EM__     ) && (__ARM_ARCH_7EM__     == 1)) || \
+ 577:dev/CMSIS/Include/cmsis_gcc.h ****            (defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1))    ) */
+ 578:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 579:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 580:dev/CMSIS/Include/cmsis_gcc.h **** #if ((defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) || \
+ 581:dev/CMSIS/Include/cmsis_gcc.h ****      (defined (__ARM_ARCH_8M_BASE__ ) && (__ARM_ARCH_8M_BASE__ == 1))    )
+ 582:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 583:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 584:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer Limit
+ 585:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 586:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence zero is returned always in non-secure
+ 587:dev/CMSIS/Include/cmsis_gcc.h ****   mode.
+ 588:dev/CMSIS/Include/cmsis_gcc.h ****   
+ 589:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Process Stack Pointer Limit (PSPLIM).
+ 590:dev/CMSIS/Include/cmsis_gcc.h ****   \return               PSPLIM Register value
+ 591:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 592:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_PSPLIM(void)
+ 593:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 594:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
+ 595:dev/CMSIS/Include/cmsis_gcc.h ****     (!defined (__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+ 596:dev/CMSIS/Include/cmsis_gcc.h ****     // without main extensions, the non-secure PSPLIM is RAZ/WI
+ 597:dev/CMSIS/Include/cmsis_gcc.h ****   return 0U;
+ 598:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 599:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 600:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psplim"  : "=r" (result) );
+ 601:dev/CMSIS/Include/cmsis_gcc.h ****   return result;
+ 602:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 603:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 604:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 605:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3))
+ 606:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 607:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer Limit (non-secure)
+ 608:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 609:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence zero is returned always.
+ 610:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 611:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Process Stack Pointer Limit (PSPLIM) when in
+ 612:dev/CMSIS/Include/cmsis_gcc.h ****   \return               PSPLIM Register value
+ 613:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 614:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_PSPLIM_NS(void)
+ 615:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 616:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)))
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 25
+
+
+ 617:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure PSPLIM is RAZ/WI
+ 618:dev/CMSIS/Include/cmsis_gcc.h ****   return 0U;
+ 619:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 620:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 621:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psplim_ns"  : "=r" (result) );
+ 622:dev/CMSIS/Include/cmsis_gcc.h ****   return result;
+ 623:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 624:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 625:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 626:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 627:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 628:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 629:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Process Stack Pointer Limit
+ 630:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 631:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence the write is silently ignored in non-secure
+ 632:dev/CMSIS/Include/cmsis_gcc.h ****   mode.
+ 633:dev/CMSIS/Include/cmsis_gcc.h ****   
+ 634:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Process Stack Pointer Limit (PSPLIM).
+ 635:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
+ 636:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 637:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_PSPLIM(uint32_t ProcStackPtrLimit)
+ 638:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 639:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
+ 640:dev/CMSIS/Include/cmsis_gcc.h ****     (!defined (__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+ 641:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure PSPLIM is RAZ/WI
+ 642:dev/CMSIS/Include/cmsis_gcc.h ****   (void)ProcStackPtrLimit;
+ 643:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 644:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR psplim, %0" : : "r" (ProcStackPtrLimit));
+ 645:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 646:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 647:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 648:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 649:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE  ) && (__ARM_FEATURE_CMSE   == 3))
+ 650:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 651:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Process Stack Pointer (non-secure)
+ 652:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 653:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence the write is silently ignored.
+ 654:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 655:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Process Stack Pointer Limit (PSPLIM) when in s
+ 656:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
+ 657:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 658:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_PSPLIM_NS(uint32_t ProcStackPtrLimit)
+ 659:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 660:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)))
+ 661:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure PSPLIM is RAZ/WI
+ 662:dev/CMSIS/Include/cmsis_gcc.h ****   (void)ProcStackPtrLimit;
+ 663:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 664:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR psplim_ns, %0\n" : : "r" (ProcStackPtrLimit));
+ 665:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 666:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 667:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 668:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 669:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 670:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 671:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer Limit
+ 672:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 673:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence zero is returned always in non-secure
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 26
+
+
+ 674:dev/CMSIS/Include/cmsis_gcc.h ****   mode.
+ 675:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 676:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Main Stack Pointer Limit (MSPLIM).
+ 677:dev/CMSIS/Include/cmsis_gcc.h ****   \return               MSPLIM Register value
+ 678:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 679:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_MSPLIM(void)
+ 680:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 681:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
+ 682:dev/CMSIS/Include/cmsis_gcc.h ****     (!defined (__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+ 683:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure MSPLIM is RAZ/WI
+ 684:dev/CMSIS/Include/cmsis_gcc.h ****   return 0U;
+ 685:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 686:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 687:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msplim" : "=r" (result) );
+ 688:dev/CMSIS/Include/cmsis_gcc.h ****   return result;
+ 689:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 690:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 691:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 692:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 693:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE  ) && (__ARM_FEATURE_CMSE   == 3))
+ 694:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 695:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer Limit (non-secure)
+ 696:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 697:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence zero is returned always.
+ 698:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 699:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Main Stack Pointer Limit(MSPLIM) when in sec
+ 700:dev/CMSIS/Include/cmsis_gcc.h ****   \return               MSPLIM Register value
+ 701:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 702:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_MSPLIM_NS(void)
+ 703:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 704:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)))
+ 705:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure MSPLIM is RAZ/WI
+ 706:dev/CMSIS/Include/cmsis_gcc.h ****   return 0U;
+ 707:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 708:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 709:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msplim_ns" : "=r" (result) );
+ 710:dev/CMSIS/Include/cmsis_gcc.h ****   return result;
+ 711:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 712:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 713:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 714:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 715:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 716:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 717:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Main Stack Pointer Limit
+ 718:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 719:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence the write is silently ignored in non-secure
+ 720:dev/CMSIS/Include/cmsis_gcc.h ****   mode.
+ 721:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 722:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Main Stack Pointer Limit (MSPLIM).
+ 723:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    MainStackPtrLimit  Main Stack Pointer Limit value to set
+ 724:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 725:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_MSPLIM(uint32_t MainStackPtrLimit)
+ 726:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 727:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
+ 728:dev/CMSIS/Include/cmsis_gcc.h ****     (!defined (__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+ 729:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure MSPLIM is RAZ/WI
+ 730:dev/CMSIS/Include/cmsis_gcc.h ****   (void)MainStackPtrLimit;
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 27
+
+
+ 731:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 732:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR msplim, %0" : : "r" (MainStackPtrLimit));
+ 733:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 734:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 735:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 736:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 737:dev/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE  ) && (__ARM_FEATURE_CMSE   == 3))
+ 738:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 739:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Main Stack Pointer Limit (non-secure)
+ 740:dev/CMSIS/Include/cmsis_gcc.h ****   Devices without ARMv8-M Main Extensions (i.e. Cortex-M23) lack the non-secure
+ 741:dev/CMSIS/Include/cmsis_gcc.h ****   Stack Pointer Limit register hence the write is silently ignored.
+ 742:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 743:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Main Stack Pointer Limit (MSPLIM) when in secu
+ 744:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    MainStackPtrLimit  Main Stack Pointer value to set
+ 745:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 746:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_MSPLIM_NS(uint32_t MainStackPtrLimit)
+ 747:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 748:dev/CMSIS/Include/cmsis_gcc.h **** #if (!(defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)))
+ 749:dev/CMSIS/Include/cmsis_gcc.h ****   // without main extensions, the non-secure MSPLIM is RAZ/WI
+ 750:dev/CMSIS/Include/cmsis_gcc.h ****   (void)MainStackPtrLimit;
+ 751:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 752:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR msplim_ns, %0" : : "r" (MainStackPtrLimit));
+ 753:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 754:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 755:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 756:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 757:dev/CMSIS/Include/cmsis_gcc.h **** #endif /* ((defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) || \
+ 758:dev/CMSIS/Include/cmsis_gcc.h ****            (defined (__ARM_ARCH_8M_BASE__ ) && (__ARM_ARCH_8M_BASE__ == 1))    ) */
+ 759:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 760:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 761:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 762:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Get FPSCR
+ 763:dev/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Floating Point Status/Control register.
+ 764:dev/CMSIS/Include/cmsis_gcc.h ****   \return               Floating Point Status/Control register value
+ 765:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 766:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_FPSCR(void)
+ 767:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 768:dev/CMSIS/Include/cmsis_gcc.h **** #if ((defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)) && \
+ 769:dev/CMSIS/Include/cmsis_gcc.h ****      (defined (__FPU_USED   ) && (__FPU_USED    == 1U))     )
+ 770:dev/CMSIS/Include/cmsis_gcc.h **** #if __has_builtin(__builtin_arm_get_fpscr) 
+ 771:dev/CMSIS/Include/cmsis_gcc.h **** // Re-enable using built-in when GCC has been fixed
+ 772:dev/CMSIS/Include/cmsis_gcc.h **** // || (__GNUC__ > 7) || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2)
+ 773:dev/CMSIS/Include/cmsis_gcc.h ****   /* see https://gcc.gnu.org/ml/gcc-patches/2017-04/msg00443.html */
+ 774:dev/CMSIS/Include/cmsis_gcc.h ****   return __builtin_arm_get_fpscr();
+ 775:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 776:dev/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 777:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 778:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("VMRS %0, fpscr" : "=r" (result) );
+ 779:dev/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 780:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 781:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 782:dev/CMSIS/Include/cmsis_gcc.h ****   return(0U);
+ 783:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 784:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 785:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 786:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 787:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 28
+
+
+ 788:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Set FPSCR
+ 789:dev/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Floating Point Status/Control register.
+ 790:dev/CMSIS/Include/cmsis_gcc.h ****   \param [in]    fpscr  Floating Point Status/Control value to set
+ 791:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 792:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_FPSCR(uint32_t fpscr)
+ 793:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 794:dev/CMSIS/Include/cmsis_gcc.h **** #if ((defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)) && \
+ 795:dev/CMSIS/Include/cmsis_gcc.h ****      (defined (__FPU_USED   ) && (__FPU_USED    == 1U))     )
+ 796:dev/CMSIS/Include/cmsis_gcc.h **** #if __has_builtin(__builtin_arm_set_fpscr)
+ 797:dev/CMSIS/Include/cmsis_gcc.h **** // Re-enable using built-in when GCC has been fixed
+ 798:dev/CMSIS/Include/cmsis_gcc.h **** // || (__GNUC__ > 7) || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2)
+ 799:dev/CMSIS/Include/cmsis_gcc.h ****   /* see https://gcc.gnu.org/ml/gcc-patches/2017-04/msg00443.html */
+ 800:dev/CMSIS/Include/cmsis_gcc.h ****   __builtin_arm_set_fpscr(fpscr);
+ 801:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 802:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("VMSR fpscr, %0" : : "r" (fpscr) : "vfpcc", "memory");
+ 803:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 804:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 805:dev/CMSIS/Include/cmsis_gcc.h ****   (void)fpscr;
+ 806:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 807:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 808:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 809:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 810:dev/CMSIS/Include/cmsis_gcc.h **** /*@} end of CMSIS_Core_RegAccFunctions */
+ 811:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 812:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 813:dev/CMSIS/Include/cmsis_gcc.h **** /* ##########################  Core Instruction Access  ######################### */
+ 814:dev/CMSIS/Include/cmsis_gcc.h **** /** \defgroup CMSIS_Core_InstructionInterface CMSIS Core Instruction Interface
+ 815:dev/CMSIS/Include/cmsis_gcc.h ****   Access to dedicated instructions
+ 816:dev/CMSIS/Include/cmsis_gcc.h ****   @{
+ 817:dev/CMSIS/Include/cmsis_gcc.h **** */
+ 818:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 819:dev/CMSIS/Include/cmsis_gcc.h **** /* Define macros for porting to both thumb1 and thumb2.
+ 820:dev/CMSIS/Include/cmsis_gcc.h ****  * For thumb1, use low register (r0-r7), specified by constraint "l"
+ 821:dev/CMSIS/Include/cmsis_gcc.h ****  * Otherwise, use general registers, specified by constraint "r" */
+ 822:dev/CMSIS/Include/cmsis_gcc.h **** #if defined (__thumb__) && !defined (__thumb2__)
+ 823:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_OUT_REG(r) "=l" (r)
+ 824:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_RW_REG(r) "+l" (r)
+ 825:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_USE_REG(r) "l" (r)
+ 826:dev/CMSIS/Include/cmsis_gcc.h **** #else
+ 827:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_OUT_REG(r) "=r" (r)
+ 828:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_RW_REG(r) "+r" (r)
+ 829:dev/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_USE_REG(r) "r" (r)
+ 830:dev/CMSIS/Include/cmsis_gcc.h **** #endif
+ 831:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 832:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 833:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   No Operation
+ 834:dev/CMSIS/Include/cmsis_gcc.h ****   \details No Operation does nothing. This instruction can be used for code alignment purposes.
+ 835:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 836:dev/CMSIS/Include/cmsis_gcc.h **** #define __NOP()                             __ASM volatile ("nop")
+ 837:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 838:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 839:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Wait For Interrupt
+ 840:dev/CMSIS/Include/cmsis_gcc.h ****   \details Wait For Interrupt is a hint instruction that suspends execution until one of a number o
+ 841:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 842:dev/CMSIS/Include/cmsis_gcc.h **** #define __WFI()                             __ASM volatile ("wfi")
+ 843:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 844:dev/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 29
+
+
+ 845:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 846:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Wait For Event
+ 847:dev/CMSIS/Include/cmsis_gcc.h ****   \details Wait For Event is a hint instruction that permits the processor to enter
+ 848:dev/CMSIS/Include/cmsis_gcc.h ****            a low-power state until one of a number of events occurs.
+ 849:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 850:dev/CMSIS/Include/cmsis_gcc.h **** #define __WFE()                             __ASM volatile ("wfe")
+ 851:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 852:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 853:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 854:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Send Event
+ 855:dev/CMSIS/Include/cmsis_gcc.h ****   \details Send Event is a hint instruction. It causes an event to be signaled to the CPU.
+ 856:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 857:dev/CMSIS/Include/cmsis_gcc.h **** #define __SEV()                             __ASM volatile ("sev")
+ 858:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 859:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 860:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 861:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Instruction Synchronization Barrier
+ 862:dev/CMSIS/Include/cmsis_gcc.h ****   \details Instruction Synchronization Barrier flushes the pipeline in the processor,
+ 863:dev/CMSIS/Include/cmsis_gcc.h ****            so that all instructions following the ISB are fetched from cache or memory,
+ 864:dev/CMSIS/Include/cmsis_gcc.h ****            after the instruction has been completed.
+ 865:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 866:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __ISB(void)
+ 867:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 868:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("isb 0xF":::"memory");
+ 869:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 870:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 871:dev/CMSIS/Include/cmsis_gcc.h **** 
+ 872:dev/CMSIS/Include/cmsis_gcc.h **** /**
+ 873:dev/CMSIS/Include/cmsis_gcc.h ****   \brief   Data Synchronization Barrier
+ 874:dev/CMSIS/Include/cmsis_gcc.h ****   \details Acts as a special kind of Data Memory Barrier.
+ 875:dev/CMSIS/Include/cmsis_gcc.h ****            It completes when all explicit memory accesses before this instruction complete.
+ 876:dev/CMSIS/Include/cmsis_gcc.h ****  */
+ 877:dev/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __DSB(void)
+ 373              		.loc 2 877 27 view .LVU57
+ 374              	.LBB11:
+ 878:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 879:dev/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("dsb 0xF":::"memory");
+ 375              		.loc 2 879 3 view .LVU58
+ 376              		.syntax unified
+ 377              	@ 879 "dev/CMSIS/Include/cmsis_gcc.h" 1
+ 378 000a BFF34F8F 		dsb 0xF
+ 379              	@ 0 "" 2
+ 380              		.thumb
+ 381              		.syntax unified
+ 382              	.LBE11:
+ 383              	.LBE10:
+ 398:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __ISB();
+ 384              		.loc 1 398 3 view .LVU59
+ 385              	.LBB12:
+ 386              	.LBI12:
+ 866:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 387              		.loc 2 866 27 view .LVU60
+ 388              	.LBB13:
+ 868:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 389              		.loc 2 868 3 view .LVU61
+ 390              		.syntax unified
+ 391              	@ 868 "dev/CMSIS/Include/cmsis_gcc.h" 1
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 30
+
+
+ 392 000e BFF36F8F 		isb 0xF
+ 393              	@ 0 "" 2
+ 394              		.thumb
+ 395              		.syntax unified
+ 396              	.LBE13:
+ 397              	.LBE12:
+ 399:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 400:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Select SLEEP mode entry -------------------------------------------------*/
+ 401:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if(SLEEPEntry == PWR_SLEEPENTRY_WFI)
+ 398              		.loc 1 401 3 view .LVU62
+ 399              		.loc 1 401 5 is_stmt 0 view .LVU63
+ 400 0012 0129     		cmp	r1, #1
+ 401 0014 03D0     		beq	.L33
+ 402:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {   
+ 403:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     /* Request Wait For Interrupt */
+ 404:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __WFI();
+ 405:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 406:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   else
+ 407:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 408:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     /* Request Wait For Event */
+ 409:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __SEV();
+ 402              		.loc 1 409 5 is_stmt 1 view .LVU64
+ 403              		.syntax unified
+ 404              	@ 409 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 405 0016 40BF     		sev
+ 406              	@ 0 "" 2
+ 410:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __WFE();
+ 407              		.loc 1 410 5 view .LVU65
+ 408              	@ 410 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 409 0018 20BF     		wfe
+ 410              	@ 0 "" 2
+ 411:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __WFE();
+ 411              		.loc 1 411 5 view .LVU66
+ 412              	@ 411 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 413 001a 20BF     		wfe
+ 414              	@ 0 "" 2
+ 412:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 413:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 415              		.loc 1 413 1 is_stmt 0 view .LVU67
+ 416              		.thumb
+ 417              		.syntax unified
+ 418 001c 7047     		bx	lr
+ 419              	.L33:
+ 404:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 420              		.loc 1 404 5 is_stmt 1 view .LVU68
+ 421              		.syntax unified
+ 422              	@ 404 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 423 001e 30BF     		wfi
+ 424              	@ 0 "" 2
+ 425              		.thumb
+ 426              		.syntax unified
+ 427 0020 7047     		bx	lr
+ 428              	.L35:
+ 429 0022 00BF     		.align	2
+ 430              	.L34:
+ 431 0024 00ED00E0 		.word	-536810240
+ 432              		.cfi_endproc
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 31
+
+
+ 433              	.LFE149:
+ 435              		.section	.text.HAL_PWR_EnterSTOPMode,"ax",%progbits
+ 436              		.align	1
+ 437              		.global	HAL_PWR_EnterSTOPMode
+ 438              		.syntax unified
+ 439              		.thumb
+ 440              		.thumb_func
+ 441              		.fpu fpv5-d16
+ 443              	HAL_PWR_EnterSTOPMode:
+ 444              	.LVL5:
+ 445              	.LFB150:
+ 414:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 415:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 416:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enters Stop mode. 
+ 417:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note In Stop mode, all I/O pins keep the same state as in Run mode.
+ 418:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note When exiting Stop mode by issuing an interrupt or a wakeup event, 
+ 419:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         the HSI RC oscillator is selected as system clock.
+ 420:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note When the voltage regulator operates in low power mode, an additional 
+ 421:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         startup delay is incurred when waking up from Stop mode. 
+ 422:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         By keeping the internal regulator ON during Stop mode, the consumption 
+ 423:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *         is higher although the startup time is reduced.    
+ 424:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param Regulator Specifies the regulator state in Stop mode.
+ 425:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          This parameter can be one of the following values:
+ 426:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_MAINREGULATOR_ON: Stop mode with regulator ON
+ 427:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_LOWPOWERREGULATOR_ON: Stop mode with low power regulator ON
+ 428:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @param STOPEntry Specifies if Stop mode in entered with WFI or WFE instruction.
+ 429:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          This parameter can be one of the following values:
+ 430:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_STOPENTRY_WFI: Enter Stop mode with WFI instruction
+ 431:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            @arg PWR_STOPENTRY_WFE: Enter Stop mode with WFE instruction
+ 432:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 433:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 434:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnterSTOPMode(uint32_t Regulator, uint8_t STOPEntry)
+ 435:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 446              		.loc 1 435 1 view -0
+ 447              		.cfi_startproc
+ 448              		@ args = 0, pretend = 0, frame = 0
+ 449              		@ frame_needed = 0, uses_anonymous_args = 0
+ 450              		@ link register save eliminated.
+ 436:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   uint32_t tmpreg = 0;
+ 451              		.loc 1 436 3 view .LVU70
+ 437:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 438:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Check the parameters */
+ 439:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_REGULATOR(Regulator));
+ 452              		.loc 1 439 3 view .LVU71
+ 440:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   assert_param(IS_PWR_STOP_ENTRY(STOPEntry));
+ 453              		.loc 1 440 3 view .LVU72
+ 441:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 442:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Select the regulator state in Stop mode ---------------------------------*/
+ 443:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   tmpreg = PWR->CR1;
+ 454              		.loc 1 443 3 view .LVU73
+ 455              		.loc 1 443 10 is_stmt 0 view .LVU74
+ 456 0000 0D4A     		ldr	r2, .L40
+ 457 0002 1368     		ldr	r3, [r2]
+ 458              	.LVL6:
+ 444:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Clear PDDS and LPDS bits */
+ 445:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   tmpreg &= (uint32_t)~(PWR_CR1_PDDS | PWR_CR1_LPDS);
+ 459              		.loc 1 445 3 is_stmt 1 view .LVU75
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 32
+
+
+ 460              		.loc 1 445 10 is_stmt 0 view .LVU76
+ 461 0004 23F00303 		bic	r3, r3, #3
+ 462              	.LVL7:
+ 446:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 447:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Set LPDS, MRLVDS and LPLVDS bits according to Regulator value */
+ 448:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   tmpreg |= Regulator;
+ 463              		.loc 1 448 3 is_stmt 1 view .LVU77
+ 464              		.loc 1 448 10 is_stmt 0 view .LVU78
+ 465 0008 0343     		orrs	r3, r3, r0
+ 466              	.LVL8:
+ 449:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 450:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Store the new value */
+ 451:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   PWR->CR1 = tmpreg;
+ 467              		.loc 1 451 3 is_stmt 1 view .LVU79
+ 468              		.loc 1 451 12 is_stmt 0 view .LVU80
+ 469 000a 1360     		str	r3, [r2]
+ 452:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 453:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Set SLEEPDEEP bit of Cortex System Control Register */
+ 454:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+ 470              		.loc 1 454 3 is_stmt 1 view .LVU81
+ 471              		.loc 1 454 12 is_stmt 0 view .LVU82
+ 472 000c 0B4A     		ldr	r2, .L40+4
+ 473 000e 1369     		ldr	r3, [r2, #16]
+ 474              	.LVL9:
+ 475              		.loc 1 454 12 view .LVU83
+ 476 0010 43F00403 		orr	r3, r3, #4
+ 477 0014 1361     		str	r3, [r2, #16]
+ 478              	.LVL10:
+ 455:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 456:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Ensure that all instructions done before entering STOP mode */
+ 457:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __DSB();
+ 479              		.loc 1 457 3 is_stmt 1 view .LVU84
+ 480              	.LBB14:
+ 481              	.LBI14:
+ 877:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 482              		.loc 2 877 27 view .LVU85
+ 483              	.LBB15:
+ 484              		.loc 2 879 3 view .LVU86
+ 485              		.syntax unified
+ 486              	@ 879 "dev/CMSIS/Include/cmsis_gcc.h" 1
+ 487 0016 BFF34F8F 		dsb 0xF
+ 488              	@ 0 "" 2
+ 489              		.thumb
+ 490              		.syntax unified
+ 491              	.LBE15:
+ 492              	.LBE14:
+ 458:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __ISB();
+ 493              		.loc 1 458 3 view .LVU87
+ 494              	.LBB16:
+ 495              	.LBI16:
+ 866:dev/CMSIS/Include/cmsis_gcc.h **** {
+ 496              		.loc 2 866 27 view .LVU88
+ 497              	.LBB17:
+ 868:dev/CMSIS/Include/cmsis_gcc.h **** }
+ 498              		.loc 2 868 3 view .LVU89
+ 499              		.syntax unified
+ 500              	@ 868 "dev/CMSIS/Include/cmsis_gcc.h" 1
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 33
+
+
+ 501 001a BFF36F8F 		isb 0xF
+ 502              	@ 0 "" 2
+ 503              		.thumb
+ 504              		.syntax unified
+ 505              	.LBE17:
+ 506              	.LBE16:
+ 459:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 460:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Select Stop mode entry --------------------------------------------------*/
+ 461:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if(STOPEntry == PWR_STOPENTRY_WFI)
+ 507              		.loc 1 461 3 view .LVU90
+ 508              		.loc 1 461 5 is_stmt 0 view .LVU91
+ 509 001e 0129     		cmp	r1, #1
+ 510 0020 08D0     		beq	.L39
+ 462:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {   
+ 463:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     /* Request Wait For Interrupt */
+ 464:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __WFI();
+ 465:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 466:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   else
+ 467:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 468:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     /* Request Wait For Event */
+ 469:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __SEV();
+ 511              		.loc 1 469 5 is_stmt 1 view .LVU92
+ 512              		.syntax unified
+ 513              	@ 469 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 514 0022 40BF     		sev
+ 515              	@ 0 "" 2
+ 470:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __WFE();
+ 516              		.loc 1 470 5 view .LVU93
+ 517              	@ 470 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 518 0024 20BF     		wfe
+ 519              	@ 0 "" 2
+ 471:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __WFE();
+ 520              		.loc 1 471 5 view .LVU94
+ 521              	@ 471 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 522 0026 20BF     		wfe
+ 523              	@ 0 "" 2
+ 524              		.thumb
+ 525              		.syntax unified
+ 526              	.L38:
+ 472:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 473:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Reset SLEEPDEEP bit of Cortex System Control Register */
+ 474:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);  
+ 527              		.loc 1 474 3 view .LVU95
+ 528              		.loc 1 474 12 is_stmt 0 view .LVU96
+ 529 0028 044A     		ldr	r2, .L40+4
+ 530 002a 1369     		ldr	r3, [r2, #16]
+ 531 002c 23F00403 		bic	r3, r3, #4
+ 532 0030 1361     		str	r3, [r2, #16]
+ 475:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 533              		.loc 1 475 1 view .LVU97
+ 534 0032 7047     		bx	lr
+ 535              	.L39:
+ 464:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 536              		.loc 1 464 5 is_stmt 1 view .LVU98
+ 537              		.syntax unified
+ 538              	@ 464 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 539 0034 30BF     		wfi
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 34
+
+
+ 540              	@ 0 "" 2
+ 541              		.thumb
+ 542              		.syntax unified
+ 543 0036 F7E7     		b	.L38
+ 544              	.L41:
+ 545              		.align	2
+ 546              	.L40:
+ 547 0038 00700040 		.word	1073770496
+ 548 003c 00ED00E0 		.word	-536810240
+ 549              		.cfi_endproc
+ 550              	.LFE150:
+ 552              		.section	.text.HAL_PWR_EnterSTANDBYMode,"ax",%progbits
+ 553              		.align	1
+ 554              		.global	HAL_PWR_EnterSTANDBYMode
+ 555              		.syntax unified
+ 556              		.thumb
+ 557              		.thumb_func
+ 558              		.fpu fpv5-d16
+ 560              	HAL_PWR_EnterSTANDBYMode:
+ 561              	.LFB151:
+ 476:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 477:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 478:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enters Standby mode.
+ 479:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note In Standby mode, all I/O pins are high impedance except for:
+ 480:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          - Reset pad (still available) 
+ 481:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          - RTC_AF1 pin (PC13) if configured for tamper, time-stamp, RTC 
+ 482:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *            Alarm out, or RTC clock calibration out.
+ 483:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          - RTC_AF2 pin (PI8) if configured for tamper or time-stamp.  
+ 484:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *          - WKUP pins if enabled.       
+ 485:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 486:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 487:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnterSTANDBYMode(void)
+ 488:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 562              		.loc 1 488 1 view -0
+ 563              		.cfi_startproc
+ 564              		@ args = 0, pretend = 0, frame = 0
+ 565              		@ frame_needed = 0, uses_anonymous_args = 0
+ 566              		@ link register save eliminated.
+ 489:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Select Standby mode */
+ 490:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   PWR->CR1 |= PWR_CR1_PDDS;
+ 567              		.loc 1 490 3 view .LVU100
+ 568              		.loc 1 490 12 is_stmt 0 view .LVU101
+ 569 0000 054A     		ldr	r2, .L43
+ 570 0002 1368     		ldr	r3, [r2]
+ 571 0004 43F00203 		orr	r3, r3, #2
+ 572 0008 1360     		str	r3, [r2]
+ 491:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 492:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Set SLEEPDEEP bit of Cortex System Control Register */
+ 493:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+ 573              		.loc 1 493 3 is_stmt 1 view .LVU102
+ 574              		.loc 1 493 12 is_stmt 0 view .LVU103
+ 575 000a 044A     		ldr	r2, .L43+4
+ 576 000c 1369     		ldr	r3, [r2, #16]
+ 577 000e 43F00403 		orr	r3, r3, #4
+ 578 0012 1361     		str	r3, [r2, #16]
+ 494:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   
+ 495:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* This option is used to ensure that store operations are completed */
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 35
+
+
+ 496:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #if defined ( __CC_ARM)
+ 497:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __force_stores();
+ 498:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** #endif
+ 499:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Request Wait For Interrupt */
+ 500:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   __WFI();
+ 579              		.loc 1 500 3 is_stmt 1 view .LVU104
+ 580              		.syntax unified
+ 581              	@ 500 "dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" 1
+ 582 0014 30BF     		wfi
+ 583              	@ 0 "" 2
+ 501:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 584              		.loc 1 501 1 is_stmt 0 view .LVU105
+ 585              		.thumb
+ 586              		.syntax unified
+ 587 0016 7047     		bx	lr
+ 588              	.L44:
+ 589              		.align	2
+ 590              	.L43:
+ 591 0018 00700040 		.word	1073770496
+ 592 001c 00ED00E0 		.word	-536810240
+ 593              		.cfi_endproc
+ 594              	.LFE151:
+ 596              		.section	.text.HAL_PWR_PVDCallback,"ax",%progbits
+ 597              		.align	1
+ 598              		.weak	HAL_PWR_PVDCallback
+ 599              		.syntax unified
+ 600              		.thumb
+ 601              		.thumb_func
+ 602              		.fpu fpv5-d16
+ 604              	HAL_PWR_PVDCallback:
+ 605              	.LFB153:
+ 502:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 503:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 504:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief This function handles the PWR PVD interrupt request.
+ 505:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note This API should be called under the PVD_IRQHandler().
+ 506:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 507:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 508:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_PVD_IRQHandler(void)
+ 509:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 510:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Check PWR Exti flag */
+ 511:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   if(__HAL_PWR_PVD_EXTI_GET_FLAG() != RESET)
+ 512:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 513:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     /* PWR PVD interrupt user callback */
+ 514:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     HAL_PWR_PVDCallback();
+ 515:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     
+ 516:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     /* Clear PWR Exti pending bit */
+ 517:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     __HAL_PWR_PVD_EXTI_CLEAR_FLAG();
+ 518:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 519:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 520:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 521:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 522:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief  PWR PVD interrupt callback
+ 523:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 524:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 525:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** __weak void HAL_PWR_PVDCallback(void)
+ 526:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 606              		.loc 1 526 1 is_stmt 1 view -0
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 36
+
+
+ 607              		.cfi_startproc
+ 608              		@ args = 0, pretend = 0, frame = 0
+ 609              		@ frame_needed = 0, uses_anonymous_args = 0
+ 610              		@ link register save eliminated.
+ 527:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* NOTE : This function Should not be modified, when the callback is needed,
+ 528:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****             the HAL_PWR_PVDCallback could be implemented in the user file
+ 529:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****    */ 
+ 530:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 611              		.loc 1 530 1 view .LVU107
+ 612 0000 7047     		bx	lr
+ 613              		.cfi_endproc
+ 614              	.LFE153:
+ 616              		.section	.text.HAL_PWR_PVD_IRQHandler,"ax",%progbits
+ 617              		.align	1
+ 618              		.global	HAL_PWR_PVD_IRQHandler
+ 619              		.syntax unified
+ 620              		.thumb
+ 621              		.thumb_func
+ 622              		.fpu fpv5-d16
+ 624              	HAL_PWR_PVD_IRQHandler:
+ 625              	.LFB152:
+ 509:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Check PWR Exti flag */
+ 626              		.loc 1 509 1 view -0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 0
+ 629              		@ frame_needed = 0, uses_anonymous_args = 0
+ 630 0000 08B5     		push	{r3, lr}
+ 631              	.LCFI2:
+ 632              		.cfi_def_cfa_offset 8
+ 633              		.cfi_offset 3, -8
+ 634              		.cfi_offset 14, -4
+ 511:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 635              		.loc 1 511 3 view .LVU109
+ 511:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 636              		.loc 1 511 6 is_stmt 0 view .LVU110
+ 637 0002 064B     		ldr	r3, .L50
+ 638 0004 5B69     		ldr	r3, [r3, #20]
+ 511:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   {
+ 639              		.loc 1 511 5 view .LVU111
+ 640 0006 13F4803F 		tst	r3, #65536
+ 641 000a 00D1     		bne	.L49
+ 642              	.L46:
+ 519:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 643              		.loc 1 519 1 view .LVU112
+ 644 000c 08BD     		pop	{r3, pc}
+ 645              	.L49:
+ 514:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****     
+ 646              		.loc 1 514 5 is_stmt 1 view .LVU113
+ 647 000e FFF7FEFF 		bl	HAL_PWR_PVDCallback
+ 648              	.LVL11:
+ 517:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   }
+ 649              		.loc 1 517 5 view .LVU114
+ 650 0012 024B     		ldr	r3, .L50
+ 651 0014 4FF48032 		mov	r2, #65536
+ 652 0018 5A61     		str	r2, [r3, #20]
+ 519:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 653              		.loc 1 519 1 is_stmt 0 view .LVU115
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 37
+
+
+ 654 001a F7E7     		b	.L46
+ 655              	.L51:
+ 656              		.align	2
+ 657              	.L50:
+ 658 001c 003C0140 		.word	1073822720
+ 659              		.cfi_endproc
+ 660              	.LFE152:
+ 662              		.section	.text.HAL_PWR_EnableSleepOnExit,"ax",%progbits
+ 663              		.align	1
+ 664              		.global	HAL_PWR_EnableSleepOnExit
+ 665              		.syntax unified
+ 666              		.thumb
+ 667              		.thumb_func
+ 668              		.fpu fpv5-d16
+ 670              	HAL_PWR_EnableSleepOnExit:
+ 671              	.LFB154:
+ 531:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 532:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 533:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Indicates Sleep-On-Exit when returning from Handler mode to Thread mode. 
+ 534:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note Set SLEEPONEXIT bit of SCR register. When this bit is set, the processor 
+ 535:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       re-enters SLEEP mode when an interruption handling is over.
+ 536:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       Setting this bit is useful when the processor is expected to run only on
+ 537:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       interruptions handling.         
+ 538:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 539:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 540:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnableSleepOnExit(void)
+ 541:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 672              		.loc 1 541 1 is_stmt 1 view -0
+ 673              		.cfi_startproc
+ 674              		@ args = 0, pretend = 0, frame = 0
+ 675              		@ frame_needed = 0, uses_anonymous_args = 0
+ 676              		@ link register save eliminated.
+ 542:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Set SLEEPONEXIT bit of Cortex System Control Register */
+ 543:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SET_BIT(SCB->SCR, ((uint32_t)SCB_SCR_SLEEPONEXIT_Msk));
+ 677              		.loc 1 543 3 view .LVU117
+ 678 0000 024A     		ldr	r2, .L53
+ 679 0002 1369     		ldr	r3, [r2, #16]
+ 680 0004 43F00203 		orr	r3, r3, #2
+ 681 0008 1361     		str	r3, [r2, #16]
+ 544:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 682              		.loc 1 544 1 is_stmt 0 view .LVU118
+ 683 000a 7047     		bx	lr
+ 684              	.L54:
+ 685              		.align	2
+ 686              	.L53:
+ 687 000c 00ED00E0 		.word	-536810240
+ 688              		.cfi_endproc
+ 689              	.LFE154:
+ 691              		.section	.text.HAL_PWR_DisableSleepOnExit,"ax",%progbits
+ 692              		.align	1
+ 693              		.global	HAL_PWR_DisableSleepOnExit
+ 694              		.syntax unified
+ 695              		.thumb
+ 696              		.thumb_func
+ 697              		.fpu fpv5-d16
+ 699              	HAL_PWR_DisableSleepOnExit:
+ 700              	.LFB155:
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 38
+
+
+ 545:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 546:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 547:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Disables Sleep-On-Exit feature when returning from Handler mode to Thread mode. 
+ 548:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note Clears SLEEPONEXIT bit of SCR register. When this bit is set, the processor 
+ 549:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       re-enters SLEEP mode when an interruption handling is over.          
+ 550:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 551:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 552:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_DisableSleepOnExit(void)
+ 553:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 701              		.loc 1 553 1 is_stmt 1 view -0
+ 702              		.cfi_startproc
+ 703              		@ args = 0, pretend = 0, frame = 0
+ 704              		@ frame_needed = 0, uses_anonymous_args = 0
+ 705              		@ link register save eliminated.
+ 554:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Clear SLEEPONEXIT bit of Cortex System Control Register */
+ 555:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   CLEAR_BIT(SCB->SCR, ((uint32_t)SCB_SCR_SLEEPONEXIT_Msk));
+ 706              		.loc 1 555 3 view .LVU120
+ 707 0000 024A     		ldr	r2, .L56
+ 708 0002 1369     		ldr	r3, [r2, #16]
+ 709 0004 23F00203 		bic	r3, r3, #2
+ 710 0008 1361     		str	r3, [r2, #16]
+ 556:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 711              		.loc 1 556 1 is_stmt 0 view .LVU121
+ 712 000a 7047     		bx	lr
+ 713              	.L57:
+ 714              		.align	2
+ 715              	.L56:
+ 716 000c 00ED00E0 		.word	-536810240
+ 717              		.cfi_endproc
+ 718              	.LFE155:
+ 720              		.section	.text.HAL_PWR_EnableSEVOnPend,"ax",%progbits
+ 721              		.align	1
+ 722              		.global	HAL_PWR_EnableSEVOnPend
+ 723              		.syntax unified
+ 724              		.thumb
+ 725              		.thumb_func
+ 726              		.fpu fpv5-d16
+ 728              	HAL_PWR_EnableSEVOnPend:
+ 729              	.LFB156:
+ 557:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 558:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 559:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Enables CORTEX M4 SEVONPEND bit. 
+ 560:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note Sets SEVONPEND bit of SCR register. When this bit is set, this causes 
+ 561:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       WFE to wake up when an interrupt moves from inactive to pended.
+ 562:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 563:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 564:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_EnableSEVOnPend(void)
+ 565:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 730              		.loc 1 565 1 is_stmt 1 view -0
+ 731              		.cfi_startproc
+ 732              		@ args = 0, pretend = 0, frame = 0
+ 733              		@ frame_needed = 0, uses_anonymous_args = 0
+ 734              		@ link register save eliminated.
+ 566:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Set SEVONPEND bit of Cortex System Control Register */
+ 567:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   SET_BIT(SCB->SCR, ((uint32_t)SCB_SCR_SEVONPEND_Msk));
+ 735              		.loc 1 567 3 view .LVU123
+ 736 0000 024A     		ldr	r2, .L59
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 39
+
+
+ 737 0002 1369     		ldr	r3, [r2, #16]
+ 738 0004 43F01003 		orr	r3, r3, #16
+ 739 0008 1361     		str	r3, [r2, #16]
+ 568:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 740              		.loc 1 568 1 is_stmt 0 view .LVU124
+ 741 000a 7047     		bx	lr
+ 742              	.L60:
+ 743              		.align	2
+ 744              	.L59:
+ 745 000c 00ED00E0 		.word	-536810240
+ 746              		.cfi_endproc
+ 747              	.LFE156:
+ 749              		.section	.text.HAL_PWR_DisableSEVOnPend,"ax",%progbits
+ 750              		.align	1
+ 751              		.global	HAL_PWR_DisableSEVOnPend
+ 752              		.syntax unified
+ 753              		.thumb
+ 754              		.thumb_func
+ 755              		.fpu fpv5-d16
+ 757              	HAL_PWR_DisableSEVOnPend:
+ 758              	.LFB157:
+ 569:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** 
+ 570:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** /**
+ 571:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @brief Disables CORTEX M4 SEVONPEND bit. 
+ 572:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @note Clears SEVONPEND bit of SCR register. When this bit is set, this causes 
+ 573:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   *       WFE to wake up when an interrupt moves from inactive to pended.         
+ 574:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   * @retval None
+ 575:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   */
+ 576:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** void HAL_PWR_DisableSEVOnPend(void)
+ 577:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** {
+ 759              		.loc 1 577 1 is_stmt 1 view -0
+ 760              		.cfi_startproc
+ 761              		@ args = 0, pretend = 0, frame = 0
+ 762              		@ frame_needed = 0, uses_anonymous_args = 0
+ 763              		@ link register save eliminated.
+ 578:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   /* Clear SEVONPEND bit of Cortex System Control Register */
+ 579:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c ****   CLEAR_BIT(SCB->SCR, ((uint32_t)SCB_SCR_SEVONPEND_Msk));
+ 764              		.loc 1 579 3 view .LVU126
+ 765 0000 024A     		ldr	r2, .L62
+ 766 0002 1369     		ldr	r3, [r2, #16]
+ 767 0004 23F01003 		bic	r3, r3, #16
+ 768 0008 1361     		str	r3, [r2, #16]
+ 580:dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c **** }
+ 769              		.loc 1 580 1 is_stmt 0 view .LVU127
+ 770 000a 7047     		bx	lr
+ 771              	.L63:
+ 772              		.align	2
+ 773              	.L62:
+ 774 000c 00ED00E0 		.word	-536810240
+ 775              		.cfi_endproc
+ 776              	.LFE157:
+ 778              		.text
+ 779              	.Letext0:
+ 780              		.file 3 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 781              		.file 4 "c:\\program files (x86)\\gnu arm embedded toolchain\\9 2020-q2-update\\arm-none-eabi\\inc
+ 782              		.file 5 "dev/CMSIS/Include/core_cm7.h"
+ 783              		.file 6 "dev/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 40
+
+
+ 784              		.file 7 "dev/CMSIS/Device/ST/STM32F7xx/Include/stm32f767xx.h"
+ 785              		.file 8 "dev/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h"
+ 786              		.file 9 "dev/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h"
+ 787              		.file 10 "dev/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h"
+ARM GAS  C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s 			page 41
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f7xx_hal_pwr.c
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:17     .text.HAL_PWR_DeInit:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:25     .text.HAL_PWR_DeInit:00000000 HAL_PWR_DeInit
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:47     .text.HAL_PWR_DeInit:00000014 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:52     .text.HAL_PWR_EnableBkUpAccess:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:59     .text.HAL_PWR_EnableBkUpAccess:00000000 HAL_PWR_EnableBkUpAccess
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:76     .text.HAL_PWR_EnableBkUpAccess:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:81     .text.HAL_PWR_DisableBkUpAccess:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:88     .text.HAL_PWR_DisableBkUpAccess:00000000 HAL_PWR_DisableBkUpAccess
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:105    .text.HAL_PWR_DisableBkUpAccess:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:110    .text.HAL_PWR_ConfigPVD:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:117    .text.HAL_PWR_ConfigPVD:00000000 HAL_PWR_ConfigPVD
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:204    .text.HAL_PWR_ConfigPVD:0000007c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:210    .text.HAL_PWR_EnablePVD:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:217    .text.HAL_PWR_EnablePVD:00000000 HAL_PWR_EnablePVD
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:234    .text.HAL_PWR_EnablePVD:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:239    .text.HAL_PWR_DisablePVD:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:246    .text.HAL_PWR_DisablePVD:00000000 HAL_PWR_DisablePVD
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:263    .text.HAL_PWR_DisablePVD:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:268    .text.HAL_PWR_EnableWakeUpPin:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:275    .text.HAL_PWR_EnableWakeUpPin:00000000 HAL_PWR_EnableWakeUpPin
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:311    .text.HAL_PWR_EnableWakeUpPin:00000020 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:316    .text.HAL_PWR_DisableWakeUpPin:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:323    .text.HAL_PWR_DisableWakeUpPin:00000000 HAL_PWR_DisableWakeUpPin
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:342    .text.HAL_PWR_DisableWakeUpPin:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:347    .text.HAL_PWR_EnterSLEEPMode:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:354    .text.HAL_PWR_EnterSLEEPMode:00000000 HAL_PWR_EnterSLEEPMode
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:431    .text.HAL_PWR_EnterSLEEPMode:00000024 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:436    .text.HAL_PWR_EnterSTOPMode:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:443    .text.HAL_PWR_EnterSTOPMode:00000000 HAL_PWR_EnterSTOPMode
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:547    .text.HAL_PWR_EnterSTOPMode:00000038 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:553    .text.HAL_PWR_EnterSTANDBYMode:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:560    .text.HAL_PWR_EnterSTANDBYMode:00000000 HAL_PWR_EnterSTANDBYMode
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:591    .text.HAL_PWR_EnterSTANDBYMode:00000018 $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:597    .text.HAL_PWR_PVDCallback:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:604    .text.HAL_PWR_PVDCallback:00000000 HAL_PWR_PVDCallback
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:617    .text.HAL_PWR_PVD_IRQHandler:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:624    .text.HAL_PWR_PVD_IRQHandler:00000000 HAL_PWR_PVD_IRQHandler
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:658    .text.HAL_PWR_PVD_IRQHandler:0000001c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:663    .text.HAL_PWR_EnableSleepOnExit:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:670    .text.HAL_PWR_EnableSleepOnExit:00000000 HAL_PWR_EnableSleepOnExit
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:687    .text.HAL_PWR_EnableSleepOnExit:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:692    .text.HAL_PWR_DisableSleepOnExit:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:699    .text.HAL_PWR_DisableSleepOnExit:00000000 HAL_PWR_DisableSleepOnExit
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:716    .text.HAL_PWR_DisableSleepOnExit:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:721    .text.HAL_PWR_EnableSEVOnPend:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:728    .text.HAL_PWR_EnableSEVOnPend:00000000 HAL_PWR_EnableSEVOnPend
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:745    .text.HAL_PWR_EnableSEVOnPend:0000000c $d
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:750    .text.HAL_PWR_DisableSEVOnPend:00000000 $t
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:757    .text.HAL_PWR_DisableSEVOnPend:00000000 HAL_PWR_DisableSEVOnPend
+C:\Users\BIGBIG~1\AppData\Local\Temp\ccfdejwK.s:774    .text.HAL_PWR_DisableSEVOnPend:0000000c $d
+
+NO UNDEFINED SYMBOLS
