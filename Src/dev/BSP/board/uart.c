@@ -4,12 +4,7 @@
 
 
 extern UART_HandleTypeDef huart3;
-/**
- * @brief send a character to terminal
- * 
- * @param ch character for send
- * @return int 
- */
+
 int usart_putchar(int ch)
 {
   uint8_t c = (uint8_t)ch;

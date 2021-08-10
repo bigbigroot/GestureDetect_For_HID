@@ -33,9 +33,19 @@ void GestureDetectorHandler(void *pvParameters)
     uint8_t id;
     
     BoardDevs[0].I2cAddr = 0x52;
+
+    while(status = VL6180_WaitDeviceBooted(&BoardDevs[0]));
+
+    if(VL6180_InitData(&BoardDevs[0])) 
+        printf("TOF proximity Device 0: InitData is unsuccssfull");
+
+    
+    if(VL6180_Prepare(&BoardDevs[0])) 
+        printf("TOF proximity Device 0: VL6180 Prepare is unsuccssfull");
+        
     /* to detect device presence try to read it's dev id */
     status = VL6180_RdByte(&BoardDevs[0], IDENTIFICATION_MODEL_ID, &id);
-
+    printf("id: %d", BoardDevs[0].DevID);
 }
 
 #define i2c_bus      (&hi2c1)

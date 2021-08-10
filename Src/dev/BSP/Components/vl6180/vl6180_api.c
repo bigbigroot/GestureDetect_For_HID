@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright © 2019, STMicroelectronics International N.V.
+Copyright ï¿½ 2019, STMicroelectronics International N.V.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -187,7 +187,7 @@ int VL6180_WaitDeviceBooted(VL6180Dev_t dev)
 int VL6180_InitData(VL6180Dev_t dev)
 {
 	int status, dmax_status ;
-	int8_t offset;
+	int8_t offset; 
 	uint8_t FreshOutReset;
 	uint32_t CalValue;
 	uint16_t u16;

@@ -1,28 +1,40 @@
+/**
+ * @file watchdog.c
+ * @author Weigen Huang (weigen.huang.k7e@fh-zwickau.de)
+ * @brief 
+ * @version 0.1
+ * @date 2021-08-02
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
+#include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_iwdg.h"
 
 
-static IWDG_HandleTypeDef hwdg;
+static IWDG_HandleTypeDef hiwdg;
 
 void hardware_watchdog_init(int timeout)
 {
-    hwdg.Instance = IWDG;
+    hiwdg.Instance = IWDG;
     /* clock frequence 32kHz */
-    hwdg.Init.Prescaler = IWDG_PRESCALER_32;
-    hwdg.Init.Reload = timeout*1000;
-    hwdg.Init.Window = 0;
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_32;
+    hiwdg.Init.Reload = timeout*1000;
+    hiwdg.Init.Window = 0;
 
-    HAL_IWDG_Init(&hwdg);
+    HAL_IWDG_Init(&hiwdg);
 }
 
 void hardware_watchdog_deinit(int timeout)
 {
-    hwdg.Instance = IWDG;
+    hiwdg.Instance = IWDG;
     /* clock frequence 32kHz */
-    hwdg.Init.Prescaler = IWDG_PRESCALER_32;
-    hwdg.Init.Reload = timeout*1000;
-    hwdg.Init.Window = 0;
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_32;
+    hiwdg.Init.Reload = timeout*1000;
+    hiwdg.Init.Window = 0;
 
-    HAL_IWDG_Init(&hwdg);
+    HAL_IWDG_Init(&hiwdg);
 }
 /**
  * @brief feed watchdog
