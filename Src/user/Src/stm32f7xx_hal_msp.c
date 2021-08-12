@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "board.h"
 #include "core_cm7.h"
 /**
   * Initializes the Global MSP.

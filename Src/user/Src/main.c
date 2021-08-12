@@ -22,6 +22,8 @@
 #include "main.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "board.h"
+#include "6180a1.h"
 #include "usb_device.h"
 
 /* Definitions for defaultTask */
@@ -170,18 +172,6 @@ static void MX_USART3_UART_Init(void)
     Error_Handler("uart init fail");
   }
 
-}
-
-void BSP_Init(){
-    GPIO_InitTypeDef GPIO_InitStruct;
-    
-    /*Configure push button GPIO pin : PC13  */
-    __GPIOC_CLK_ENABLE();
-    
-    GPIO_InitStruct.Pin = GPIO_PIN_13;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
 /**

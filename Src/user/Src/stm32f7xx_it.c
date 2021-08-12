@@ -22,6 +22,7 @@
 #include "stm32f7xx_it.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "board.h"
 
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
