@@ -23,8 +23,10 @@
 /* ARMv7-m instruction */
 #include "core_cm7.h"
 
+static char isNInit=0;
 
 /* Hook prototypes */
+void vApplicationTickHook(void);
 void vApplicationIdleHook(void);
 
 /* Idle task control block and stack */
@@ -55,7 +57,16 @@ void vApplicationGetTimerTaskMemory (StaticTask_t **ppxTimerTaskTCBBuffer, Stack
   *pulTimerTaskStackSize   = (uint32_t)configTIMER_TASK_STACK_DEPTH;
 }
 
-/* USER CODE BEGIN 2 */
+__weak void vApplicationTickHook( void )
+{
+  // if(isNInit==0){
+  //   /* Initilizition the Watchdog */ 
+  //   hardware_watchdog_init(100);
+  //   isNInit=1;
+  // }else
+  // hardware_watchdog_feed();
+}
+
 __weak void vApplicationIdleHook( void )
 {
    /* vApplicationIdleHook() will only be called if configUSE_IDLE_HOOK is set

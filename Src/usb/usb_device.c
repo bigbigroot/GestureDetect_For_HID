@@ -24,36 +24,44 @@
 #include "usbd_core.h"
 #include "usbd_hid.h"
 #include "main.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "Gesture.h"
 /**
  * @brief user button's state
  *        true: press
  *        false: release
  * 
  */
-extern int usr_btn_state;
+extern int key1_press;
 
-/* Private variables ---------------------------------------------------------*/
-static uint8_t HID_Buffer [4];
-static int x=0;
-static int y=255;
-/* USER CODE END PV */
+extern ButtonState buttonState;
 
-/* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
+// static uint8_t HID_Buffer [4];
+// int x=0;
+// int y=0;
 
-/* USER CODE END PFP */
-
-/* USB Device Core handle declaration. */
 USBD_HandleTypeDef hUsbDeviceFS;
 
-static uint8_t *USBD_HID_GetPos(void)
-{
-  HID_Buffer[0] = 0;
-  HID_Buffer[1] = x;
-  HID_Buffer[2] = y;
-  HID_Buffer[3] = 0;
-  return HID_Buffer;
-}
+// static uint8_t *USBD_HID_GetPos(void)
+// {
+//   if(buttonState==PRESS)
+//   {
+//     HID_Buffer[0] = LeftButton;
+//   }else if(buttonState==RELEASE){
+//     HID_Buffer[0] = 0;
+//   }
+//   // if(key1_press){
+//   //   HID_Buffer[0] = 1;
+//   //   key1_press=0;
+//   // }else{
+//   //   HID_Buffer[0] = 0;
+//   // }
+//   HID_Buffer[1] = x;
+//   HID_Buffer[2] = y;
+//   HID_Buffer[3] = 0;
+//   return HID_Buffer;
+// }
 
 /**
   * Init USB device Library, add supported class and start the library
@@ -61,9 +69,6 @@ static uint8_t *USBD_HID_GetPos(void)
   */
 void MX_USB_DEVICE_Init(void)
 {
-  /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-
-  /* USER CODE END USB_DEVICE_Init_PreTreatment */
 
   /* Init Device Library, add supported class and start the library. */
   if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
@@ -78,10 +83,6 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler("cannot start usbd");
   }
-
-  /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
-
-  /* USER CODE END USB_DEVICE_Init_PostTreatment */
 }
 
 
@@ -90,20 +91,23 @@ void MX_USB_DEVICE_Init(void)
   * @param  argument: Not used
   * @retval None
   */
-void USBDeviceReportHandler(void *pvParameters)
-{
-  /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
+// void USBDeviceReportHandler(void *pvParameters)
+// {
+//   TickType_t xLastWakeTime;
 
+//   /* init code for USB_DEVICE */
+//   MX_USB_DEVICE_Init();
 
-  /* Infinite loop */
-  while(1)
-  {
-    USBD_HID_GetPos();
-    //USBD_HID_SendReport(&hUsbDeviceFS, HID_Buffer, 4);
-    vTaskDelay(100);
-  }
-}
+//   /* Infinite loop */
+//   while(1)
+//   {
+//     vTaskDelay(100000);
+//     //ulTaskNotifyTake(pdTRUE, 10000);
+//     // USBD_HID_SendReport(&hUsbDeviceFS, USBD_HID_GetPos(), 4);
+//     // x=0;
+//     // y=0;
+//   }
+// }
 /**
   * @}
   */

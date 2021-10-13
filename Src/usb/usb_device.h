@@ -30,9 +30,6 @@
 #include "stm32f7xx_hal.h"
 #include "usbd_def.h"
 
-/* USER CODE BEGIN INCLUDE */
-
-/* USER CODE END INCLUDE */
 
 /** @addtogroup USBD_OTG_DRIVER
   * @{
@@ -47,23 +44,14 @@
   * @brief Public variables.
   * @{
   */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
+#define LeftButton    0x01
 /* Private function prototypes -----------------------------------------------*/
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
 
 /*
  * -- Insert your variables declaration here --
  */
-/* USER CODE BEGIN VARIABLES */
 
-/* USER CODE END VARIABLES */
 /**
   * @}
   */

@@ -22,25 +22,33 @@
 #include "main.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timers.h"
+#include "stream_buffer.h"
 #include "board.h"
+#include "watchdog.h"
+#include "led.h"
 #include "6180a1.h"
 #include "usb_device.h"
 
+
+TimerHandle_t blinkTimer;
 /* Definitions for defaultTask */
 TaskHandle_t usbdTask;
 TaskHandle_t gestureTask;
 TaskHandle_t idleTask;
-/* USER CODE BEGIN PV */
+
 UART_HandleTypeDef huart3;
 I2C_HandleTypeDef hi2c1;
 EXTI_HandleTypeDef exitUsrBtn;
 
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART3_UART_Init(void);
+static void openLED(void);
+/* callback funktions */
+static void LEDBlink(TimerHandle_t xExpiredTimer);
 void IDLETask_Handler(void *pvParameters);
 void GestureDetectorHandler(void *pvParameters);
 
@@ -68,14 +76,19 @@ int main(void)
   XNUCLEO6180XA1_GPIO_Init();
   XNUCLEO6180XA1_I2C1_Init(&hi2c1);
 
+  /*create the software timers*/
+  blinkTimer = xTimerCreate("LED Blink timer", LEDBlinkInterval, pdTRUE, NULL, LEDBlink);
   /* Create the thread(s) */
   /* creation of defaultTask */
-  xTaskCreate(USBDeviceReportHandler, "USB device HID task", TaskStackSize, NULL, configMAX_PRIORITIES-1,&usbdTask);
-  xTaskCreate(GestureDetectorHandler, "Gesture task", TaskStackSize, NULL, configMAX_PRIORITIES-1,&gestureTask);
+  // xTaskCreate(USBDeviceReportHandler, "USB device HID task", TaskStackSize, NULL, configMAX_PRIORITIES-3,&usbdTask);
+  xTaskCreate(GestureDetectorHandler, "Gesture task", TaskStackSize, NULL, configMAX_PRIORITIES-2,&gestureTask);
   xTaskCreate(IDLETask_Handler, "idle task", TaskStackSize, NULL, 0, &idleTask);
-  printf("All Task create...\r\n");
+  
+  openLED();
 
-  __enable_irq();
+  xTimerStart(blinkTimer, 0);
+  printf("System Start...\r\n");
+
   /* Start scheduler */
   vTaskStartScheduler();
 
@@ -86,6 +99,26 @@ int main(void)
   return 0;
 }
 
+/**
+ * @brief open L E D to indicate system started
+ * 
+ */
+void openLED(void)
+{
+  LED_ON(LED1);
+  LED_ON(LED2);
+  LED_ON(LED3);
+}
+
+/**
+ * @brief callback function of timer
+ * 
+ * @param xExpiredTimer timer Handle
+ */
+void LEDBlink(TimerHandle_t xExpiredTimer)
+{
+  LED_BLINK(LED2);
+}
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -229,9 +262,10 @@ void IDLETask_Handler(void *pvParameters)
 { 
   while (1)
   {
-    vTaskDelay(1000);    
+    DisplayExec();
   }  
 }
+
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
@@ -241,7 +275,7 @@ void Error_Handler(char *errMsg)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   /* USER CODE END Error_Handler_Debug */
-  printf("error: %s;\n", errMsg);
+  printf("error: %s!\r\n", errMsg);
 }
 
 #ifdef  USE_FULL_ASSERT

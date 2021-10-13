@@ -40,10 +40,13 @@ boot/system_stm32f7xx.c \
 user/Src/main.c \
 user/Src/Gesture.c \
 user/Src/freertos.c \
+user/Src/sim_mouse.c \
 user/Src/stm32f7xx_it.c \
 user/Src/stm32f7xx_hal_msp.c \
 dev/BSP/6180A1/6180a1.c \
 dev/BSP/board/uart.c \
+dev/BSP/board/led.c \
+dev/BSP/board/key.c \
 dev/BSP/board/6180a1_i2c.c \
 dev/BSP/board/watchdog.c \
 dev/BSP/Components/vl6180/vl6180_api.c \
@@ -69,6 +72,7 @@ dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c \
 dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c \
 dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c \
 dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c \
+dev/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_iwdg.c \
 lib/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 lib/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 lib/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \

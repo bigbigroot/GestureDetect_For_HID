@@ -5,7 +5,7 @@
 
 extern UART_HandleTypeDef huart3;
 
-int usart_putchar(int ch)
+int __IO_putchar(int ch)
 {
   uint8_t c = (uint8_t)ch;
   HAL_UART_Transmit(&huart3, &c, 1, 10);

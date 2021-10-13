@@ -20,35 +20,17 @@ void hardware_watchdog_init(int timeout)
     hiwdg.Instance = IWDG;
     /* clock frequence 32kHz */
     hiwdg.Init.Prescaler = IWDG_PRESCALER_32;
-    hiwdg.Init.Reload = timeout*1000;
+    hiwdg.Init.Reload = timeout;
     hiwdg.Init.Window = 0;
 
     HAL_IWDG_Init(&hiwdg);
 }
 
-void hardware_watchdog_deinit(int timeout)
-{
-    hiwdg.Instance = IWDG;
-    /* clock frequence 32kHz */
-    hiwdg.Init.Prescaler = IWDG_PRESCALER_32;
-    hiwdg.Init.Reload = timeout*1000;
-    hiwdg.Init.Window = 0;
-
-    HAL_IWDG_Init(&hiwdg);
-}
 /**
- * @brief feed watchdog
+ * @brief open watchdog
  * 
  */
-void hardware_watchdog_enable(void)
-{
-    __HAL_IWDG_START(&hiwdg);
-}
-/**
- * @brief feed watchdog
- * 
- */
-void hardware_watchdog_disable(void)
+void hardware_watchdog_start(void)
 {
     __HAL_IWDG_START(&hiwdg);
 }
@@ -58,5 +40,5 @@ void hardware_watchdog_disable(void)
  */
 void hardware_watchdog_feed(void)
 {
-    __HAL_IWDG_RELOAD_COUNTER(&hiwdg);
+    HAL_IWDG_Refresh(&hiwdg);
 }

@@ -578,7 +578,7 @@ static void _V1_GPIO_Init(void) {
 
 
     /*Configure GPIO pins : PA0 PA1 PA4 PA5 PA8 PA9 */
-    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8 | GPIO_PIN_9;
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5;//| GPIO_PIN_8 | GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
@@ -624,6 +624,11 @@ static void _V1_GPIO_Init(void) {
 static void _V2_GPIO_Init(){
     uint16_t PadDir;
 
+/*  why? 
+    because the GPIO1 interrupt pins are not used.
+*/
+
+#if 0
     GPIO_InitTypeDef GPIO_InitStruct;
 
     __GPIOA_CLK_ENABLE();
@@ -641,6 +646,7 @@ static void _V2_GPIO_Init(){
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+#endif
 
     /* expender config */
     PadDir=~V2_DISP_SEL;
