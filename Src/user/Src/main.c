@@ -22,7 +22,9 @@
 #include "main.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "stream_buffer.h"
 #include "board.h"
+#include "watchdog.h"
 #include "6180a1.h"
 #include "usb_device.h"
 
@@ -30,6 +32,7 @@
 TaskHandle_t usbdTask;
 TaskHandle_t gestureTask;
 TaskHandle_t idleTask;
+
 /* USER CODE BEGIN PV */
 UART_HandleTypeDef huart3;
 I2C_HandleTypeDef hi2c1;
@@ -68,14 +71,14 @@ int main(void)
   XNUCLEO6180XA1_GPIO_Init();
   XNUCLEO6180XA1_I2C1_Init(&hi2c1);
 
+
   /* Create the thread(s) */
   /* creation of defaultTask */
-  xTaskCreate(USBDeviceReportHandler, "USB device HID task", TaskStackSize, NULL, configMAX_PRIORITIES-1,&usbdTask);
-  xTaskCreate(GestureDetectorHandler, "Gesture task", TaskStackSize, NULL, configMAX_PRIORITIES-1,&gestureTask);
+  xTaskCreate(USBDeviceReportHandler, "USB device HID task", TaskStackSize, NULL, configMAX_PRIORITIES-3,&usbdTask);
+  xTaskCreate(GestureDetectorHandler, "Gesture task", TaskStackSize, NULL, configMAX_PRIORITIES-2,&gestureTask);
   xTaskCreate(IDLETask_Handler, "idle task", TaskStackSize, NULL, 0, &idleTask);
-  printf("All Task create...\r\n");
+  printf("System Start...\r\n");
 
-  __enable_irq();
   /* Start scheduler */
   vTaskStartScheduler();
 
@@ -229,9 +232,10 @@ void IDLETask_Handler(void *pvParameters)
 { 
   while (1)
   {
-    vTaskDelay(1000);    
+    DisplayExec();
   }  
 }
+
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
@@ -241,7 +245,7 @@ void Error_Handler(char *errMsg)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   /* USER CODE END Error_Handler_Debug */
-  printf("error: %s;\n", errMsg);
+  printf("error: %s!\r\n", errMsg);
 }
 
 #ifdef  USE_FULL_ASSERT

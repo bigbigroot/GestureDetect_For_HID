@@ -22,6 +22,7 @@
 #include "main.h"
 #include "board.h"
 #include "core_cm7.h"
+#include "stm32f7xx_hal.h"
 /**
   * Initializes the Global MSP.
   */
@@ -31,7 +32,7 @@ void HAL_MspInit(void)
   __HAL_RCC_SYSCFG_CLK_ENABLE();
 
   /* System interrupt init*/
-
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
   /* enable usagefault */
   SCB->SHCSR = 1<<SCB_SHCSR_USGFAULTENA_Pos;  
   /* enable busfault */

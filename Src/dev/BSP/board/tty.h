@@ -19,6 +19,6 @@
  * @param ch character for send
  * @return int 
  */
-int usart_putchar(int ch);
+int __IO_putchar(int ch);
 
 #endif /*TTY_H*/

@@ -55,7 +55,6 @@ void vApplicationGetTimerTaskMemory (StaticTask_t **ppxTimerTaskTCBBuffer, Stack
   *pulTimerTaskStackSize   = (uint32_t)configTIMER_TASK_STACK_DEPTH;
 }
 
-/* USER CODE BEGIN 2 */
 __weak void vApplicationIdleHook( void )
 {
    /* vApplicationIdleHook() will only be called if configUSE_IDLE_HOOK is set

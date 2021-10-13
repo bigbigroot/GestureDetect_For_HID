@@ -42,7 +42,7 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-  printf("Hard fault");
+  printf("Hard fault\r\n");
   while (1)
   {
   }
@@ -53,7 +53,7 @@ void HardFault_Handler(void)
   */
 void MemManage_Handler(void)
 {
-  printf("Memory management fault");
+  printf("Memory management fault\r\n");
   while (1)
   {
   }
@@ -64,7 +64,7 @@ void MemManage_Handler(void)
   */
 void BusFault_Handler(void)
 {
-  printf("memory access fault");
+  printf("memory access fault\r\n");
   while (1)
   {
   }
@@ -75,7 +75,7 @@ void BusFault_Handler(void)
   */
 void UsageFault_Handler(void)
 {
-  printf("illegal instruction");
+  printf("illegal instruction\r\n");
   while (1)
   {
     /* USER CODE BEGIN W1_UsageFault_IRQn 0 */

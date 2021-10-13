@@ -17,5 +17,9 @@ typedef enum LEDNum_typ
     LED1=1,
     LED2,
     LED3
-} LEDNum
+} LEDNum;
 
+void LED_ON(LEDNum n);
+void LED_OFF(LEDNum n);
+
+#endif

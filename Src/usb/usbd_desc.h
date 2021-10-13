@@ -51,9 +51,6 @@
 
 #define  USB_SIZ_STRING_SERIAL       0x1A
 
-/* USER CODE BEGIN EXPORTED_CONSTANTS */
-
-/* USER CODE END EXPORTED_CONSTANTS */
 
 /**
   * @}
@@ -64,9 +61,6 @@
   * @{
   */
 
-/* USER CODE BEGIN EXPORTED_DEFINES */
-
-/* USER CODE END EXPORTED_DEFINES */
 
 /**
   * @}
@@ -77,9 +71,7 @@
   * @{
   */
 
-/* USER CODE BEGIN EXPORTED_TYPES */
 
-/* USER CODE END EXPORTED_TYPES */
 
 /**
   * @}
@@ -90,9 +82,6 @@
   * @{
   */
 
-/* USER CODE BEGIN EXPORTED_MACRO */
-
-/* USER CODE END EXPORTED_MACRO */
 
 /**
   * @}
@@ -106,9 +95,6 @@
 /** Descriptor for the Usb device. */
 extern USBD_DescriptorsTypeDef FS_Desc;
 
-/* USER CODE BEGIN EXPORTED_VARIABLES */
-
-/* USER CODE END EXPORTED_VARIABLES */
 
 /**
   * @}
@@ -119,9 +105,6 @@ extern USBD_DescriptorsTypeDef FS_Desc;
   * @{
   */
 
-/* USER CODE BEGIN EXPORTED_FUNCTIONS */
-
-/* USER CODE END EXPORTED_FUNCTIONS */
 
 /**
   * @}
