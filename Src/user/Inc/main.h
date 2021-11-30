@@ -29,6 +29,7 @@ extern "C" {
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_uart.h"
 #include "watchdog.h"
+#include "led.h"
 
 #define TaskStackSize 1000 
 #define LEDBlinkInterval 1000

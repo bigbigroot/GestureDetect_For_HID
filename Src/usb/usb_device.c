@@ -33,13 +33,8 @@
  *        false: release
  * 
  */
-extern int key1_press;
-
 extern ButtonState buttonState;
 
-// static uint8_t HID_Buffer [4];
-// int x=0;
-// int y=0;
 
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -74,14 +69,17 @@ void MX_USB_DEVICE_Init(void)
   if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
   {
     Error_Handler("usbd init fault");
+    LED_OFF(LED2);
   }
   if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID) != USBD_OK)
   {
     Error_Handler("cannot Register Class");
+    LED_OFF(LED2);
   }
   if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
   {
     Error_Handler("cannot start usbd");
+    LED_OFF(LED2);
   }
 }
 

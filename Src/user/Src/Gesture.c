@@ -16,6 +16,7 @@
 #include "FreeRTOS.h"
 #include "FreeRTOSConfig.h"
 #include "task.h"
+#include "timers.h"
 #include "stm32f7xx_hal.h"
 #include "6180a1.h"
 #include "vl6180_api.h"
@@ -24,7 +25,10 @@
 #include "vl6180_types.h"
 #include "Gesture.h"
 #include "sim_mouse.h"
+#include "led.h"
+#include "watchdog.h"
 
+extern TimerHandle_t blinkTimer;
 extern I2C_HandleTypeDef hi2c1;
 extern int x;
 extern int y;
@@ -67,9 +71,11 @@ void GestureDetectorHandler(void *pvParameters)
     int status;
     int n_dev=4;
     int nPresentDevs;
+    int idleCnt=0;
 
     MX_USB_DEVICE_Init();
-
+    
+    LED_OFF(LED1);
     for (i = 0; i < n_dev; i++) 
     {
         /* put all under reset */
@@ -129,12 +135,20 @@ void GestureDetectorHandler(void *pvParameters)
     }
     
     printf("Gesture Detect start working...\r\n");
-
+    LED_ON(LED1);
     TASK_DELAY(1);
+    
+
+    //hardware_watchdog_init(1000);
     while (1)
     {
+        //hardware_watchdog_feed();
         detectedN =0;
         avgRange = 0;
+
+        
+        if(GestureSysState == IDLE) TASK_DELAY(20);
+
         for(i=0; i<n_dev; i++)
         {
             if(BoardDevs[i].Present){
@@ -147,14 +161,19 @@ void GestureDetectorHandler(void *pvParameters)
             }
         }
 
+        TASK_DELAY(2); 
         for (i = 0; i < n_dev; i++)
         {
             int mTimes =  10; 
             BoardDevs[i].Ready=1;
-            do{     
-                TASK_DELAY(1);          
+            do{              
                 VL6180_RangeGetMeasurementIfReady(&BoardDevs[i], &measureRanges[i]);
-            }while(measureRanges[i].errorStatus == DataNotReady&&mTimes-- > 0);
+                if(measureRanges[i].errorStatus == DataNotReady) 
+                {
+                    TASK_DELAY(1); 
+                }
+                else break;
+            }while(mTimes-- > 0);
             if(mTimes>0){
                 if(MeasureErrHandle(i, measureRanges[i].errorStatus) == Detected){
                     detectedN++;
@@ -212,13 +231,6 @@ void GestureDetectorHandler(void *pvParameters)
                 }
                 if(measureRanges[LEFT].errorStatus == 0){
                     GestureSysState = LEFT_TO_RIGHT_SWIPE;
-                    x=-50;
-                    y=0;
-                    // xTaskNotifyGive(usbdTask);
-                    USBD_HID_SendReport(&hUsbDeviceFS, USBD_HID_GetPos(), 4);
-                    printf("RIGHT_TO_LEFT_SWIPE\r\n");
-                    x=0;
-                    y=0;
                 }
                 break;
             case LEFT_TO_RIGHT_SWIPE:
@@ -227,13 +239,6 @@ void GestureDetectorHandler(void *pvParameters)
                 }
                 if(measureRanges[RIGHT].errorStatus == 0){
                     GestureSysState = RIGHT_TO_LEFT_SWIPE;
-                    x=50;
-                    y=0;
-                    // xTaskNotifyGive(usbdTask);
-                    USBD_HID_SendReport(&hUsbDeviceFS, USBD_HID_GetPos(), 4);
-                    printf("LEFT_TO_RIGHT_SWIPE\r\n");
-                    x=0;
-                    y=0;
                 }
                 break;
             case TOP_TO_BOTTOM_SWIPE:
@@ -242,12 +247,6 @@ void GestureDetectorHandler(void *pvParameters)
                 }
                 if(measureRanges[RIGHT].errorStatus == 0){
                     GestureSysState = RIGHT_TO_LEFT_SWIPE;
-                    x=0;
-                    y=50;
-                    // xTaskNotifyGive(usbdTask);
-                    USBD_HID_SendReport(&hUsbDeviceFS, USBD_HID_GetPos(), 4);
-                    x=0;
-                    y=0;
                 }
                 break;
             case BOTTOM_TO_TOP_SWIPE:
@@ -256,24 +255,49 @@ void GestureDetectorHandler(void *pvParameters)
                 }
                 if(measureRanges[RIGHT].errorStatus == 0){
                     GestureSysState = RIGHT_TO_LEFT_SWIPE;
-                    x=0;
-                    y=-50;
-                    // xTaskNotifyGive(usbdTask);
-                    USBD_HID_SendReport(&hUsbDeviceFS, USBD_HID_GetPos(), 4);
-                    x=0;
-                    y=0;
                 }
                 break;
 #endif       
-            case RANGE:
-                if (isOnTheTop()){       
+            case IDLE:
+            case RANGE:  
+                if(GestureSysState==IDLE)
+                {
+                    if(detectedN>0)
+                    {
+                        printf("System will wake up.\r\n");
+                        xTimerStop(blinkTimer, 0);
+                        LED_ON(LED3);
+                        idleCnt=0;
+                    }
+                }else
+                {
+                    if(detectedN==0)
+                    {
+                        if(idleCnt>10000)
+                        {
+                            GestureSysState=IDLE;
+                            printf("System will sleep...\r\n");
+                            xTimerStart(blinkTimer, 0);
+                        }else
+                        {
+                            idleCnt++;
+                        }                                          
+                    }else
+                    {
+                        idleCnt = 0;
+                    }                                        
+                }
+                
+                if (isOnTheTop())
+                {       
                     GestureSysState = ON_THE_TOP;
                 }
-                else if(isOnTheLeft()){
-                    GestureSysState = ON_THE_LEFT;
-                    
+                else if(isOnTheLeft())
+                {
+                    GestureSysState = ON_THE_LEFT;                        
                 }
-                else if(isOnTheRight()){
+                else if(isOnTheRight())
+                {
                     GestureSysState = ON_THE_RIGHT;
                 }
                 else if(isOnTheBottom())
@@ -284,7 +308,6 @@ void GestureDetectorHandler(void *pvParameters)
                 {                    
                     GestureSysState = ON_THE_MID;
                 }
-                
                 break;    
             case ON_THE_MID:                
                 if(detectedN==0){

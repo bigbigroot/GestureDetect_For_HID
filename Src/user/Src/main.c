@@ -86,7 +86,6 @@ int main(void)
   
   openLED();
 
-  xTimerStart(blinkTimer, 0);
   printf("System Start...\r\n");
 
   /* Start scheduler */
@@ -117,7 +116,7 @@ void openLED(void)
  */
 void LEDBlink(TimerHandle_t xExpiredTimer)
 {
-  LED_BLINK(LED2);
+  LED_BLINK(LED3);
 }
 /**
   * @brief System Clock Configuration

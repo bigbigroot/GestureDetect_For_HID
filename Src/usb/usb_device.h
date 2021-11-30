@@ -47,6 +47,8 @@
 #define LeftButton    0x01
 /* Private function prototypes -----------------------------------------------*/
 
+void USBDeviceReportHandler(void *pvParameters);
+
 
 /*
  * -- Insert your variables declaration here --
@@ -63,8 +65,6 @@
 
 /** USB Device initialization function. */
 void MX_USB_DEVICE_Init(void);
-
-void USBDeviceReportHandler(void *pvParameters);
 /**
   * @}
   */
