@@ -22,14 +22,6 @@
 #include "usbd_desc.h"
 #include "usbd_conf.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
   * @{
@@ -67,26 +59,17 @@
 
 #define USB_SIZ_BOS_DESC            0x0C
 
-/* USER CODE BEGIN PRIVATE_DEFINES */
-
-/* USER CODE END PRIVATE_DEFINES */
 
 /**
   * @}
   */
 
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /** @defgroup USBD_DESC_Private_Macros USBD_DESC_Private_Macros
   * @brief Private macros.
   * @{
   */
 
-/* USER CODE BEGIN PRIVATE_MACRO */
-
-/* USER CODE END PRIVATE_MACRO */
 
 /**
   * @}

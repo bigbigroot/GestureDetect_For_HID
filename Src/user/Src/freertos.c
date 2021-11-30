@@ -59,12 +59,7 @@ void vApplicationGetTimerTaskMemory (StaticTask_t **ppxTimerTaskTCBBuffer, Stack
 
 __weak void vApplicationTickHook( void )
 {
-  // if(isNInit==0){
-  //   /* Initilizition the Watchdog */ 
-  //   hardware_watchdog_init(100);
-  //   isNInit=1;
-  // }else
-  // hardware_watchdog_feed();
+
 }
 
 __weak void vApplicationIdleHook( void )

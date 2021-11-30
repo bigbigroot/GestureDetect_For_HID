@@ -19,9 +19,9 @@ void hardware_watchdog_init(int timeout)
 {
     hiwdg.Instance = IWDG;
     /* clock frequence 32kHz */
-    hiwdg.Init.Prescaler = IWDG_PRESCALER_32;
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_64;
     hiwdg.Init.Reload = timeout;
-    hiwdg.Init.Window = 0;
+    hiwdg.Init.Window = 0xFFF;
 
     HAL_IWDG_Init(&hiwdg);
 }
