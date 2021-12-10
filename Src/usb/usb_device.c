@@ -73,12 +73,6 @@ static uint8_t *USBD_HID_GetPos(void)
   }else if(buttonState==RELEASE){
     HID_Buffer[0] = 0;
   }
-  // if(key1_press){
-  //   HID_Buffer[0] = 1;
-  //   key1_press=0;
-  // }else{
-  //   HID_Buffer[0] = 0;
-  // }
   HID_Buffer[1] = x;
   HID_Buffer[2] = y;
   HID_Buffer[3] = 0;
